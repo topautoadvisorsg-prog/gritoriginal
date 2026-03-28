@@ -111,7 +111,7 @@ const mapGlobalRankings = (entries: GlobalLeaderboardEntry[]): RankingUser[] => 
 export type LeaderboardType = 'global' | 'monthly' | 'yearly';
 
 export const MMAMetricsRankings: React.FC = () => {
-    const { user } = useAuth();
+    const { user: authUser } = useAuth();
     const [leaderboardType, setLeaderboardType] = React.useState<LeaderboardType>('global');
 
     // Fetch Leaderboard
@@ -133,8 +133,8 @@ export const MMAMetricsRankings: React.FC = () => {
         : mapSnapshotRankings(rawData?.rankings || []);
 
     // Find current user's row for pinning
-    const currentUserRow = rankings.find(r => r.id === user?.id);
-    const filteredRankings = rankings.filter(r => r.id !== user?.id);
+    const currentUserRow = rankings.find(r => r.id === authUser?.id);
+    const filteredRankings = rankings.filter(r => r.id !== authUser?.id);
 
     const tabs: { id: LeaderboardType; label: string }[] = [
         { id: 'global', label: 'Global All-Time' },
@@ -247,7 +247,7 @@ export const MMAMetricsRankings: React.FC = () => {
                                 <RankingRow
                                     user={user}
                                     animationIndex={index}
-                                    isSelf={user.id === (useAuth() as any).authUser?.id}
+                                    isSelf={user.id === authUser?.id}
                                     currentStreak={user.currentStreak}
                                     disableAnimation={true} // We use motion.div for animation now
                                 />
@@ -261,6 +261,7 @@ export const MMAMetricsRankings: React.FC = () => {
                             <p className="text-white/60">No rankings available for this period yet.</p>
                         </div>
                     )}
+                    </div>
                     </div>
                 </div>
             </div>

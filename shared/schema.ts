@@ -5,6 +5,7 @@ import { z } from "zod/v4";
 
 // Re-export auth models
 export * from "./models/auth";
+import { users } from "./models/auth";
 
 /**
  * Fighters table - Primary Data Authority
@@ -905,7 +906,7 @@ export const groups = pgTable("groups", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  ownerId: uuid("owner_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  ownerId: varchar("owner_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   isPrivate: boolean("is_private").notNull().default(true),
   maxMembers: integer("max_members").notNull().default(50),
   avatarUrl: text("avatar_url"),
@@ -919,7 +920,7 @@ export const groups = pgTable("groups", {
 export const groupMembers = pgTable("group_members", {
   id: uuid("id").defaultRandom().primaryKey(),
   groupId: uuid("group_id").notNull().references(() => groups.id, { onDelete: "cascade" }),
-  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   role: varchar("role", { length: 50 }).notNull().default('member'), // 'owner', 'admin', 'member'
   joinedAt: timestamp("joined_at").defaultNow().notNull(),
 }, (table) => ({
@@ -938,7 +939,7 @@ export type InsertGroupMember = typeof groupMembers.$inferInsert;
 export const groupChat = pgTable("group_chat", {
   id: uuid("id").defaultRandom().primaryKey(),
   groupId: uuid("group_id").notNull().references(() => groups.id, { onDelete: "cascade" }),
-  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   content: text("content").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });

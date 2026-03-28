@@ -22,6 +22,8 @@ export async function initJobService() {
     await boss.start();
     logger.info('[pg-boss] Job queue started successfully');
 
+    await boss.createQueue('outbound-sync').catch(() => {});
+
     await boss.work('outbound-sync', async (job: any) => {
       const { entry } = job.data as { entry: any };
       logger.info(`[pg-boss] Processing outbound-sync for entry ${entry.id}`);
