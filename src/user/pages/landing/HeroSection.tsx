@@ -24,10 +24,10 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
                         <span className="lp-hero__title-red">{t('hero.title_accent_red2')}</span>
                     </span>
                 </h1>
-                <div className="lp-hero__subtitle-wrap">{t('hero.subtitle')}</div>
                 <p className="lp-hero__desc">{t('hero.desc')}</p>
                 <div className="lp-hero__ctas">
                     <button className="lp-btn lp-btn--primary" onClick={onSignIn}><Zap size={18} /> {t('hero.cta')}</button>
+                    <div className="lp-hero__subtitle-wrap">{t('hero.subtitle')}</div>
                 </div>
             </div>
         </section>

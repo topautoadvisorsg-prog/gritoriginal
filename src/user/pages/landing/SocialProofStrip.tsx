@@ -53,7 +53,7 @@ export function SocialProofStrip() {
             <div className="lp-ticker">
                 <div className="lp-ticker__label">
                     <span className="lp-ticker__dot" />
-                    {t('intel_section.title')}
+                    INTEL
                 </div>
                 <div className="lp-ticker__track">
                     <div className="lp-ticker__inner">
