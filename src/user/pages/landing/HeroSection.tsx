@@ -27,7 +27,7 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
                 <p className="lp-hero__desc">{t('hero.desc')}</p>
                 <div className="lp-hero__ctas">
                     <button className="lp-btn lp-btn--primary" onClick={onSignIn}><Zap size={18} /> {t('hero.cta')}</button>
-                    <div className="lp-hero__subtitle-wrap">{t('hero.subtitle')}</div>
+                    <div className="lp-hero__subtitle-wrap text-[34px] opacity-[1]">Put your skills to the test</div>
                 </div>
             </div>
         </section>
