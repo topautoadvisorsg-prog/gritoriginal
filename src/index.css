@@ -1,0 +1,482 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* GRIT Design System - Cyan/Teal + Red Theme matching logo */
+
+@layer base {
+  :root {
+    /* Core Background Layers - Deep navy/black */
+    --background: 220 25% 6%;
+    --foreground: 210 40% 98%;
+
+    /* Surface Cards */
+    --card: 220 25% 9%;
+    --card-foreground: 210 40% 98%;
+    --card-elevated: 220 25% 12%;
+
+    --popover: 220 25% 10%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary - Vibrant Gold (matches mockup) */
+    --primary: 38 92% 55%;
+    --primary-foreground: 220 25% 6%;
+    --primary-glow: 38 92% 65%;
+
+    /* Secondary - Slate with cyan tint */
+    --secondary: 210 25% 15%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* Muted */
+    --muted: 210 25% 12%;
+    --muted-foreground: 210 20% 55%;
+
+    /* Accent - Red/Coral (matches logo accent) */
+    --accent: 355 85% 55%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Combat Colors */
+    --win: 142 71% 45%;
+    --win-foreground: 142 71% 95%;
+    --loss: 355 85% 55%;
+    --loss-foreground: 355 85% 95%;
+    --draw: 45 10% 70%;
+    --draw-foreground: 45 10% 10%;
+
+    /* Status Colors */
+    --destructive: 355 85% 55%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 142 71% 45%;
+    --warning: 38 92% 50%;
+    --info: 190 90% 50%;
+
+    /* Borders & Inputs */
+    --border: 210 25% 18%;
+    --input: 210 25% 14%;
+    --ring: 190 90% 50%;
+
+    --radius: 0.75rem;
+
+    /* Glass Effects */
+    --glass: 220 25% 9% / 0.85;
+    --glass-border: 210 25% 22%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(190 90% 50%), hsl(200 90% 40%));
+    --gradient-surface: linear-gradient(180deg, hsl(220 25% 11%), hsl(220 25% 6%));
+    --gradient-card: linear-gradient(180deg, hsl(220 25% 14%), hsl(220 25% 9%));
+    --gradient-win: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 35%));
+    --gradient-loss: linear-gradient(135deg, hsl(355 85% 55%), hsl(355 85% 45%));
+    --gradient-accent: linear-gradient(135deg, hsl(355 85% 55%), hsl(340 85% 50%));
+    --gradient-hero: linear-gradient(135deg, hsl(190 90% 50% / 0.2), hsl(355 85% 55% / 0.2));
+
+    /* Shadows */
+    --shadow-sm: 0 2px 8px -2px hsl(220 25% 4% / 0.5);
+    --shadow-md: 0 4px 16px -4px hsl(220 25% 4% / 0.6);
+    --shadow-lg: 0 8px 32px -8px hsl(220 25% 4% / 0.7);
+    --shadow-glow: 0 0 40px -10px hsl(190 90% 50% / 0.4);
+    --shadow-glow-accent: 0 0 40px -10px hsl(355 85% 55% / 0.4);
+    --shadow-win: 0 0 20px -5px hsl(142 71% 45% / 0.4);
+    --shadow-loss: 0 0 20px -5px hsl(355 85% 55% / 0.4);
+
+    /* Sidebar - Darker with cyan accents */
+    --sidebar-background: 220 25% 5%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 190 90% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 25% 10%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 210 25% 12%;
+    --sidebar-ring: 190 90% 50%;
+  }
+
+  .dark {
+    /* Same as root - this is a dark-first app */
+    --background: 220 25% 6%;
+    --foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply scroll-smooth;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3, h4, h5, h6, .display-font {
+    font-family: 'Outfit', sans-serif;
+    @apply tracking-tight;
+  }
+}
+
+@layer components {
+  /* Glass Card Effect */
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-lg;
+  }
+
+  .glass-card-elevated {
+    @apply bg-card-elevated/90 backdrop-blur-xl border border-border/60 shadow-xl;
+  }
+
+  /* Stat Cards */
+  .stat-card {
+    @apply bg-muted/50 rounded-lg p-3 border border-border/30 transition-all duration-200;
+  }
+
+  .stat-card:hover {
+    @apply border-primary/40 shadow-md;
+  }
+
+  /* Fight Result Badges */
+  .result-win {
+    @apply bg-win/20 text-win border border-win/30;
+  }
+
+  .result-loss {
+    @apply bg-loss/20 text-loss border border-loss/30;
+  }
+
+  .result-draw {
+    @apply bg-draw/20 text-draw border border-draw/30;
+  }
+
+  /* Data Labels */
+  .data-label {
+    @apply text-[10px] font-bold uppercase tracking-widest text-muted-foreground;
+  }
+
+  .data-value {
+    @apply text-sm font-mono font-semibold text-foreground;
+  }
+
+  /* Section Headers */
+  .section-header {
+    @apply text-xs font-bold uppercase tracking-widest text-muted-foreground;
+  }
+
+  /* Live Indicator */
+  .live-indicator {
+    @apply relative flex h-3 w-3;
+  }
+
+  .live-indicator::before {
+    @apply absolute inline-flex h-full w-full rounded-full bg-success opacity-75 animate-ping content-[''];
+  }
+
+  .live-indicator::after {
+    @apply relative inline-flex h-3 w-3 rounded-full bg-success content-[''];
+  }
+
+  /* Navigation Active States */
+  .nav-active {
+    @apply bg-primary/10 text-primary border-l-2 border-primary;
+  }
+
+  /* Last 5 Fights Indicator */
+  .fight-indicator {
+    @apply w-3 h-3 rounded-full transition-all duration-200;
+  }
+
+  .fight-indicator-win {
+    @apply bg-win shadow-win;
+    box-shadow: 0 0 8px hsl(var(--win) / 0.5);
+  }
+
+  .fight-indicator-loss {
+    @apply bg-loss shadow-loss;
+    box-shadow: 0 0 8px hsl(var(--loss) / 0.5);
+  }
+
+  .fight-indicator-neutral {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Scrollbar Styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-muted/30 rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer utilities {
+  /* Text Gradients */
+  .text-gradient-primary {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-foreground;
+  }
+
+  .text-gradient-accent {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-accent to-warning;
+  }
+
+  .text-gradient-brand {
+    background: linear-gradient(90deg, hsl(190 90% 50%), hsl(355 85% 55%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Glow Effects */
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .glow-accent {
+    box-shadow: var(--shadow-glow-accent);
+  }
+
+  .glow-win {
+    box-shadow: var(--shadow-win);
+  }
+
+  .glow-loss {
+    box-shadow: var(--shadow-loss);
+  }
+
+  /* Animation Utilities */
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Shine animation for badge unlock */
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shine {
+    animation: shine 2s ease-in-out infinite;
+  }
+
+  /* Pulse glow for streaks */
+  @keyframes pulseGlow {
+    0%, 100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  /* Arena cinematic backdrop */
+  .arena-backdrop {
+    background:
+      radial-gradient(ellipse 60% 40% at 20% -10%, rgba(255,220,100,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% -10%, rgba(255,200,80,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 100% 60% at 50% 100%, rgba(0,0,0,0.95) 0%, transparent 80%),
+      #060608;
+  }
+
+  /* Base standard button for consistency */
+  .btn-standard {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    height: 42px;
+    padding: 0 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* Gold outlined CTA button */
+  .gold-btn {
+    @apply btn-standard;
+    border: 1px solid rgba(232, 160, 32, 0.55);
+    color: #E8A020;
+    background: transparent;
+  }
+
+  .gold-btn:hover {
+    background: rgba(232, 160, 32, 0.1);
+    border-color: rgba(232, 160, 32, 0.8);
+    box-shadow: 0 0 18px rgba(232, 160, 32, 0.22);
+  }
+
+  /* Ghost outlined button */
+  .ghost-btn {
+    @apply btn-standard;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .ghost-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+  }
+
+  /* Bokeh spotlight animation */
+  @keyframes bokehDrift {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.06; }
+    33%       { transform: translate(3%, 2%) scale(1.06); opacity: 0.1; }
+    66%       { transform: translate(-2%, 1%) scale(0.96); opacity: 0.07; }
+  }
+
+  .bokeh-spot {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    animation: bokehDrift 12s ease-in-out infinite;
+  }
+
+  .bokeh-spot-left {
+    width: 45vw;
+    height: 65vh;
+    top: -15%;
+    left: -8%;
+    background: radial-gradient(circle, rgba(255, 210, 80, 0.18) 0%, transparent 70%);
+    animation-delay: 0s;
+  }
+
+  .bokeh-spot-right {
+    width: 40vw;
+    height: 55vh;
+    top: -10%;
+    right: -5%;
+    background: radial-gradient(circle, rgba(220, 170, 40, 0.14) 0%, transparent 70%);
+    animation-delay: -5s;
+  }
+
+  /* --- NEW GLOBAL INTERACTIONS --- */
+  
+  /* Buttons should scale down on click */
+  .button-press-scale {
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .button-press-scale:active {
+    transform: scale(0.97);
+  }
+
+  /* Any interactive element gets subtle gold glow on hover/focus */
+  .hover-glow {
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .hover-glow:hover, .hover-glow:focus-visible {
+    box-shadow: 0 0 15px rgba(232, 160, 32, 0.15);
+    border-color: rgba(232, 160, 32, 0.5);
+    outline: none;
+  }
+
+  /* #1 Rank / Feature Shimmer */
+  @keyframes goldShimmer {
+    0% { background-position: 200% center; }
+    100% { background-position: -200% center; }
+  }
+  
+  .gold-shimmer-border {
+    position: relative;
+  }
+  .gold-shimmer-border::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(90deg, 
+      rgba(232,160,32,0.1), 
+      rgba(232,160,32,0.8), 
+      rgba(232,160,32,0.1)
+    );
+    background-size: 200% auto;
+    animation: goldShimmer 3s linear infinite;
+    opacity: 0.8;
+  }
+
+  /* Slide up and fade in smoothly */
+  .slide-up-fade {
+    animation: slideUpFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  @keyframes slideUpFadeIn {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+}

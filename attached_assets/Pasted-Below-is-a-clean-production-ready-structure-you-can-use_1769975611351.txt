@@ -1,0 +1,481 @@
+Below is a clean, production-ready structure you can use immediately.
+
+MMA Matrix Pro — Full Project Guide
+1) Executive Overview
+
+MMA Matrix Pro is a data-driven MMA analytics platform built around a Fighter Profile as Source of Truth architecture.
+It centralizes fighter data, fight history, events, rankings, and user picks into a unified system designed for analytics, scouting, and fantasy-style competition.
+
+Core Principle:
+
+No module defines fighter data independently. All data flows from Fighter Profiles.
+
+2) System Architecture (High-Level)
+Core Modules
+
+Fighter Database
+
+Fight History Ledger
+
+Events & Fight Cards
+
+Rankings & Metrics
+
+User Picks & Leaderboards
+
+News System
+
+Import/Export Engine
+
+Admin Panel
+
+Data Flow Model
+CSV / API / Admin Input
+          ↓
+   Fighter & Fight History Tables
+          ↓
+      Fighter Profiles (Source of Truth)
+          ↓
+Events → Rankings → Picks → Analytics → UI
+
+3) User Interface Guide (By Tab)
+USER TABS
+3.1 Event Card
+
+Purpose: Display upcoming fights.
+
+Current Behavior:
+
+Shows upcoming event fights.
+
+Falls back to mockEvent if no event exists (⚠️ bug).
+
+Expected Behavior (Target State):
+
+If no upcoming event → show “No upcoming events” state.
+
+Never display mock data in production.
+
+3.2 MMA Metrics Rankings
+
+Purpose: Fighter leaderboard based on fantasy scoring.
+
+Features:
+
+Ranking list
+
+Fantasy points calculation
+
+Fighter filtering
+
+Current Gap:
+
+Event filter is hardcoded to “All Time”.
+
+Target State:
+
+Filter by:
+
+All Time
+
+Season
+
+Event
+
+Organization
+
+Weight Class
+
+3.3 Fighter Profiles
+
+Purpose: Central fighter data hub.
+
+Blocks:
+
+Identity
+
+Physical Stats
+
+Record
+
+Performance Metrics
+
+Fight History
+
+Notes
+
+Images
+
+Source of Truth Role:
+
+All modules read from this data.
+
+No duplication allowed.
+
+3.4 Event History
+
+Purpose: Show completed events and pick outcomes.
+
+Features:
+
+Event list
+
+Fight results
+
+Pick accuracy
+
+Points earned
+
+Gap:
+
+No per-event leaderboard.
+
+3.5 News
+
+Purpose: MMA news articles.
+
+Features:
+
+Article list
+
+Tags
+
+Categories
+
+Gaps:
+
+No edit/delete
+
+Tag filters incomplete
+
+3.6 Export
+
+Purpose: Data extraction.
+
+Supported Data:
+
+Fighters
+
+Fight History
+
+Formats:
+
+CSV
+
+XLSX (if enabled)
+
+ADMIN TABS
+3.7 Create Event
+
+Purpose: Build events and fight cards.
+
+Data Created:
+
+events
+
+event_fights
+
+Gap:
+
+No edit/delete events.
+
+3.8 Import System
+Fighter Import (Layer 1)
+
+Required fields:
+
+firstName
+
+lastName
+
+weightClass
+
+organization
+
+Features:
+
+Field mapping
+
+Duplicate detection
+
+Manual conflict resolution
+
+Fight History Import (Layer 2)
+
+Requirements:
+
+Fighter must exist first
+
+fighter_id or fighter_full_name
+
+opponent_full_name
+
+event_name
+
+event_date
+
+result
+
+Deep Stats Import (Layer 3) ⚠️ Missing
+
+Expected:
+
+Round-by-round stats
+
+Advanced metrics
+
+Strike breakdowns
+
+3.9 Fighter Manager
+
+Purpose: Admin control over fighters.
+
+Features:
+
+Edit profiles
+
+Upload images
+
+Manual corrections
+
+Gap:
+
+No verification flag.
+
+3.10 Create News
+
+Purpose: Publish articles.
+
+Gap:
+
+No edit/delete functionality.
+
+4) Database Schema (Conceptual Model)
+Core Tables
+fighters
+
+Key fields:
+
+id
+
+first_name
+
+last_name
+
+nickname
+
+organization
+
+weight_class
+
+record
+
+stats
+
+is_active
+
+ranking
+
+⚠️ is_verified (missing)
+
+fight_history
+
+fight_id
+
+fighter_id
+
+opponent_name
+
+event_id
+
+result
+
+method
+
+round
+
+time
+
+stats
+
+locked (immutable)
+
+events
+
+id
+
+name
+
+date
+
+organization
+
+status (upcoming/completed)
+
+event_fights
+
+event_id
+
+fighter_a_id
+
+fighter_b_id
+
+order
+
+title_fight
+
+users
+
+id
+
+username
+
+role
+
+user_picks
+
+user_id
+
+event_id
+
+fight_id
+
+pick
+
+points
+
+fight_results
+
+fight_id
+
+winner_id
+
+method
+
+news_articles
+
+id
+
+title
+
+content
+
+tags
+
+author_id
+
+created_at
+
+5) API Overview (Logical Grouping)
+Fighter API
+
+GET /fighters
+
+GET /fighters/:id
+
+POST /fighters
+
+PUT /fighters/:id
+
+DELETE /fighters/:id
+
+⚠️ PATCH /fighters/:id/verify (missing)
+
+Fight History API
+
+GET /fights
+
+POST /fights/import
+
+GET /fighters/:id/fights
+
+Events API
+
+GET /events
+
+POST /events
+
+⚠️ PUT /events/:id (missing)
+
+⚠️ DELETE /events/:id (missing)
+
+Rankings API
+
+GET /rankings
+
+GET /rankings?eventId=
+
+Picks API
+
+POST /picks
+
+GET /events/:id/picks
+
+News API
+
+GET /news
+
+POST /news
+
+⚠️ PUT /news/:id (missing)
+
+⚠️ DELETE /news/:id (missing)
+
+6) Gap Analysis → Strategic Roadmap
+PHASE 1 — Data Integrity (Critical)
+
+Priority: 🔥🔥🔥
+
+Add isVerified to fighters
+
+Remove mockEvent fallback
+
+Fix Rankings event filter
+
+Add event edit/delete
+
+Add news edit/delete
+
+Fix TypeScript LSP errors
+
+Impact:
+
+System becomes trustworthy
+
+Admin can correct mistakes
+
+Rankings become meaningful
+
+PHASE 2 — Analytics Power
+
+Priority: ⚡⚡
+
+Deep stats import layer
+
+Per-event leaderboard
+
+Advanced metrics engine
+
+Historical trend analysis
+
+Impact:
+
+Turns MMA Matrix Pro into a real analytics platform.
+
+PHASE 3 — Platform Evolution
+
+Priority: 🚀
+
+Authentication
+
+Multi-user support
+
+Backend persistence (DB instead of localStorage)
+
+Real-time updates
+
+Role-based admin system
+
+Impact:
+
+Product becomes scalable SaaS.

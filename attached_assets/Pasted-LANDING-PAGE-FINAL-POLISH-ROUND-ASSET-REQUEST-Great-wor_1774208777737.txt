@@ -1,0 +1,25 @@
+LANDING PAGE — FINAL POLISH ROUND + ASSET REQUEST
+Great work, it is coming together. A few final items and then we need some information from you.
+
+1. HERO — NO BETTING. PURE SKILL.
+That line is currently gray and unreadable against the background. Change it to white. It needs to be visible. Simple fix.
+
+2. SELF AUDIT
+Go through the entire landing page yourself top to bottom. Look at every section with fresh eyes. Flag anything that could be spaced better, aligned better, sized better, or feels off. Report back with your own findings. We want to hear what you see — not just what we tell you to fix.
+
+3. INTEL FEED — NEEDS ADMIN CONNECTION
+The intel feed ticker on the landing page cannot stay hardcoded with fake content. It needs to be connected to the admin dashboard. Here is how it should work:
+In the admin dashboard there needs to be a dedicated Intel Feed tab. Admin goes in, types a new intel signal, hits publish, and it appears in the ticker on the landing page in real time or near real time. Admin can also edit or remove existing feed items.
+The landing page ticker pulls from this live data. Whatever admin publishes is what users see scrolling across. This is how we keep the feed current and relevant without touching code every time.
+Build this connection. Admin side and landing page side. Report back when done.
+
+4. ASSET SIZES — WE NEED YOUR SPEC
+We are preparing the following assets for you. Tell us exactly what sizes and formats you need for each one:
+Favicon — what size or sizes do you need. Standard is 16x16, 32x32, and 512x512 PNG. Confirm or tell us what works best for your setup.
+Header logo — what size do you need the WebP logo file for the navbar. Give us exact pixel dimensions.
+If there are any other places on the landing page or in the app where the logo or brand mark appears tell us now and give us the required size for each placement.
+
+5. FIGHTER IMAGE STANDARDS — CONFIRM THE SPEC
+We are standardizing two fighter image formats across the entire platform — landing page and app. Confirm these specs work for your layout or adjust them:
+Format 1 — Face profile. Head and shoulders only. Used for leaderboard rows, small card thumbnails, chat avatars.
+Format 2 — Half body. Waist up. Used for fighter cards, section features, AI arena section. No shorts visible — crop at or just above the waistband so no brand logos or shorts branding shows.

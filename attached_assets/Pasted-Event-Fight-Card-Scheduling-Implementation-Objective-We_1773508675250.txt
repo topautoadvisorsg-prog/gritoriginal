@@ -1,0 +1,76 @@
+Event & Fight Card Scheduling Implementation
+
+Objective:
+We need a system for managing fight events and their fight cards that handles ordering, estimated start times, and locking picks automatically. This is for our MMA app where admins create events with fights, and users can view schedules and make picks.
+
+Requirements:
+
+Event Cards Structure
+
+Each event may have 1–3 cards: Pre-Prelims, Prelims, Main Card.
+
+Each card contains multiple fights in a defined order.
+
+Admin should be able to drag and drop fights to reorder them within a card.
+
+Time Management
+
+Admin sets one base event start time (e.g., 1:00 PM PST).
+
+Each fight should derive its start time based on:
+
+Its card type (Prelims, Main Card, Pre-Prelims)
+
+Order within the card
+
+Default estimated duration per fight (e.g., 15–20 minutes including buffer)
+
+Allow small manual adjustments (±5–10 minutes) to tweak times.
+
+Display fight start times in the UI.
+
+Locking Picks / Actions
+
+Once a fight is within 5–10 minutes of its start time, all fantasy picks or betting options for that fight must lock automatically.
+
+Locked fights should no longer be editable.
+
+UI Elements
+
+Drag/drop interface for ordering fights.
+
+Labels showing card type (Prelims, Main Card, Pre-Prelims).
+
+Editable event start time field.
+
+Estimated fight start times should update dynamically based on order changes.
+
+Quick-select dropdowns for common locations: USA (Nevada, Florida), Mexico, etc.
+
+Backend / API Considerations
+
+Each fight should store scheduledTime in the database (varchar or timestamp) derived from the card and order.
+
+Updates to fight order or card type should recalc scheduledTime automatically.
+
+API endpoints for creating/updating events and fights should handle these calculated times consistently.
+
+Event/fight creation must validate JSON input correctly — avoid “unexpected token” errors.
+
+Implementation Notes
+
+Times are estimates, not exact fight durations.
+
+Admin must have flexibility to adjust order and minor start time deviations.
+
+Base start time and card type drive all automatic scheduling.
+
+Deliverable:
+
+A fully functional admin interface for creating events and fights, with drag/drop ordering and automatic time calculation.
+
+Database updates to store calculated fight times.
+
+Locking logic for picks 5–10 minutes before a fight starts.
+
+Proper error handling on event creation to ensure all fields are valid JSON and stored correctly.

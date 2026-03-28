@@ -1,0 +1,73 @@
+DATA ENGINE SYNCHRONIZATION — TIME TO CONNECT
+The data engine is built, tested, and ready to start pushing data to you. Before we connect them I need you to be the lead on this. You know your system better than anyone. You know exactly what fields you expect, what formats you need, and how your pipeline intake works.
+Here is what the data engine is ready to push to you. For each one I need you to confirm you are ready to receive it and flag anything that needs to be adjusted on your end before we open the connection.
+
+1. FIGHTER PROFILES
+The data engine will push complete fighter records. Full bio, physical stats, performance metrics, win loss breakdown by method, career striking and grappling averages, social handles, rankings, organization, status, fighting style, everything.
+Questions for you:
+
+Is your fighters table ready to receive all fields from the sync bible we finalized
+Is the POST /api/data-engine/webhook endpoint live and tested
+Is the admin pipeline dashboard ready to receive and display incoming fighter records for review
+Is the duplicate detection working — sourceId match routes to update, name fuzzy match flags as potential duplicate
+
+
+2. FIGHT HISTORY
+The data engine pushes complete professional bout history per fighter. Every fight, every method, every stat, round by round data, judge scores, referee, location, everything.
+Questions for you:
+
+Is your fight history table schema matching the sync bible fields exactly
+When a fighter record is approved and applied does the fight history come with it or is it a separate push
+Are the fight duration seconds, judge scores, and method detail fields mapped correctly in your schema
+
+
+3. FIGHTER IMAGES
+The data engine will provide image URLs for fighter portraits. Two formats — face profile and half body. These get stored on the fighter record and displayed throughout the app and landing page.
+Questions for you:
+
+How are you storing image URLs on the fighter record — direct URL or do you download and re-host
+Are the fighter image placeholders on the landing page and in the app wired to pull from the fighter record image URL field
+What happens in the UI when a fighter has no image yet — is there a clean fallback placeholder
+
+
+4. NEWS AND INTELLIGENCE
+The data engine has a news agent that pushes two types of content — standard fight news and intelligence signals. Both go through your pipeline for admin review before going live.
+Questions for you:
+
+Is the news pipeline intake working for both standard and intelligence layer content
+Are tags being mapped correctly from tag names to tag IDs when content comes in
+Is the intelligence signals feed displaying separately from standard news with the correct visual treatment — red or gold accent, urgent feel
+Is the intel feed ticker on the landing page connected to live data or still hardcoded
+
+
+5. EVENTS AND FIGHT CARDS
+The data engine will push upcoming event metadata and full fight card matchups including lockTime which is critical for pick deadline enforcement.
+Questions for you:
+
+Is your events table ready to receive all event fields including lockTime
+When an event record comes in through the pipeline and gets approved does the fight card populate automatically or does that require a separate push
+Is the pick locking logic reading from the lockTime field on the event record
+
+
+6. ODDS
+The data engine pushes moneyline odds per bout daily. These odds get locked to picks at submission time and drive the entire net units ranking system.
+Questions for you:
+
+Is the odds field on your event fights record ready to receive the data engine format
+Is the odds locking at pick submission time working correctly — confirm the lockedOdds field is being set on every pick record at the moment of submission
+Is line movement tracking in place or are we only storing current live odds
+
+
+7. AUTHENTICATION
+The data engine will send the x-data-engine-api-key header with every request.
+Questions for you:
+
+Is the API key validation live and working
+Have you set the DATA ENGINE API KEY value in your admin system settings
+What should the data engine developer set as the key value on his end — confirm the exact key so both sides match
+
+
+YOUR JOB RIGHT NOW
+Go through every one of these seven areas. Tell me what is ready, what needs adjustment, and what is missing. Be specific. Once you give me the green light on each area we connect the two servers and start the first real data push.
+You are in charge of this conversation. The data engine developer will follow your lead. Whatever you need from him — field formats, test payloads, timing — tell him and he will deliver it. You are the receiver. You set the standard. He will match it.
+Report back with your full readiness assessment.

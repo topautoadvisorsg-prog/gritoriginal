@@ -1,0 +1,239 @@
+Goal
+
+Stress verify all business logic, routing, lifecycle rules, locking integrity, and module interactions.
+
+You are not creating production content.
+
+You are generating disposable fantasy test data to validate system behavior.
+
+1. Event Lifecycle Simulation (Primary Priority)
+
+Create multiple test events.
+
+Each event must go through full lifecycle:
+
+Upcoming → Live → Completed → Closed → Archived
+
+For each event:
+
+Generate:
+
+12+ fights per card
+
+24–30 fighter profiles across events
+
+Fake matchup combinations
+
+Fill ALL schema fields even if dummy.
+
+If field exists → populate it.
+
+Acceptable placeholder values:
+
+test
+test1
+123
+dummy
+fantasy
+0
+2. Pick System Integrity Testing
+
+Simulate user behavior:
+
+Test:
+
+✅ Pick submission during UPCOMING state
+✅ Pick edit during UPCOMING state
+✅ Pick attempt exactly at lock boundary
+✅ Pick attempt after lock
+✅ Replay pick submission attack simulation
+✅ Payload manual modification simulation
+
+Verify backend validation rejects illegal states.
+
+Locking rules must follow:
+
+Time lock → now >= eventStartTime
+
+Status lock → event status not UPCOMING
+
+Flag lock → isLocked === true after finalization
+
+3. Scoring Engine Audit
+
+Test finalize pipeline:
+
+When fight result is entered:
+
+Confirm atomic execution of:
+
+Pick correctness evaluation
+
+Point distribution
+
+Fighter record update
+
+Ledger history insert
+
+Prestige key check
+
+Badge audit logging
+
+Leaderboard recalculation
+
+Simulate:
+
+Multiple finalize requests
+
+Concurrent finalize calls if possible
+
+Expected result:
+
+Exactly one scoring transaction per fight.
+
+4. Prestige System Validation
+
+Clean Sweep Detection must be tested.
+
+Conditions:
+
+User gets Prestige Key only if:
+
+100% prediction accuracy
+
+Verify uniqueness constraint:
+
+user_keys UNIQUE(userId, eventId)
+
+Test edge cases:
+
+User edits pick before lock
+
+User tries to trigger key award twice
+
+5. Routing & Navigation Audit
+
+Verify:
+
+URL-based routing works
+
+Browser Back / Forward buttons work
+
+Deep links load correctly
+
+Test paths:
+
+/event
+/event/fight/:id
+/fighter/index
+/fighter/:id
+/competition
+/ai
+/chat
+/settings
+/admin/:tab
+6. Role Security Audit
+
+Test role isolation.
+
+Verify:
+
+Non-admin cannot access /admin/*
+
+Auth hydration works
+
+Sidebar does not leak admin modules
+
+Check:
+
+user.role === 'admin'
+
+is the only gate.
+
+7. Chat System Stress Test
+
+Simulate:
+
+Rapid message spam
+
+Long message payloads
+
+Concurrent users posting
+
+Verify:
+
+Rate limiter activates
+
+HTML/script injection is sanitized
+
+Oversized messages are rejected
+
+8. AI Module Verification (Premium Gate)
+
+Test three user classes:
+
+Tier	Expected Behavior
+free	Upgrade prompt
+medium	Limited access
+premium	Full AI features
+admin	Full override access
+
+Remove dead code branches.
+
+9. Export Module Security
+
+Confirm:
+
+Export endpoint is behind:
+
+Authentication guard
+
+Tier gate (premium only)
+
+Output format must be valid CSV.
+
+10. Chaos Simulation (Highly Recommended)
+
+Ask developer to attempt:
+
+Multiple rapid navigation clicks
+
+Multiple pick submissions
+
+Logout/login mid-stream
+
+Concurrent event finalization
+
+Large chat messages
+
+Manual API payload tampering
+
+If system crashes → fix before next phase.
+
+11. Data Policy
+
+All test data is temporary.
+
+After audit:
+
+Delete test fighters
+
+Delete test events
+
+Delete test users
+
+12. Final Quality Target
+
+System should be able to handle:
+
+✅ Real user traffic
+✅ Edge timing cases
+✅ Duplicate request attempts
+✅ Role isolation security
+✅ Transaction atomicity
+✅ Routing stability
+
+Developer Instruction Closing Line
+
+Continue refining and hardening the system if any edge case is discovered.
+The objective is maximum behavioral stability before owner-level manual testing begins.

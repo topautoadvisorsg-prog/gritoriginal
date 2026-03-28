@@ -1,0 +1,67 @@
+
+> vite_react_shadcn_ts@0.0.0 dev
+> concurrently "tsx watch server/user-server.ts" "tsx watch server/admin-server.ts" "vite"
+
+[1G[0K[0m[2][0m 
+[0m[2][0m   [32m[1mVITE[22m v5.4.19[39m  [2mready in [0m[1m380[22m[2m[0m ms[22m
+[0m[2][0m 
+[0m[2][0m   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5000[22m/[39m
+[0m[2][0m   [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.78.66:[1m5000[22m/[39m
+[0m[1][0m [INFO] Environment validation passed
+[0m[0][0m [INFO] Environment validation passed
+[0m[2][0m Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+[0m[2][0m   npx update-browserslist-db@latest
+[0m[2][0m   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[0m[1][0m [2026-03-25T15:22:15.231Z] [INFO] Admin API server running on port 3002
+[0m[0][0m [2026-03-25T15:22:15.484Z] [WARN] ANTHROPIC_API_KEY is not set. Anthropic functionality will be disabled.
+[0m[0][0m [2026-03-25T15:22:15.488Z] [WARN] OPENMETER_API_KEY is not set. Usage tracking will be disabled.
+[0m[0][0m [2026-03-25T15:22:15.526Z] [WARN] STRIPE_SECRET_KEY is not set. Stripe functionality will be disabled.
+[0m[0][0m [2026-03-25T15:22:15.747Z] [INFO] [Cron] Initializing scheduled tasks...
+[0m[0][0m [2026-03-25T15:22:15.777Z] [INFO] [Cron] All tasks scheduled
+[0m[0][0m [2026-03-25T15:22:15.782Z] [INFO] Socket.IO initialized with authentication
+[0m[0][0m [2026-03-25T15:22:15.787Z] [INFO] User API server running on port 3001
+[0m[0][0m [2026-03-25T15:22:15.802Z] [INFO] [Seed] Suggested questions already populated (8 rows), skipping
+[0m[0][0m [2026-03-25T15:22:26.332Z] [INFO] [Data Pipeline] Entry created: 1e302c06-1953-4cba-8a8a-44e4ac948967 - fighter/create
+[0m[0][0m [2026-03-25T15:22:26.332Z] [INFO] [Data Engine Webhook] Queued %s/%s → entry %s create fighter 1e302c06-1953-4cba-8a8a-44e4ac948967
+[0m[0][0m [2026-03-25T15:22:26.336Z] [INFO] [Data Pipeline] Entry 1e302c06-1953-4cba-8a8a-44e4ac948967 approved by admin auto-apply
+[0m[0][0m [2026-03-25T15:22:26.340Z] [INFO] [Data Pipeline] Entry 1e302c06-1953-4cba-8a8a-44e4ac948967 applied successfully
+[0m[0][0m [2026-03-25T15:22:26.343Z] [INFO] [Data Engine Webhook] Auto-applied entry %s (%s/%s) 1e302c06-1953-4cba-8a8a-44e4ac948967 create fighter
+[0m[0][0m [2026-03-25T15:22:26.345Z] [WARN] [OutboundSync] Supabase credentials not configured — skipping outbound push
+[0m[0][0m [2026-03-25T15:25:43.139Z] [WARN] [Fight Stats] Open tracking failed: DrizzleQueryError: Failed query: insert into "ai_fight_stats" ("fight_id", "open_count", "last_open_at") values ($1, $2, $3)
+[0m[0][0m params: 742797d4-3180-44d4-9e81-2594383d4834,1,2026-03-25T15:25:43.134Z
+[0m[0][0m     at NodePgPreparedQuery.queryWithCache [90m(/home/runner/workspace/[39mnode_modules/[4msrc[24m/pg-core/session.ts:73:11[90m)[39m
+[0m[0][0m [90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[0m[0][0m     at async trackFightChatOpen [90m(/home/runner/workspace/[39mserver/ai/fightQaCache.ts:154:13[90m)[39m {
+[0m[0][0m   query: [32m'insert into "ai_fight_stats" ("fight_id", "open_count", "last_open_at") values ($1, $2, $3)'[39m,
+[0m[0][0m   params: [
+[0m[0][0m     [32m'742797d4-3180-44d4-9e81-2594383d4834'[39m,
+[0m[0][0m     [33m1[39m,
+[0m[0][0m     [32m'2026-03-25T15:25:43.134Z'[39m
+[0m[0][0m   ],
+[0m[0][0m   cause: error: duplicate key value violates unique constraint "ai_fight_stats_pkey"
+[0m[0][0m       at [90m/home/runner/workspace/[39mnode_modules/[4mpg-pool[24m/index.js:45:11
+[0m[0][0m   [90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+[0m[0][0m       at async <anonymous> [90m(/home/runner/workspace/[39mnode_modules/[4msrc[24m/node-postgres/session.ts:149:14[90m)[39m
+[0m[0][0m       at async NodePgPreparedQuery.queryWithCache [90m(/home/runner/workspace/[39mnode_modules/[4msrc[24m/pg-core/session.ts:71:12[90m)[39m
+[0m[0][0m       at async trackFightChatOpen [90m(/home/runner/workspace/[39mserver/ai/fightQaCache.ts:154:13[90m)[39m {
+[0m[0][0m     length: [33m248[39m,
+[0m[0][0m     severity: [32m'ERROR'[39m,
+[0m[0][0m     code: [32m'23505'[39m,
+[0m[0][0m     detail: [32m'Key (fight_id)=(742797d4-3180-44d4-9e81-2594383d4834) already exists.'[39m,
+[0m[0][0m     hint: [90mundefined[39m,
+[0m[0][0m     position: [90mundefined[39m,
+[0m[0][0m     internalPosition: [90mundefined[39m,
+[0m[0][0m     internalQuery: [90mundefined[39m,
+[0m[0][0m     where: [90mundefined[39m,
+[0m[0][0m     schema: [32m'public'[39m,
+[0m[0][0m     table: [32m'ai_fight_stats'[39m,
+[0m[0][0m     column: [90mundefined[39m,
+[0m[0][0m     dataType: [90mundefined[39m,
+[0m[0][0m     constraint: [32m'ai_fight_stats_pkey'[39m,
+[0m[0][0m     file: [32m'nbtinsert.c'[39m,
+[0m[0][0m     line: [32m'673'[39m,
+[0m[0][0m     routine: [32m'_bt_check_unique'[39m
+[0m[0][0m   }
+[0m[0][0m }
+[0m[0][0m [2026-03-25T15:30:00.025Z] [INFO] [Cron] Running pipeline retry for failed entries...
+[0m[0][0m [2026-03-25T15:30:00.038Z] [INFO] [Data Pipeline] Retry run complete: 0 attempted, 0 succeeded, 0 failed

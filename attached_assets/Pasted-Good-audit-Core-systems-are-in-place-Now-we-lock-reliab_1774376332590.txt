@@ -1,0 +1,116 @@
+Good audit. Core systems are in place. Now we lock reliability and integration.
+
+🚨 1. DEDUPLICATION (REQUIRED FIX)
+
+Current:
+
+exact name match only
+Implement:
+
+Before insert:
+
+Normalize:
+- lowercase
+- trim spaces
+Match:
+exact name OR
+similar name + same weight class OR record
+If uncertain:
+flag instead of insert
+🚨 2. RETRY SYSTEM (REQUIRED)
+
+Current:
+
+failed jobs = dead
+
+Implement:
+retry_count field
+max retries = 3
+background retry job
+🚨 3. REMOVE DEAD SCORING FUNCTION
+
+Remove completely:
+
+scoreEventPicks()
+
+Ensure only one scoring path exists.
+
+🚨 4. INTEGRATION VALIDATION (MISSING — ADD THIS)
+
+Confirm:
+
+Data Engine → webhook → DB → UI works end-to-end
+Report:
+{
+  "webhook_receiving_data": true/false,
+  "fighters_created": true/false,
+  "events_created": true/false,
+  "event_fights_created": true/false,
+  "data_integrity_valid": true/false
+}
+🚨 5. IMAGE VALIDATION (NOT OPTIONAL)
+
+Even if generation is Data Engine:
+
+Main app MUST enforce:
+
+headshot = 1:1
+half-body = 2:3
+reject invalid uploads
+
+👉 Prevent bad data entering system
+
+🚨 6. FIGHTER PROFILE UI (REQUIRED — NOT OPTIONAL)
+
+Must implement:
+
+full fighter view
+missing fields highlighted
+image previews
+data completeness visibility
+
+👉 This is a system control panel, not UI polish
+
+🟡 7. KEEP SCOPE CLEAN
+
+Do NOT:
+
+touch scraping
+touch AI generation
+duplicate Data Engine logic
+📊 FINAL STATUS REQUIRED
+{
+  "deduplication": "fixed | partial",
+  "retry_system": "implemented | missing",
+  "scoring_cleanup": "done | pending",
+  "integration_verified": true/false,
+  "image_validation": "enforced | not enforced",
+  "profile_ui": "built | not built",
+  "ready_for_live": true/false
+}
+🧠 Big Picture (You Need to See This Clearly)
+Data Engine:
+Produces data ✅
+Needs standardization + control
+Main App:
+Receives data ✅
+Needs validation + visibility
+🔥 Where You ACTUALLY Are
+
+You are very close.
+
+What’s left is NOT building…
+
+👉 It’s tightening the system so it doesn’t break under real usage
+
+🏁 Final Call
+
+Fix these 5 things:
+
+Dedup
+Retry
+Integration verification
+Image validation
+Profile UI
+
+👉 After that, you can run a full automated fight card live

@@ -1,0 +1,80 @@
+Hey — quick alignment as you take over **finishing this app**.
+
+### Where We’re At
+
+* You’re now the **primary developer completing the product**
+* Please **read the README first** — it reflects the current architecture and flow
+* The **main UI layout is already set**
+
+  * Keep everything **gamified**
+  * Simple, clean, entertaining
+  * This is a **multi-tenant SaaS product**, so avoid any single-tenant assumptions
+
+### Current Focus (High Priority)
+
+1. **Real Fighter Data (In Progress)**
+
+   * We are moving away from mock fighter profiles
+   * We will start by importing **real fighters tied to a real event**
+   * First test event: **UFC 324 (upcoming card)**
+   * Fighters from that full card will be imported and attached to the event
+
+2. **Import Flow (Critical)**
+
+   * I’ll provide you:
+
+     * The fighter fields I currently have
+     * Their exact column names (Excel / CSV)
+   * Your task:
+
+     * Verify field name alignment with the backend
+     * Tell me:
+
+       * What matches
+       * What needs renaming
+       * What’s missing
+   * Goal:
+     👉 I should be able to **copy-paste or import an Excel sheet cleanly** without manual fixes
+
+3. **Event ↔ Fighter Logic**
+
+   * Fighters will be attached **through event creation**
+   * This UFC 324 card will be our **validation dataset**
+   * Once this works, we’ll scale to more events and historical data
+
+### UI / UX Expectations
+
+* No redesigns unless something is broken
+* Keep interactions **fun, fast, and obvious**
+* Avoid dead-end states or confusing messages
+* Everything should feel like a product, not a dashboard
+
+### Important Notes
+
+* **Do NOT touch user logic yet**
+
+  * We are keeping mock users for now
+  * User cleanup will happen later after validation
+* If you find gaps, edge cases, or unclear logic:
+
+  * Flag them
+  * Don’t silently hack around them
+
+### Documentation & Code Quality
+
+* If anything you touch is **not reflected in the README**:
+
+  * Add a short note or section
+* Clean up:
+
+  * Dead code
+  * Unused imports
+  * Incorrect assumptions
+* Call out anything that feels brittle or rushed
+
+---
+
+**Immediate next step:**
+Review import logic + Event Card flow, then be ready to validate UFC 324 fighter imports once I send the field list.
+
+We’re close — this phase is about **correctness, clarity, and real data**.

@@ -1,0 +1,114 @@
+OFFICIAL UPDATE — FIGHTER PROFILE STANDARD (UFC 324)
+1️⃣ This Sheet IS the Fighter Profile Canon
+
+This CSV represents one complete fighter profile
+
+Treat it as if it were directly imported
+
+Any backend mismatch must be surfaced now
+
+Fight history is NOT part of this import
+→ Bout / fight history will be uploaded separately and linked by fighter ID
+
+2️⃣ KEEP ALL FIELDS — INCLUDING “GRAY AREA” STATS
+
+We are NOT removing the following fields:
+
+strikeDefense
+
+submissionAvg
+
+Decision:
+
+These fields must exist in the backend even if data is missing, incomplete, or zero.
+
+Rules:
+
+N/A = data not available
+
+0 = real numeric value
+
+No assumptions
+
+No derived or fabricated values
+
+Empty fields are acceptable. Missing backend fields are not.
+
+3️⃣ FINAL REQUIRED BACKEND FIELD LIST
+
+The backend must support exactly these columns (names are authoritative):
+
+ranking
+firstName
+lastName
+strikesLandedPerMin
+strikeAccuracy
+strikesAbsorbedPerMin
+strikeDefense
+takedownAccuracy
+takedownDefense
+submissionAvg
+dateOfBirth
+height
+reach
+legReach
+stance
+gym
+team
+nationality
+nickname
+wins
+losses
+draws
+noContests
+koWins
+submissionWins
+decisionWins
+gender
+organization
+weightClass
+
+
+No silent remapping
+
+No inferred fields
+
+No auto-calculations
+
+Parse-only where explicitly defined (e.g., height strings → inches if needed)
+
+4️⃣ DATA CONSTRAINTS (IMPORTANT)
+
+organization → always "UFC" (explicit, not implied)
+
+gender → explicit (Male / Female)
+
+weightClass → must be stored exactly as provided
+
+Rankings may be numeric or N/A
+
+Height / reach / leg reach remain string-first, parsed secondarily if needed
+
+5️⃣ ERROR HANDLING RULE
+
+If ANY of the following occur, the dev must stop and report:
+
+Backend missing a field listed above
+
+Field type incompatibility
+
+Unexpected null rejection
+
+Import transform required beyond rename / parse
+
+This is the only acceptable time to flag mismatches.
+
+6️⃣ RESULTING OUTCOME
+
+Once implemented:
+
+This becomes the universal fighter profile schema
+
+All future imports must conform to this standard
+
+Fight history, rankings over time, analytics, and UI layers build on top of this — not inside it

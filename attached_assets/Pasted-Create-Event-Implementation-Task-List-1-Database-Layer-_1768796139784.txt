@@ -1,0 +1,92 @@
+Create Event — Implementation Task List
+1. Database Layer
+
+Add events table:
+
+Columns: id, name, date, venue, city, state, country, organization, description
+
+Add event_fights table:
+
+Columns: id, event_id, fighter1_id, fighter2_id, card_placement (enum), is_title_fight (boolean), rounds (integer)
+
+Foreign keys: event_id → events.id, fighter1_id & fighter2_id → fighters.id
+
+Ensure relationships and constraints to prevent duplicate fights per event
+
+2. API Layer
+
+POST /api/events
+
+Accept event metadata + array of fights
+
+Validate fighters exist, enforce card placement rules
+
+Save in a single transaction (event + fights)
+
+GET /api/events (optional)
+
+Return list of events with minimal metadata
+
+GET /api/events/:id
+
+Return single event + all associated fights for edit/view
+
+3. Frontend
+
+Event Details Section:
+
+Fields: Name, Date, Venue, City, State, Country, Organization, Description
+
+Fight Builder Section:
+
+Add/edit/remove fights before final save
+
+Searchable fighter dropdown with filters: organization & weight class
+
+Card placement selector: Main Event, Co-Main, Main Card, Prelim
+
+Title fight toggle
+
+Rounds selector (auto-defaults to 5 for main/title fights)
+
+Maintain local state until submit
+
+Submit event → POST API endpoint
+
+4. UI/UX
+
+Match existing dark theme with cyan/teal accents
+
+Toast notifications on save success/failure
+
+Loading states during fighter fetch & event creation
+
+Scroll to latest fight after adding to list
+
+5. Testing / Verification
+
+Verify event + fights saved correctly in database
+
+Ensure fighter selection works and prevents duplicates
+
+Verify card placement assignment is correct
+
+Smoke test with UFC 324 sample data
+
+6. Proposed Implementation Steps
+
+Add event + event_fights tables to database
+
+Implement API endpoints (POST + GET)
+
+Build frontend form for event creation
+
+Build fight card builder UI with filters & toggles
+
+Connect frontend to API, maintain local state
+
+Add notifications, loading states, and UX polish
+
+Test with UFC 324 sample event
+
+Verify DB entries, relationships, and card placement correctness

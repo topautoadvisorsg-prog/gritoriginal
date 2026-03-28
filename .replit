@@ -1,0 +1,63 @@
+modules = ["nodejs-20", "web", "bash", "postgresql-16"]
+[agent]
+expertMode = true
+integrations = ["javascript_object_storage:2.0.0", "javascript_database:1.0.0", "javascript_log_in_with_replit:2.0.0"]
+
+[nix]
+channel = "stable-25_05"
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npx", "tsx", "server/production.ts"]
+build = ["npm", "run", "build"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
+waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[ports]]
+localPort = 3001
+externalPort = 3001
+
+[[ports]]
+localPort = 3002
+externalPort = 3003
+
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 5001
+externalPort = 3000
+
+[[ports]]
+localPort = 5904
+externalPort = 3002
+
+[userenv]
+
+[userenv.shared]
+ADMIN_EMAIL = "saraimateo1612@proton.me"
+DATA_ENGINE_API_KEY = "de_bcde5cbbd72f7d9b0f2dac9b1e19c6153c97b108dd96bf4cc67220b9b646badf"
+DATA_ENGINE_AUTO_APPLY = "true"

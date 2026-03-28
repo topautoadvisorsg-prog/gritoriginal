@@ -1,0 +1,303 @@
+s the UFC pages, right? So on the UFC page, they have one for the fighter, okay? And basically, when you click on the fighter, you see all this information. This is all the information you see. So it's one of the, this is the fighters on the UFC stats fighter, okay? Which is one of the pages that are authorized. But once you click, so this is part of the prompt, right? They gotta click on the link on the page of the fight that was in there, this is, and this is for fight history, okay? This is for a different prompt. So this is basically, well, let's just click to, meet profile fighter profile information is gonna be based off these two pages. That's, that's for the main fighter profile information, okay?>Z><<<<Paddy PimblettRecord: 23-4-0
+The Baddy
+
+Height: 5' 10"
+Weight: 155 lbs.
+Reach: 73"
+STANCE: Orthodox
+DOB: Jan 03, 1995
+Career statistics:
+SLpM: 5.49
+Str. Acc.: 52%
+SApM: 3.89
+Str. Def: 42%
+TD Avg.: 0.69
+TD Acc.: 21%
+TD Def.: 44%
+Sub. Avg.: 1.2
+SLpM - Significant Strikes Landed per Minute
+
+Str. Acc. - Significant Striking Accuracy
+
+SApM - Significant Strikes Absorbed per Minute
+
+Str. Def. - Significant Strike Defence (the % of opponents strikes that did not land)
+
+TD Avg. - Average Takedowns Landed per 15 minutes
+
+TD Acc. - Takedown Accuracy
+
+TD Def. - Takedown Defense (the % of opponents TD attempts that did not land)
+
+Sub. Avg. - Average Submissions Attempted per 15 minutes
+
+Click on row to see detailed stats
+W/L	Fighter	Kd	Str	Td	Sub	Event	Method	Round	Time
+loss
+
+Paddy Pimblett
+
+Justin Gaethje
+
+0
+
+2
+
+156
+
+144
+
+0
+
+3
+
+0
+
+0
+
+UFC 324: Gaethje vs. Pimblett
+
+ Jan. 24, 2026
+
+U-DEC 
+
+
+5
+
+5:00
+
+win
+
+Paddy Pimblett
+
+Michael Chandler
+
+0
+
+0
+
+80
+
+11
+
+1
+
+4
+
+0
+
+0
+
+UFC 314: Volkanovski vs. Lopes
+
+Apr. 12, 2025
+
+KO/TKO 
+
+Elbows
+
+3
+
+3:07
+
+win
+
+Paddy Pimblett
+
+King Green
+
+0
+
+0
+
+8
+
+15
+
+0
+
+1
+
+2
+
+0
+
+UFC 304: Edwards vs. Muhammad 2
+
+Jul. 27, 2024
+
+SUB 
+
+Triangle Choke
+
+1
+
+3:22
+
+win
+
+Paddy Pimblett
+
+Tony Ferguson
+
+1
+
+0
+
+106
+
+62
+
+1
+
+0
+
+0
+
+0
+
+UFC 296: Edwards vs. Covington
+
+Dec. 16, 2023
+
+U-DEC
+
+
+3
+
+5:00
+
+win
+
+Paddy Pimblett
+
+Jared Gordon
+
+0
+
+0
+
+63
+
+60
+
+0
+
+3
+
+0
+
+0
+
+UFC 282: Blachowicz vs. Ankalaev
+
+Dec. 10, 2022
+
+U-DEC
+
+
+3
+
+5:00
+
+win
+
+Paddy Pimblett
+
+Jordan Leavitt
+
+0
+
+0
+
+17
+
+16
+
+1
+
+3
+
+4
+
+0
+
+UFC Fight Night: Blaydes vs. Aspinall
+
+Jul. 23, 2022
+
+SUB 
+
+Rear Naked Choke
+
+2
+
+2:46
+
+win
+
+Paddy Pimblett
+
+Kazula Vargas
+
+0
+
+0
+
+3
+
+7
+
+1
+
+0
+
+1
+
+0
+
+UFC Fight Night: Volkov vs. Aspinall
+
+Mar. 19, 2022
+
+SUB 
+
+Rear Naked Choke
+
+1
+
+3:49
+
+win
+
+Paddy Pimblett
+
+Luigi Vendramini
+
+1
+
+0
+
+47
+
+25
+
+0
+
+1
+
+0
+
+0
+
+UFC Fight Night: Brunson vs. Till
+
+Sep. 04, 2021
+
+KO/TKO 
+
+Punches
+
+1
+
+4:25

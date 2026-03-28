@@ -1,0 +1,124 @@
+Super Audit Requirement — Codebase Critique
+
+Project: MMA Champions League Platform
+
+Objective
+
+Perform a deep structural audit of the platform codebase.
+
+The purpose of this audit is to ensure the system is:
+
+• Cleanly structured
+• Easily maintainable by another developer
+• Ready for domain isolation deployment
+• Clearly documented through README instructions
+
+Audit Scope
+
+Please review the entire project and provide detailed answers to the following.
+
+1. Code Quality Assessment
+
+Evaluate:
+
+* Naming consistency
+* Component complexity
+* Duplicate logic
+* Unused or dead code
+* Circular dependencies
+* Over-coupled modules
+* Business logic inside UI layers
+
+If any area is considered weak or messy, clearly report it.
+
+---
+
+2. Domain Isolation Readiness
+
+Verify that the codebase can be separated into:
+
+User Domain Server
+Admin Domain Server
+
+Answer:
+
+• What files belong to User runtime system
+• What files belong to Admin governance system
+• What files should remain shared infrastructure
+
+Provide a mapping recommendation.
+
+---
+
+3. Tab Ownership Classification
+
+Review all sidebar tabs and classify them into:
+
+User Platform Tabs:
+
+* Community interaction
+* Predictions
+* Rankings
+* Chat
+* News
+* Utility tools
+
+Admin Platform Tabs:
+
+* Event lifecycle control
+* Fighter management
+* Moderation
+* Dataset governance
+* Publishing management
+
+Explain your reasoning if classification is ambiguous.
+
+---
+
+4. Isolation Documentation Requirement (Very Important)
+
+Create a README section explaining:
+
+• How domain isolation works in this project
+• How to set up User Server deployment
+• How to set up Admin Server deployment
+• How authentication flows across domains
+• How shared infrastructure is used
+
+The README must be written so that:
+
+Another developer can understand the architecture in less than one day.
+
+---
+
+5. Risk Identification
+
+Identify:
+
+• Areas where refactor risk is high
+• Files that are tightly coupled
+• Potential scaling bottlenecks
+• Security vulnerabilities in route handling
+
+---
+
+6. Clean Architecture Standards
+
+Ensure codebase follows additive development philosophy:
+
+• Do not remove working features unless replacement is tested
+• Prefer file movement over deletion
+• Verify build stability after structural changes
+
+---
+
+7. Final Deliverable
+
+Provide:
+
+• Audit summary
+• Recommended improvements
+• Domain isolation readiness score (0–100)
+• List of critical issues if any exist
+
+End of Audit Request

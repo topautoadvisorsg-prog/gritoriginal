@@ -1,0 +1,57 @@
+Hey, I want to go over how the Event Tab, Carousel, and Event Card should function and get your input on implementation. This is a collaborative discussion, so feel free to suggest the best way to handle anything visually or technically. The goal is a clean, game-like UI that’s intuitive and looks polished.
+
+1. Event Image Field
+
+We need an optional image for the event, uploaded when creating or editing an event.
+
+This image should act as a background or promotional backdrop behind the fighter photos — not replace them.
+
+It should display correctly on both the carousel card and event card header.
+
+You decide the size, placement, cropping, and any effects to make it look good.
+
+2. Event Carousel
+
+Focus on one main event at a time — upcoming event is center stage.
+
+Users should see a small peek of the next or previous event at the sides.
+
+Arrow buttons or swipe gestures should navigate to the next event.
+
+Clicking the center card or “ENTER DRAFT” should open the Event Card page.
+
+Animate transitions smoothly, but keep it subtle.
+
+3. Fighter Portraits
+
+The carousel and event card should use the fighters’ existing profile photos.
+
+Fighter images appear side by side for the main event.
+
+If a fighter photo is missing, display a placeholder.
+
+4. Event Card Page
+
+Shows all fights for the event.
+
+Main event should be prominent with a “VIEW FIGHT” link/button.
+
+Other fights can be clickable rows with hover feedback.
+
+Event image is background for the hero section, but you decide the best styling.
+
+5. Timing & Order
+
+Event card fights should reflect their order: pre-prelims, prelims, main event.
+
+Start times for each card/fight should be automatic based on sequence.
+
+You can suggest how to calculate or display these times in a way that’s clear and functional.
+
+6. Visual & UX Goals
+
+Game-like feel: clean, intuitive, simple, visually engaging.
+
+Carousel, hover, and click interactions should feel smooth.
+
+You decide on sizing, scaling, and effects for images, cards, and background.

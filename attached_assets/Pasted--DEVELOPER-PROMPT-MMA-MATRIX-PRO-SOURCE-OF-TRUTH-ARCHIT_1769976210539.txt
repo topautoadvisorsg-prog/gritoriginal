@@ -1,0 +1,248 @@
+🔥 DEVELOPER PROMPT — MMA MATRIX PRO (SOURCE OF TRUTH ARCHITECTURE)
+1) Core Rule (DO NOT BREAK THIS)
+
+The Fighter Profile is the ONLY source of truth.
+
+No module is allowed to define fighter data independently.
+
+All modules must read from Fighter Profiles:
+
+Events
+
+Fight Cards
+
+Rankings
+
+Metrics
+
+Picks
+
+Export
+
+Admin Views
+
+If fighter data changes → every module must update automatically.
+
+If a module does not reflect fighter data → it is a bug.
+
+2) Scope Clarification (IMPORTANT)
+
+This is NOT a live-tracking app.
+
+Data is manually updated by admin using UFC official stats.
+
+Workflow:
+
+Before fight → event created manually
+
+During fight → nothing automated
+
+After fight → admin updates results manually
+
+Fighter stats updated manually from UFC data
+
+Source of data = UFC stats only.
+
+No AI.
+No external APIs (for now).
+
+3) Fighter Profile — REQUIRED DATA MODEL
+
+You must ensure ALL these fields exist in the Fighter Profile model and UI.
+
+Identity
+id (uuid)
+firstName
+lastName
+nickname
+fullName (computed)
+dateOfBirth
+age (computed)
+nationality
+gender
+
+Organization / Division
+organization (default: UFC)
+weightClass
+stance
+gym
+team
+headCoach
+
+Physical Attributes
+height
+weight
+reach
+legReach
+
+Record (Official)
+wins
+losses
+draws
+noContests
+
+Performance Metrics
+koWins
+tkoWins
+submissionWins
+decisionWins
+finishRate
+strikesLanded
+strikesAttempted
+takedownsLanded
+takedownsAttempted
+submissionsAttempted
+controlTime
+
+Status Flags
+isActive (boolean)
+isChampion (boolean)
+ranking
+isVerified (boolean) ✅ REQUIRED
+
+
+⚠️ Verification Logic:
+
+Only two states: VERIFIED / NOT VERIFIED
+
+Admin manually decides verification
+
+No AI, no sources, no automation
+
+4) Fighter Images — REQUIRED RULE
+
+Each fighter can have ONLY 2 images max.
+
+Rule:
+
+When a new image is uploaded:
+
+If there are already 2 images → delete the oldest one automatically.
+
+No image history.
+
+No unlimited storage.
+
+You must implement this logic in Fighter Manager.
+
+5) Admin Panel — REQUIRED FEATURES
+Fighter Manager MUST allow:
+
+Edit all fighter fields
+
+Toggle isVerified
+
+Upload fighter images (with 2-image rule)
+
+Save changes persistently
+
+Missing Issue to Fix:
+
+Currently:
+
+Fighters appear in admin editor
+
+But NOT on the public site
+
+This means:
+
+👉 Data is not synced between environments or storage layers.
+
+You must fix the data persistence architecture.
+
+6) Data Persistence Rule
+
+Current problem:
+
+localStorage works only per environment/browser
+
+Dev site ≠ Published site
+
+Required solution:
+
+Either:
+
+Option A (temporary but consistent)
+
+Unify storage layer so:
+
+Admin edits → reflected in public UI
+
+Option B (real solution)
+
+Implement real database:
+
+Tables already defined:
+
+fighters
+fight_history
+events
+event_fights
+users
+user_picks
+fight_results
+news_articles
+
+
+All UI must read from the same database.
+
+7) Events System — Required Behavior
+
+Events must NOT use mock data.
+
+Required:
+
+Create Event (admin)
+
+Add fights to event
+
+Link fighters by fighter_id
+
+Edit event
+
+Delete event
+
+Fight Card must pull fighters from Fighter Profiles.
+
+8) Fight History — Required Rules
+
+Fighters must exist before fight history can be imported
+
+Fight records are immutable after creation
+
+Linked by:
+
+fighter_id (preferred)
+
+fallback: fullName match
+
+9) Critical Bugs to Fix (PRIORITY)
+HIGH PRIORITY
+
+isVerified field missing in Fighter Profile UI
+
+Fighters not showing on public site
+
+Image upload logic missing
+
+Mock event fallback still active
+
+Event editing/deletion missing
+
+If these are not fixed → architecture is broken.
+
+10) Developer Objective
+
+Your job is NOT to add random features.
+
+Your job is to make sure:
+
+✅ Fighter Profile is complete
+✅ All modules read from Fighter Profile
+✅ Admin changes reflect everywhere
+✅ Data persistence is consistent
+✅ No mock data in production logic
+
+If Fighter Profile is stable → we move to Events, Rankings, Analytics.
+
+If Fighter Profile is not stable → everything else is useless.

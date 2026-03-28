@@ -1,0 +1,415 @@
+UFC Data System — Developer Blueprint & Implementation Prompt
+1) Objective
+
+We are building a UFC fight data system.
+The goal is to extract, structure, store, and display UFC fight statistics exactly as they appear in official UFC-style data.
+
+This system must support:
+
+Fight metadata
+
+Fighter profiles
+
+Fight results
+
+Totals stats
+
+Significant strike breakdowns
+
+Per-round statistics
+
+README is the system roadmap.
+Every field listed here must exist in the database + API + UI.
+
+2) Core Entities (Data Model)
+A) Event
+
+Fields:
+
+event_id
+
+event_name
+→ Example: UFC 324: Gaethje vs. Pimblett
+
+event_date (if available later)
+
+location (optional future field)
+
+B) Fight
+
+Fields:
+
+fight_id
+
+event_id (FK)
+
+fight_type
+→ Example: UFC Interim Lightweight Title Bout
+
+weight_class
+→ Example: Lightweight
+
+title_fight (boolean)
+
+rounds_scheduled
+→ Example: 5
+
+round_end
+→ Example: 5
+
+time_end
+→ Example: 5:00
+
+time_format
+→ Example: 5 Rnd (5-5-5-5-5)
+
+referee
+→ Example: Marc Goddard
+
+method
+→ Example: Decision - Unanimous
+
+C) Fighter
+
+Fields:
+
+fighter_id
+
+name
+→ Example: Justin Gaethje
+
+nickname
+→ Example: "The Highlight"
+
+corner
+→ Red / Blue (optional)
+
+result
+→ W / L
+
+D) Judges Scorecards
+
+Fields:
+
+scorecard_id
+
+fight_id
+
+judge_name
+→ Example: Mike Bell
+
+fighter1_score
+→ Example: 47
+
+fighter2_score
+→ Example: 48
+
+Example records:
+
+Mike Bell → 47 - 48
+
+Derek Cleary → 46 - 49
+
+Sal D'amato → 46 - 49
+
+3) Fight Totals Stats (Per Fighter)
+
+Entity: fight_totals
+
+Fields:
+
+fight_id
+
+fighter_id
+
+Striking
+
+knockdowns (KD)
+
+sig_str_landed
+
+sig_str_attempted
+
+sig_str_percentage
+
+total_str_landed
+
+total_str_attempted
+
+Grappling
+
+takedowns_landed
+
+takedowns_attempted
+
+takedown_percentage
+
+submission_attempts
+
+reversals
+
+control_time (mm:ss)
+
+Example mapping (Justin Gaethje vs Paddy Pimblett):
+
+Justin Gaethje:
+
+KD: 2
+
+Sig Str: 144 of 254
+
+Sig Str %: 56%
+
+Total Str: 200 of 313
+
+TD: 3 of 3
+
+TD %: 100%
+
+Sub Att: 0
+
+Rev: 0
+
+Ctrl: 5:55
+
+Paddy Pimblett:
+
+KD: 0
+
+Sig Str: 156 of 311
+
+Sig Str %: 50%
+
+Total Str: 170 of 326
+
+TD: 0 of 5
+
+TD %: 0%
+
+Sub Att: 0
+
+Rev: 0
+
+Ctrl: 0:48
+
+4) Significant Strikes Breakdown
+
+Entity: sig_strikes_breakdown
+
+Fields:
+
+fight_id
+
+fighter_id
+
+By Target
+
+head_landed
+
+head_attempted
+
+body_landed
+
+body_attempted
+
+leg_landed
+
+leg_attempted
+
+By Position
+
+distance_landed
+
+distance_attempted
+
+clinch_landed
+
+clinch_attempted
+
+ground_landed
+
+ground_attempted
+
+Example (Justin Gaethje):
+
+Head:
+
+120 of 222
+
+Body:
+
+15 of 21
+
+Leg:
+
+9 of 11
+
+Distance:
+
+102 of 198
+
+Clinch:
+
+20 of 27
+
+Ground:
+
+22 of 29
+
+Example (Paddy Pimblett):
+
+Head:
+
+83 of 221
+
+Body:
+
+48 of 63
+
+Leg:
+
+25 of 27
+
+Distance:
+
+140 of 284
+
+Clinch:
+
+16 of 27
+
+Ground:
+
+0 of 0
+
+5) Per-Round Significant Strikes
+
+Entity: round_stats
+
+Fields:
+
+fight_id
+
+fighter_id
+
+round_number
+
+Per round:
+
+sig_str_landed
+
+sig_str_attempted
+
+sig_str_percentage
+
+Example:
+
+Round 1
+
+Justin Gaethje:
+
+27 of 45 → 60%
+
+Paddy Pimblett:
+
+37 of 65 → 56%
+
+Round 2
+
+Justin Gaethje:
+
+32 of 50 → 64%
+
+Paddy Pimblett:
+
+22 of 47 → 46%
+
+Round 3
+
+Justin Gaethje:
+
+24 of 53 → 45%
+
+Paddy Pimblett:
+
+41 of 78 → 52%
+
+Round 4
+
+Justin Gaethje:
+
+32 of 54 → 59%
+
+Paddy Pimblett:
+
+35 of 58 → 60%
+
+Round 5
+
+Justin Gaethje:
+
+29 of 52 → 55%
+
+Paddy Pimblett:
+
+21 of 63 → 33%
+
+6) System Architecture (What to Build)
+Backend
+
+Database tables for all entities above
+
+API endpoints:
+
+/events
+
+/fights
+
+/fighters
+
+/stats/totals
+
+/stats/significant
+
+/stats/rounds
+
+Frontend
+
+Tabs per fight:
+
+Overview
+
+Fighters
+
+Results
+
+Totals Stats
+
+Significant Strikes
+
+Per-Round Stats
+
+7) Implementation Order (Execution Plan)
+
+Step 1
+→ Build database schema from fields above.
+
+Step 2
+→ Create API endpoints for UFC fight data.
+
+Step 3
+→ Build UI tabs matching README structure.
+
+Step 4
+→ Validate data accuracy against UFC format.
+
+Step 5
+→ Make system scalable for future fights.
+
+8) Key Rule
+
+Do not invent fields.
+Do not simplify UFC data.
+If a field exists in UFC stats, it must exist in the system.
+
+README = system blueprint.

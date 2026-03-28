@@ -1,0 +1,87 @@
+Alright — let’s slow this down and approach it safely and architecturally.
+
+### 1. Landing Page Language Issue
+
+You mentioned multiple language support is missing on the landing page.
+
+Please check:
+
+* Is the i18n initialization running before the landing page mounts?
+* Are translation files loaded asynchronously?
+* Is the language selector component wired to state?
+
+If the landing page cannot switch languages, this is likely a bootstrap or context wiring problem rather than a server separation issue.
+
+---
+
+### 2. Login Flow Blocking Issue
+
+When clicking “Get Started” and nothing happens, we need to determine:
+
+* Is the authentication route triggered?
+* Is the frontend navigation handler working?
+* Is the backend auth endpoint reachable?
+
+Please verify:
+
+* Console logs in browser developer tools.
+* Network tab request behavior when clicking the button.
+
+Do not create new server architecture yet if the login flow is simply miswired.
+
+---
+
+### 3. Admin Access for Testing
+
+To test admin functionality safely:
+
+You do not need a separate physical server right now.
+
+The recommended approach is:
+
+* Use role-based authentication inside the same backend service.
+* Create an admin test account.
+* Enable route guards based on user role.
+
+This avoids unnecessary infrastructure complexity.
+
+---
+
+### 4. User vs Admin Separation Strategy
+
+Based on current project size, I suggest NOT splitting into different servers yet.
+
+Instead:
+
+* Keep one backend server.
+* Implement logical separation using:
+
+  * Middleware authentication
+  * Role authorization layers
+  * Module-based routing
+
+Only consider multi-server architecture later if scale demands it.
+
+---
+
+### 5. Your Immediate Testing Steps
+
+Please help confirm:
+
+1. Whether login API endpoint is responding.
+2. Whether navigation after “Get Started” is being triggered.
+3. Whether admin role detection is working.
+
+If login is blocked, fix authentication flow first before continuing structural separation.
+
+---
+
+### 6. My Question Back to You
+
+Is the login button simply not navigating, or is authentication itself failing?
+
+Please check browser console errors and report what you see.
+
+Once login flow is working, we can safely proceed with admin testing and module validation.
+
+Let’s stabilize runtime behavior first before doing architectural expansion.

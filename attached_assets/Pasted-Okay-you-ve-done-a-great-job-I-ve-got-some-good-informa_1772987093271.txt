@@ -1,0 +1,138 @@
+Okay, you've done a great job. I've got some good information on that. Now, what you call it, let's go ahead and move on to the five history prompt fields we need to find, okay? So I'm gonna give you the raw data information, that way you can see it cross-reference. Everything should be there, but, you know, if you wanna double-check. Other than that, it's just gonna, and like I said, not all, not all the finders are gonna have all these fields, so these are optional, okay? Some of these are gonna be optional, but we still need to have it there, okay? As much as we could gather, if it's available on that page there for extracting, then definitely take it, right?Basically, what you need to emphasize in, the way you get to this page is you're on the UFC fighters tab, where the, you know, the fighter's detail is there, but you need to actually go and, if you click on the, on the fight, on the fight, it's a, it's a link, I mean, or it's a separate page, right? And then right there is way more detailed information that we are gathering that will be great, okay? And here it is.>>UFC 324: Gaethje vs. Pimblett
+W
+Justin Gaethje
+"The Highlight"
+
+L
+Paddy Pimblett
+"The Baddy"
+
+ UFC Interim Lightweight Title Bout
+Method: Decision - Unanimous Round: 5 Time: 5:00 Time format: 5 Rnd (5-5-5-5-5) Referee: Marc Goddard
+
+Details: Mike Bell 47 - 48. Derek Cleary 46 - 49. Sal D'amato 46 - 49.
+
+Totals
+
+Fighter	KD	Sig. str.	Sig. str. %	Total str.	Td	Td %	Sub. att	Rev.	Ctrl
+Justin Gaethje
+
+Paddy Pimblett
+
+2
+
+0
+
+144 of 254
+
+156 of 311
+
+56%
+
+50%
+
+200 of 313
+
+170 of 326
+
+3 of 3
+
+0 of 5
+
+100%
+
+0%
+
+0
+
+0
+
+0
+
+0
+
+5:55
+
+0:48
+
+Per round 
+Significant Strikes
+
+Fighter	Sig. str	Sig. str. %	Head	Body	Leg	Distance	Clinch	Ground
+Justin Gaethje
+
+Paddy Pimblett
+
+144 of 254
+
+156 of 311
+
+56%
+
+50%
+
+120 of 222
+
+83 of 221
+
+15 of 21
+
+48 of 63
+
+9 of 11
+
+25 of 27
+
+102 of 198
+
+140 of 284
+
+20 of 27
+
+16 of 27
+
+22 of 29
+
+0 of 0
+
+Per round 
+Significant Strikes
+ Justin Gaethje Paddy Pimblett
+Landed by target
+83%
+Head
+53%
+10%
+Body
+30%
+6%
+Leg
+16%
+Landed by position
+70%
+Distance
+89%
+13%
+Clinch
+10%
+15%
+Ground
+0%
+Per round
+RD1
+ 27 of 45 - 60%
+ 37 of 65 - 56%
+RD2
+ 32 of 50 - 64%
+ 22 of 47 - 46%
+RD3
+ 24 of 53 - 45%
+ 41 of 78 - 52%
+RD4
+ 32 of 54 - 59%
+ 35 of 58 - 60%
+RD5
+ 29 of 52 - 55%
+ 21 of 63 - 33%
+  Landed
+  Attempted

@@ -1,0 +1,61 @@
+Alright, here's the brutally honest breakdown for Ripley:
+What's Broken (Images 1-2)
+The current card view is failing because:
+
+It's tiny and centered — you've got this small card floating in the void. It feels cramped and disconnected from the event itself. Compare that to the mockups (Images 3-4) where the content fills the space with dramatic arena lighting as the backdrop.
+No fighter faces — you're using gray placeholder boxes instead of actual fighter headshots. In MMA/sports, people buy the narrative. You need the fighters' faces — real, high-contrast photographs with arena lighting. That's what creates the hype.
+No visual drama — the current layout is flat and utilitarian. The mockups have:
+
+A cinematic blurred arena background (stadium lights, atmosphere)
+Massive, centered event title at the top
+Fighter photos prominent and large
+Gold accents on the "MAIN EVENT" badge
+A card carousel (you see the main fight big, secondary fights below/beside as smaller cards)
+Professional use of negative space
+
+
+Text hierarchy is weak — everything reads at the same weight. The title should be HUGE (all caps, dominant), fighter names should be bold, the fight time should be secondary info. Right now it's all mushed together.
+Missing the carousel pattern — Images 3-4 show a horizontal carousel where the main event is centered and big, and you can scroll/swipe to see other fights. Current UI just shows one card. That's boring and doesn't showcase the full card.
+
+What the Mockups Are Doing Right (Images 3-4)
+
+Full-screen hero layout — event info expands to use the viewport, not confined to a small card
+Real fighter imagery — dramatic headshots with lighting that makes them look fierce
+Cinematic backdrop — blurred arena/stadium background with bokeh lights
+Clear visual hierarchy — title dominates, fighter names are bold and large, secondary info is smaller
+Gold/amber color accent — the "MAIN EVENT" badge pops with gold, the buttons use that color
+Horizontal scroll/carousel — shows breadth of the card without requiring vertical scroll
+Professional polish — spacing, typography, and composition all feel premium
+
+Specific Instructions for Ripley
+
+Build a full-screen hero layout — don't constrain the event card. Let the cinematic backdrop and content expand.
+Source fighter photos — get real headshots of Josh Emmett, Kevin Vallejos, etc. with good lighting and contrast.
+Use a carousel/slider pattern — show the main event prominently, with secondary fights visible alongside or below (carousel at bottom, or side-by-side cards).
+Typography scale:
+
+Event title: 40–48px, ALL CAPS, white, bold
+Date/location: 14px, muted gray
+"MAIN EVENT" badge: gold (amber) background, 12px bold
+Fighter names: 24–28px, bold, white
+Fight time/division: 13px, gray
+
+
+Color scheme:
+
+Backdrop: dark blue/black with a blur overlay and subtle stadium bokeh
+Text: white for primary, light gray for secondary
+Accents: gold/amber for "MAIN EVENT", buttons, and highlights
+Borders: subtle gold outline on the main card
+
+
+Button style: "ENTER DRAFT" and "VIEW FIGHT" should be outlined (not filled) with gold border, hover state darkens slightly or adds a glow.
+Layout stacking (mobile-first):
+
+Event info centered at top
+Main fight card below (hero size)
+Secondary fights in a horizontal carousel below
+
+
+
+That's what's broken and how to fix it. Show Ripley these mockups side-by-side with the current version and he'll see exactly where to go.

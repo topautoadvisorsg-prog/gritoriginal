@@ -1,0 +1,89 @@
+Here’s how we can structure this for the developer conversation and clarify the logic before moving forward with importing/updating fight histories:
+
+1️⃣ Purpose / Goal
+
+Ensure all fighter fight history fields are captured correctly.
+
+Enable both uploading new fight history and updating existing fight info after events.
+
+Maintain consistency between fighter profile stats and event/fight ledger stats.
+
+2️⃣ Fight History Fields Required
+
+For each fight, these fields must exist and be updateable:
+
+Basic Fight Metadata
+
+event_name
+
+event_date
+
+fight_card_position (Main Event / Co-Main / Undercard)
+
+fight_type (e.g., Interim Lightweight Title Bout)
+
+method (Decision, KO, TKO, Submission, etc.)
+
+rounds_total
+
+rounds_completed
+
+round_time_format (5-5-5-5-5, etc.)
+
+referee
+
+judges_scores
+
+Fighter-Specific Fight Stats (for each fighter)
+
+fighter_id / name
+
+result (Win / Loss / Draw / NC)
+
+KD (knockdowns)
+
+sig_str_landed / sig_str_attempted
+
+sig_str_accuracy %
+
+total_str_landed / total_str_attempted
+
+td_landed / td_attempted
+
+td_accuracy %
+
+sub_attempts
+
+reversals
+
+control_time
+
+significant_strikes_by_target: head / body / leg
+
+significant_strikes_by_position: distance / clinch / ground
+
+per_round_stats (optional but preferred for detailed breakdown)
+
+3️⃣ Integration Questions for the Developer
+
+How does uploaded fight history data link to an existing fighter profile?
+
+When a fight is uploaded, does it update the fighter’s cumulative stats automatically? Or is it manual?
+
+Can the fight history be edited after upload (for corrections)?
+
+How does this connect to the Fight Management / Event Ledger section? Does updating the fight there also update fighter profile stats?
+
+Is there any hard-coded field we should be aware of, or can everything be updated via the admin panel?
+
+How are per-round stats handled? Do they need to be stored separately or aggregated into the total fight stats?
+
+4️⃣ Key Notes / Requirements
+
+Only admin should have access to update these stats.
+
+Any update to a fighter’s fight stats should reflect both in the fighter profile averages and in the event ledger.
+
+Historical uploads vs. live event updates must follow the same schema, so no data conflicts occur.
+
+All fields in the fight history must be mapped 1:1 with the database, no missing or optional fields for critical stats.

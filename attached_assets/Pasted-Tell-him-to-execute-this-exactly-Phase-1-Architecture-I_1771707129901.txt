@@ -1,0 +1,137 @@
+Tell him to execute this exactly.
+
+Phase 1 — Architecture Isolation Verification (URGENT)
+Backend Separation
+
+Confirm:
+
+Admin server logic is isolated from user server logic.
+
+No business rule is shared directly through imports.
+
+Run project-wide search:
+
+import .*admin
+import .*user
+../admin
+../user
+
+If found → refactor.
+
+Repository Export Safety Checklist
+
+Before exporting folder to new repo:
+
+Verify:
+
+✅ No relative path coupling across domains
+✅ Database access goes through storage abstraction layer
+✅ Shared types are placed in /shared-core only
+✅ Environment variables are loaded per server runtime
+✅ CI build script does not reference parent directory
+
+If any fail → DO NOT EXPORT.
+
+Phase 2 — Dashboard Widget Activation
+
+Activate:
+
+ActivityWidget
+
+BadgeWidget
+
+CountdownWidget
+
+StatsWidget
+
+Steps:
+
+Add widgets into dashboard render tree.
+
+Bind to API data streams if available.
+
+Remove dead placeholder JSX.
+
+Verify hydration consistency.
+
+Phase 3 — Fight History Architecture Fix (Highest Priority)
+
+Remove client-side storage persistence.
+
+Implement:
+
+User Action → User API Server → Database → Client Render
+
+Never:
+
+Client LocalStorage ←→ UI State Truth Source
+Phase 4 — Codebase Cleanup (Quality Improvement)
+Remove Debug Logging
+
+Delete or centralize:
+
+138 console.log / console.error statements.
+
+Use one logging utility.
+
+Split Large Components
+
+Split these files:
+
+LandingPage.tsx
+
+Settings.tsx
+
+ImportPage.tsx
+
+Target size:
+
+< 300 lines per UI component.
+
+Split Domain Types
+
+Refactor:
+
+shared/types/fighter.ts
+
+Into domain schemas:
+
+FighterProfile
+
+FightRecord
+
+EventSchema
+
+PerformanceMetrics
+
+Phase 5 — Security Hardening
+
+Add:
+
+Input validation middleware (Zod-style runtime guard)
+
+Rate limiting for public endpoints
+
+Role enforcement on admin APIs
+
+Especially protect:
+
+Odds editor
+
+User role manager
+
+Import pipeline
+
+Phase 6 — Scalability Target
+
+System must sustain:
+
+≥ 100,000 weekly users
+
+Low latency read endpoints
+
+Pagination everywhere
+
+Audit endpoints that return lists.
+
+🚀 Your Answer — Simple CTO Verdi

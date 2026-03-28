@@ -1,0 +1,187 @@
+I want to outline the full plan for how the AI Analyst system should work going forward so we can implement it cleanly and scalably. This combines the fight-context chat we already built with a question caching system to reduce API usage and gather useful data.
+
+High-level goal
+The AI feature should behave as a **Fight Analyst**, not a prediction engine. It analyzes matchup dynamics using available data but does not present itself as predicting winners.
+
+So anywhere in the system that currently refers to **AI Predictions** should be renamed to something like:
+
+Fight Analyst AI
+AI Fight Analyst
+AI Matchup Analysis
+
+The AI should phrase conclusions in analytical terms such as:
+
+“Based on the available data…”
+“Historically this matchup favors…”
+“One possible path to victory…”
+
+The functionality stays the same — this is primarily a positioning and naming change.
+
+---
+
+AI Question + Answer Cache
+
+We want to implement a **per-fight Q&A cache** that saves answers so the system doesn't regenerate the same analysis repeatedly. This saves tokens and also builds a dataset of the most common fan questions about fights.
+
+Important: the data should **not be deleted after fights**. It should remain stored for analytics and historical reference.
+
+During the fight lifecycle:
+
+Upcoming fight
+• cache entries are active
+• questions can be reused to answer users instantly
+
+After fight completion
+• entries are marked archived
+• they are not used as live cache anymore
+• but remain stored as historical data
+
+---
+
+Database Table
+
+ai_fight_qa_cache
+
+Fields:
+
+id (uuid primary key)
+fightId (uuid)
+question (text) — original question phrasing
+questionKey (text) — normalized version for exact match lookups
+answer (text) — stored AI response
+hitCount (integer default 0) — how many times reused
+isSuggested (boolean default false) — suggested prompt vs user question
+isArchived (boolean default false) — archived after fight completion
+createdAt (timestamp)
+
+Optional for future phase:
+
+embedding (vector) — only added later if we implement similarity matching.
+
+---
+
+Suggested Questions (Primary Cache Driver)
+
+Each fight should have around **10–15 suggested questions** that appear in the UI as clickable chips when the chat opens.
+
+Examples:
+
+• Who has the striking advantage?
+• Who has the grappling advantage?
+• How do their reaches compare?
+• What is the likely pace of this fight?
+• What are the possible paths to victory for each fighter?
+
+Important design point:
+
+Suggested questions and cached questions should use the **same table**.
+
+Workflow:
+
+1. Fight loads
+2. Suggested questions appear
+3. User clicks one
+4. System checks cache
+5. If answer exists → return cached answer
+6. If not → generate with AI and store
+
+This means the first user seeds the cache and everyone after gets instant answers.
+
+Suggested questions should be stored in the database rather than hardcoded so they can be adjusted later without deploying code.
+
+---
+
+Chat Flow Logic
+
+When the AI receives a message in fight context:
+
+If isFightContext = true:
+
+1. Normalize the question → questionKey
+2. Check ai_fight_qa_cache for that fightId + questionKey
+3. If found:
+   • return cached answer
+   • increment hitCount
+4. If not found:
+   • generate answer with AI
+   • store it in cache
+   • return response
+
+Streaming behavior should remain the same for cached responses so the UI experience stays consistent.
+
+---
+
+User Custom Questions
+
+Users should still be able to ask **any custom question**.
+
+If a new question appears:
+
+• AI answers normally
+• system stores it in ai_fight_qa_cache
+• future identical questions will reuse that answer
+
+Over time this builds a dataset of real fan questions.
+
+---
+
+Fight Completion Behavior
+
+When fight.status changes to Completed:
+
+Run a batch update:
+
+set isArchived = true for that fight’s cache entries.
+
+Archived entries are no longer used for live answers but remain in the database for:
+
+• analytics
+• historical comparisons
+• AI prediction vs real outcome analysis later
+
+---
+
+Why we want to keep the data
+
+The stored questions become valuable analytics:
+
+We’ll know:
+
+• which questions fans ask the most
+• which analytical topics drive engagement
+• which suggested prompts are actually used
+
+Example dataset over time:
+
+Fight: Fighter A vs Fighter B
+
+Question | HitCount
+Who has the striking advantage? | 214
+Who has the grappling advantage? | 173
+What is the likely path to victory? | 142
+
+This lets us refine suggested prompts and understand user behavior.
+
+---
+
+Implementation Phases
+
+Phase 1 (simple and effective)
+
+• create ai_fight_qa_cache table
+• suggested questions API endpoint
+• exact match cache lookup via questionKey
+• store answers when generated
+• increment hitCount on reuse
+• UI chips for suggested questions
+
+Phase 2 (only if needed later)
+
+• add embeddings to detect similar questions
+• semantic similarity matching
+
+We should start with exact match caching because it’s simpler and covers most cases when users click suggested prompts.
+
+---
+
+Let me know if this architecture fits cleanly with the current backend and what adjustments you would recommend before implementation.

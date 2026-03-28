@@ -1,0 +1,5 @@
+
+> vite_react_shadcn_ts@0.0.0 dev
+> concurrently "tsx watch server/user-server.ts" "tsx watch server/admin-server.ts" "vite"
+
+[1G[0K

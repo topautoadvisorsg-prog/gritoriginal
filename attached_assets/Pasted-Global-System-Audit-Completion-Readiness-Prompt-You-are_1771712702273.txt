@@ -1,0 +1,167 @@
+Global System Audit & Completion Readiness Prompt
+
+You are working as an expert SaaS architect collaborator.
+
+Your task is to audit the entire codebase and system implementation.
+
+Do not focus on a single feature.
+
+Review everything.
+
+1. Current Project Objective
+
+The goal of this project is to build a scalable combat sports intelligence platform.
+
+The system must support:
+
+Prediction engagement
+
+Ranking analytics
+
+Gamified competition layers
+
+Fighter data intelligence
+
+Multi-context communication
+
+Administrative management tools
+
+Landing experience presentation
+
+2. Full Codebase Audit Requirement
+
+Please review the entire repository and evaluate:
+
+Architecture Layer
+
+Folder structure cleanliness
+
+Module isolation
+
+Shared logic consolidation
+
+Dependency coupling risks
+
+Report:
+
+Technical debt areas
+
+Refactoring recommendations
+
+Missing core components
+
+Runtime Stability
+
+Verify that the application can:
+
+Compile successfully
+
+Run locally
+
+Load landing page
+
+Authenticate users
+
+Render main UI modules
+
+If any runtime instability exists, identify it.
+
+Feature Completion Assessment
+
+Evaluate whether the system is actually ready for functional testing.
+
+Check completeness of:
+
+User-facing interface
+
+Administrative control systems
+
+Data ingestion pipelines
+
+Routing logic
+
+State management
+
+Asset loading
+
+Language localization integration
+
+Prediction and analytics components
+
+3. Integration Verification
+
+Confirm that the following subsystems are properly connected:
+
+Frontend → Backend API layer
+
+Authentication → Role authorization
+
+Shared utilities → Feature modules
+
+Database models → Application logic
+
+If anything is disconnected, report it.
+
+4. Performance & Scalability Review
+
+Evaluate risks related to:
+
+Memory usage
+
+Request handling
+
+Asset delivery (including hero frame sequence system)
+
+Real-time interaction components
+
+Message or competition event updates
+
+Suggest optimizations.
+
+5. Security Review
+
+Check for:
+
+Secret leakage risk (especially environment variables)
+
+Unauthorized route exposure
+
+Authentication bypass possibilities
+
+Data protection gaps
+
+6. Completion Status Judgment
+
+Please answer honestly:
+
+Is the system actually ready for testing?
+
+What is missing before functional validation can begin?
+
+What parts are still in development?
+
+What is the biggest architectural risk right now?
+
+7. Developer Collaboration Style
+
+Work as a partner architect.
+
+Do not assume missing pieces.
+
+If something is unclear, ask.
+
+If something is broken, report it.
+
+If something can be improved, suggest it.
+
+Final Request
+
+Provide:
+
+Full audit summary
+
+Completion readiness verdict
+
+Technical debt warnings
+
+Next safest development step

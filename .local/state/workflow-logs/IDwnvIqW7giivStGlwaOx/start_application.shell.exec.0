@@ -1,0 +1,23 @@
+[1G[0K⠙[1G[0K
+> vite_react_shadcn_ts@0.0.0 dev
+> concurrently "tsx watch server/user-server.ts" "tsx watch server/admin-server.ts" "vite"
+
+[1G[0K⠙[1G[0K[0m[2][0m 
+[0m[2][0m   [32m[1mVITE[22m v5.4.19[39m  [2mready in [0m[1m1255[22m[2m[0m ms[22m
+[0m[2][0m 
+[0m[2][0m   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5000[22m/[39m
+[0m[2][0m   [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.101.162:[1m5000[22m/[39m
+[0m[1][0m [INFO] Environment validation passed
+[0m[0][0m [INFO] Environment validation passed
+[0m[1][0m [2026-03-25T16:30:26.055Z] [INFO] Admin API server running on port 3002
+[0m[0][0m [2026-03-25T16:30:26.129Z] [WARN] ANTHROPIC_API_KEY is not set. Anthropic functionality will be disabled.
+[0m[0][0m [2026-03-25T16:30:26.131Z] [WARN] OPENMETER_API_KEY is not set. Usage tracking will be disabled.
+[0m[0][0m [2026-03-25T16:30:26.159Z] [WARN] STRIPE_SECRET_KEY is not set. Stripe functionality will be disabled.
+[0m[0][0m [2026-03-25T16:30:26.392Z] [INFO] [Cron] Initializing scheduled tasks...
+[0m[0][0m [2026-03-25T16:30:26.425Z] [INFO] [Cron] All tasks scheduled
+[0m[0][0m [2026-03-25T16:30:26.431Z] [INFO] Socket.IO initialized with authentication
+[0m[0][0m [2026-03-25T16:30:26.436Z] [INFO] User API server running on port 3001
+[0m[0][0m [2026-03-25T16:30:27.209Z] [INFO] [Seed] Suggested questions already populated (8 rows), skipping
+[0m[2][0m Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+[0m[2][0m   npx update-browserslist-db@latest
+[0m[2][0m   Why you should do it regularly: https://github.com/browserslist/update-db#readme

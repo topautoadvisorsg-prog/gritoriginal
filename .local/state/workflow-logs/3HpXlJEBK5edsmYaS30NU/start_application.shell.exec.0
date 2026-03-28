@@ -1,0 +1,39 @@
+
+> vite_react_shadcn_ts@0.0.0 dev
+> concurrently "tsx watch server/user-server.ts" "tsx watch server/admin-server.ts" "vite"
+
+[1G[0K[0m[2][0m 
+[0m[2][0m   [32m[1mVITE[22m v5.4.19[39m  [2mready in [0m[1m1395[22m[2m[0m ms[22m
+[0m[2][0m 
+[0m[2][0m   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5000[22m/[39m
+[0m[2][0m   [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.73.194:[1m5000[22m/[39m
+[0m[1][0m [INFO] Environment validation passed
+[0m[0][0m [INFO] Environment validation passed
+[0m[2][0m Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+[0m[2][0m   npx update-browserslist-db@latest
+[0m[2][0m   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[0m[1][0m [2026-03-25T03:28:15.350Z] [INFO] Admin API server running on port 3002
+[0m[0][0m [2026-03-25T03:28:15.437Z] [WARN] ANTHROPIC_API_KEY is not set. Anthropic functionality will be disabled.
+[0m[0][0m [2026-03-25T03:28:15.439Z] [WARN] OPENMETER_API_KEY is not set. Usage tracking will be disabled.
+[0m[0][0m [2026-03-25T03:28:15.462Z] [WARN] STRIPE_SECRET_KEY is not set. Stripe functionality will be disabled.
+[0m[0][0m [2026-03-25T03:28:15.700Z] [INFO] [Cron] Initializing scheduled tasks...
+[0m[0][0m [2026-03-25T03:28:15.745Z] [INFO] [Cron] All tasks scheduled
+[0m[0][0m [2026-03-25T03:28:15.751Z] [INFO] Socket.IO initialized with authentication
+[0m[0][0m [2026-03-25T03:28:15.754Z] [INFO] User API server running on port 3001
+[0m[0][0m [2026-03-25T03:28:16.505Z] [INFO] [Seed] Suggested questions already populated (8 rows), skipping
+[0m[0][0m [2026-03-25T03:30:00.008Z] [INFO] [Cron] Running pipeline retry for failed entries...
+[0m[0][0m [2026-03-25T03:30:00.025Z] [INFO] [Data Pipeline] Retry run complete: 0 attempted, 0 succeeded, 0 failed
+[0m[2][0m [2m3:58:03 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.local/skills/.tmp-artifacts-csJFyfatUmacw-doGTQHL/artifacts/expo/files/server/templates/landing-page.html[22m
+[0m[2][0m [2m3:58:03 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.local/skills/.tmp-artifacts-csJFyfatUmacw-doGTQHL/artifacts/mockup-sandbox/files/index.html[22m
+[0m[2][0m [2m3:58:03 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.local/skills/artifacts/artifacts/mockup-sandbox/files/index.html[22m
+[0m[2][0m [2m3:58:03 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.local/skills/artifacts/artifacts/expo/files/server/templates/landing-page.html[22m
+[0m[2][0m [2m3:58:04 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.local/skills/.tmp-artifacts-csJFyfatUmacw-doGTQHL/artifacts/expo/files/server/templates/landing-page.html[22m
+[0m[2][0m [2m3:58:04 AM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2m.local/skills/.tmp-artifacts-csJFyfatUmacw-doGTQHL/artifacts/mockup-sandbox/files/index.html[22m
+[0m[0][0m [2026-03-25T04:00:00.020Z] [INFO] [Cron] Running pipeline retry for failed entries...
+[0m[0][0m [2026-03-25T04:00:00.032Z] [INFO] [Data Pipeline] Retry run complete: 0 attempted, 0 succeeded, 0 failed
+[0m[0][0m [2026-03-25T04:06:57.105Z] [INFO] Authenticated client connected: goo (cWwye5LxW0XqVTBNAAAC)
+[0m[0][0m [2026-03-25T04:11:49.706Z] [INFO] Client disconnected: cWwye5LxW0XqVTBNAAAC
+[0m[0][0m [2026-03-25T04:11:58.833Z] [INFO] Authenticated client connected: goo (xhmp4Bpm0q_jlWkQAAAF)
+[0m[0][0m [2026-03-25T04:18:37.472Z] [INFO] Client disconnected: xhmp4Bpm0q_jlWkQAAAF
+[0m[0][0m [2026-03-25T04:30:00.020Z] [INFO] [Cron] Running pipeline retry for failed entries...
+[0m[0][0m [2026-03-25T04:30:00.023Z] [INFO] [Data Pipeline] Retry run complete: 0 attempted, 0 succeeded, 0 failed

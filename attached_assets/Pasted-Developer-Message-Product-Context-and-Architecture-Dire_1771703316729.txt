@@ -1,0 +1,121 @@
+Developer Message — Product Context and Architecture Direction
+
+Project Vision
+
+We are building **MMA Champions League**, which started as a small personal project and is evolving into a large-scale community and analytics ecosystem.
+
+The platform is not just a picks or fantasy system. It is designed to become a competitive sports intelligence network that combines:
+
+• Prediction engagement
+• Fighter performance analysis
+• Community interaction
+• Gamification reputation tracking
+• AI-assisted matchup insight generation
+
+The long-term goal is to transform combat sports knowledge into measurable competitive intelligence.
+
+Current Engineering Strategy
+
+We are now entering the architectural stabilization phase.
+
+The system must be separated into logical domains to support future scaling and multi-developer collaboration.
+
+Domain Isolation Philosophy
+
+1. User Platform Domain
+   This is the public-facing product.
+
+It includes:
+
+* Chat systems
+* Picks and predictions
+* Rankings and leaderboard views
+* News and community interaction
+* Gamification feedback and reputation signals
+* AI analysis presentation layers
+
+The user domain should focus on runtime experience, not control logic.
+
+2. Admin Control Domain
+   This is the operator governance layer.
+
+It should only handle:
+
+* Event lifecycle management
+* Fighter database maintenance
+* Prediction seed input
+* Moderation oversight
+* Content publishing control
+
+Admin logic must be isolated from public runtime logic.
+
+3. Intelligence Engine Domain (Future Core Value)
+
+This subsystem will be responsible for:
+
+* AI prediction computation
+* Matchup analysis generation
+* Virality engagement modeling
+* Asynchronous insight processing
+
+Important Rule
+
+We follow an additive development philosophy.
+
+✔ Do not delete working code unless replacement code is tested.
+✔ Move code safely during migration.
+✔ Maintain build stability.
+✔ Avoid architecture rewriting while features are still evolving.
+
+Folder Structure Direction
+
+Frontend code should be organized into:
+
+/admin
+/user
+/engine
+/shared
+
+Shared folder should contain:
+
+* UI primitives
+* Auth hooks
+* Type models
+* Infrastructure utilities
+
+Business logic should not be mixed across domains.
+
+Repository Workflow Goal
+
+The objective is to eventually allow:
+
+• Multiple developers to work independently
+• Clear domain boundaries
+• Safe scaling of the platform
+
+Communication Expectation
+
+If you encounter ambiguity in project goals, ask questions before implementing code.
+
+Product Understanding Check
+
+Please confirm that you understand:
+
+1. The platform is becoming a combat sports intelligence ecosystem.
+2. Domain separation is intended to improve maintainability and scalability.
+3. No working functionality should be removed during migration.
+4. Backend security enforcement is mandatory even if frontend guards exist.
+
+If anything in the system design conflicts with your implementation plan, please discuss it first.
+
+Engineering Partnership Note
+
+We are building a long-term quality product for many users.
+
+The priority is:
+
+Stability → Scalability → Feature Growth → Innovation
+
+Thank you for contributing to the platform development.
+
+End Message

@@ -1,0 +1,141 @@
+You are working on MMA Champions League, and premature integration is the #1 cause of refactor waste.
+
+🚨 Important — Replit Auth Setup Warning
+
+If the developer is currently:
+
+Installing auth packages
+
+Creating session tables
+
+Building replacement auth modules
+
+👉 Tell him to pause until audit verification is done.
+
+Because I see a high probability of:
+
+✅ Duplicate auth layer
+✅ Redundant session storage
+✅ Broken Supabase integration boundary
+
+✅ First Action — Workspace Audit (MANDATORY)
+
+Ask the developer to confirm these 4 things before coding continues:
+
+1. Authentication Source
+
+Must be ONLY one of:
+
+Supabase Auth JWT (preferred)
+
+OR
+
+Replit Auth (if replacing Supabase)
+
+⚠ Do NOT run both.
+
+2. Database Schema State
+
+Verify:
+
+Existing users table structure
+
+Picks ledger tables
+
+Fight scoring tables
+
+Leaderboard snapshot storage
+
+If schema migration is happening → freeze feature development.
+
+3. Frontend Context Pattern
+
+You mentioned:
+
+GamificationContext
+
+use-auth hook
+
+Check:
+
+Does auth state come from React Context only?
+
+Or from mixed hook + global store?
+
+If mixed → refactor.
+
+4. Repository Connection Integrity
+
+Make sure workspace contains:
+
+server/
+src/
+shared/
+drizzle.config.ts
+.env
+
+And nothing is auto-generated outside project root.
+
+⚠ I Am Slightly Concerned About This Line
+
+You showed this sequence:
+
+create sessions table
+create auth integration files
+parallel module creation
+
+👉 This is risky during migration.
+
+Auth systems must be built serially, not in parallel.
+
+⭐ My Strong Recommendation (Architect-Level)
+Pause coding.
+
+Do this instead:
+
+Step 1
+
+Run dependency audit.
+
+Check:
+
+npm packages
+
+auth libraries
+
+database connectors
+
+Step 2
+
+Confirm current auth flow:
+
+Client → Context → Backend Middleware → Database
+
+Must remain consistent.
+
+Step 3
+
+Decide ONE identity provider.
+
+Do not allow hybrid auth.
+
+🧠 I Want To Protect Your Platform From Future Pain
+
+The biggest long-term mistake I see coming is:
+
+👉 Building a second auth system accidentally.
+
+That will be very expensive to fix later.
+
+⭐ If You Trust My Judgment (CTO Advice)
+
+Tell your developer this exact instruction:
+
+Do not implement Replit Auth replacement or session table creation until architecture audit is completed.
+
+👍 Status Summary
+
+✔ Workspace setup can continue
+⚠ But coding should pause
+✔ Audit phase must finish first
+❗ Auth system duplication risk is real

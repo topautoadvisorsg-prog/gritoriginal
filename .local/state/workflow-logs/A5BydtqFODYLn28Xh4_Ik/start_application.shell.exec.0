@@ -1,0 +1,56 @@
+
+> vite_react_shadcn_ts@0.0.0 dev
+> concurrently "tsx watch server/user-server.ts" "tsx watch server/admin-server.ts" "vite"
+
+[1G[0K[0m[2][0m 
+[0m[2][0m   [32m[1mVITE[22m v5.4.19[39m  [2mready in [0m[1m202[22m[2m[0m ms[22m
+[0m[2][0m 
+[0m[2][0m   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5000[22m/[39m
+[0m[2][0m   [32m➜[39m  [1mNetwork[22m: [36mhttp://172.31.78.66:[1m5000[22m/[39m
+[0m[1][0m [INFO] Environment validation passed
+[0m[2][0m Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+[0m[2][0m   npx update-browserslist-db@latest
+[0m[2][0m   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[0m[1][0m [2026-03-25T14:33:51.725Z] [INFO] Admin API server running on port 3002
+[0m[0][0m [INFO] Environment validation passed
+[0m[0][0m [2026-03-25T14:33:52.102Z] [WARN] ANTHROPIC_API_KEY is not set. Anthropic functionality will be disabled.
+[0m[0][0m [2026-03-25T14:33:52.104Z] [WARN] OPENMETER_API_KEY is not set. Usage tracking will be disabled.
+[0m[0][0m [2026-03-25T14:33:52.127Z] [WARN] STRIPE_SECRET_KEY is not set. Stripe functionality will be disabled.
+[0m[0][0m [2026-03-25T14:33:52.346Z] [INFO] [Cron] Initializing scheduled tasks...
+[0m[0][0m [2026-03-25T14:33:52.380Z] [INFO] [Cron] All tasks scheduled
+[0m[0][0m [2026-03-25T14:33:52.391Z] [INFO] Socket.IO initialized with authentication
+[0m[0][0m [2026-03-25T14:33:52.408Z] [INFO] User API server running on port 3001
+[0m[0][0m [2026-03-25T14:33:52.422Z] [INFO] [Seed] Suggested questions already populated (8 rows), skipping
+[0m[0][0m [2026-03-25T14:34:06.710Z] [INFO] [Data Pipeline] Entry created: e11255b8-797d-4851-b633-c52138f91f61 - fighter/create
+[0m[0][0m [2026-03-25T14:34:06.711Z] [INFO] [Data Engine Webhook] Queued %s/%s → entry %s create fighter e11255b8-797d-4851-b633-c52138f91f61
+[0m[0][0m [2026-03-25T14:34:06.720Z] [INFO] [Data Pipeline] Entry e11255b8-797d-4851-b633-c52138f91f61 approved by admin auto-apply
+[0m[0][0m [2026-03-25T14:34:06.724Z] [INFO] [Data Pipeline] Entry e11255b8-797d-4851-b633-c52138f91f61 applied successfully
+[0m[0][0m [2026-03-25T14:34:06.727Z] [INFO] [Data Engine Webhook] Auto-applied entry %s (%s/%s) e11255b8-797d-4851-b633-c52138f91f61 create fighter
+[0m[0][0m [2026-03-25T14:34:06.730Z] [WARN] [OutboundSync] Supabase credentials not configured — skipping outbound push
+[0m[0][0m [90m2:34:48 PM[39m [96m[tsx][39m [95mchange[39m in [92m./server/api/bootstrapRoute.ts[39m [33mRestarting...[39m
+[0m[0][0m c[INFO] Environment validation passed
+[0m[0][0m [2026-03-25T14:34:50.251Z] [WARN] ANTHROPIC_API_KEY is not set. Anthropic functionality will be disabled.
+[0m[0][0m [2026-03-25T14:34:50.253Z] [WARN] OPENMETER_API_KEY is not set. Usage tracking will be disabled.
+[0m[0][0m [2026-03-25T14:34:50.291Z] [WARN] STRIPE_SECRET_KEY is not set. Stripe functionality will be disabled.
+[0m[0][0m [2026-03-25T14:34:50.522Z] [INFO] [Cron] Initializing scheduled tasks...
+[0m[0][0m [2026-03-25T14:34:50.562Z] [INFO] [Cron] All tasks scheduled
+[0m[0][0m [2026-03-25T14:34:50.567Z] [INFO] Socket.IO initialized with authentication
+[0m[0][0m [2026-03-25T14:34:50.572Z] [INFO] User API server running on port 3001
+[0m[0][0m [2026-03-25T14:34:50.587Z] [INFO] [Seed] Suggested questions already populated (8 rows), skipping
+[0m[0][0m [90m2:34:58 PM[39m [96m[tsx][39m [95mchange[39m in [92m./server/api/bootstrapRoute.ts[39m [33mRestarting...[39m
+[0m[0][0m c[INFO] Environment validation passed
+[0m[0][0m [2026-03-25T14:34:59.813Z] [WARN] ANTHROPIC_API_KEY is not set. Anthropic functionality will be disabled.
+[0m[0][0m [2026-03-25T14:34:59.815Z] [WARN] OPENMETER_API_KEY is not set. Usage tracking will be disabled.
+[0m[0][0m [2026-03-25T14:34:59.838Z] [WARN] STRIPE_SECRET_KEY is not set. Stripe functionality will be disabled.
+[0m[0][0m [2026-03-25T14:35:00.066Z] [INFO] [Cron] Initializing scheduled tasks...
+[0m[0][0m [2026-03-25T14:35:00.095Z] [INFO] [Cron] All tasks scheduled
+[0m[0][0m [2026-03-25T14:35:00.100Z] [INFO] Socket.IO initialized with authentication
+[0m[0][0m [2026-03-25T14:35:00.105Z] [INFO] User API server running on port 3001
+[0m[0][0m [2026-03-25T14:35:00.117Z] [INFO] [Seed] Suggested questions already populated (8 rows), skipping
+[0m[0][0m [2026-03-25T14:37:12.644Z] [INFO] Authenticated client connected: admin (wPW_KDeKYxvpz8OKAAAC)
+[0m[0][0m [2026-03-25T14:37:44.934Z] [INFO] Authenticated client connected: goo (wY_PYrt6wQJ2b4S1AAAF)
+[0m[0][0m [2026-03-25T14:37:54.552Z] [INFO] Client disconnected: wY_PYrt6wQJ2b4S1AAAF
+[0m[0][0m [2026-03-25T14:38:46.898Z] [INFO] Client disconnected: wPW_KDeKYxvpz8OKAAAC
+[0m[0][0m [0mtsx watch server/user-server.ts exited with code SIGHUP[0m
+[0m[1][0m [0mtsx watch server/admin-server.ts exited with code SIGHUP[0m
+[0m[2][0m [0mvite exited with code SIGHUP[0m

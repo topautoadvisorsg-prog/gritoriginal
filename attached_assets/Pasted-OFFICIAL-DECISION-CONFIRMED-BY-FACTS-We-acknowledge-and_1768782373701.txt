@@ -1,0 +1,153 @@
+OFFICIAL DECISION — CONFIRMED BY FACTS
+
+We acknowledge and confirm the following as CURRENT REALITY (no debate):
+
+imageUrl = required face image (URL only today)
+
+bodyImageUrl = optional full-body image (URL only today)
+
+No upload system exists
+
+No storage exists
+
+No validation exists
+
+No admin edit UI exists
+
+CSV import currently overwrites URLs, which is acceptable behavior
+
+This is fine. We are moving forward intentionally, not patching randomly.
+
+BUSINESS DECISION (LOCK THIS IN)
+
+We are KEEPING BOTH IMAGE FIELDS:
+
+imageUrl (FACE)
+
+bodyImageUrl (BODY)
+
+Even if some fighters are missing images, fields stay.
+Empty / null is acceptable.
+
+This fighter profile schema is now the STANDARD BASE PROFILE.
+Fight history remains separate and will be imported independently.
+
+IMAGE RULES (NON-NEGOTIABLE — FINAL)
+Face Image (imageUrl)
+
+Face only
+
+NO shoulders
+
+Portrait-oriented
+
+1 image max
+
+New upload replaces old image
+
+Body Image (bodyImageUrl)
+
+Full body / stance
+
+1 image max
+
+New upload replaces old image
+
+No galleries. No extras. No third image. Ever.
+
+WHAT MUST BE BUILT (PHASED, NO SHORTCUTS)
+PHASE 1 — Backend Foundations
+
+Developer must implement:
+
+Image upload endpoint
+
+Accepts file upload (not URL)
+
+Supports jpg, png, webp
+
+Max file size defined (recommend 2–5 MB)
+
+Storage
+
+Choose ONE and document it:
+
+Replit Object Storage or
+
+S3-compatible bucket
+
+Return stored URL → saved into:
+
+imageUrl OR bodyImageUrl
+
+Replacement logic
+
+Uploading a new image overwrites existing URL
+
+No duplicates possible (schema already enforces this)
+
+PHASE 2 — Admin UI (CRITICAL)
+
+Add an Admin → Fighter Manager (NOT CSV):
+
+Fighter Selection
+
+Filters:
+
+Organization
+
+Weight Class
+
+Search:
+
+Typeahead by name (G → Gaethje, etc.)
+
+Fighter Edit Screen
+
+Once fighter is selected:
+
+Editable fields (only existing schema fields)
+
+Two upload slots only:
+
+Face Image
+
+Body Image
+
+If an image exists:
+
+Show preview
+
+Uploading replaces it
+
+No CSV required for edits.
+
+PHASE 3 — Validation & UX Guardrails
+
+Minimum enforcement:
+
+Backend:
+
+File type validation
+
+File size limit
+
+Frontend:
+
+Clear labels: FACE (no shoulders) / BODY
+
+Crop / ratio guidance (even text warning is fine for v1)
+
+Aspect ratio hard-enforcement can come later if needed.
+
+IMPORTANT: WHAT NOT TO DO
+
+❌ Do NOT rename fields again
+
+❌ Do NOT add new image fields
+
+❌ Do NOT allow more than 2 images
+
+❌ Do NOT mix fight history with profile data
+
+❌ Do NOT force CSV for updates

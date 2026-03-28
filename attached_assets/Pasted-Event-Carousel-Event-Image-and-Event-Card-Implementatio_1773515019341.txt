@@ -1,0 +1,344 @@
+Event Carousel, Event Image, and Event Card Implementation
+
+Hey — I reviewed the mockups again and I want to clarify exactly how the Event Tab, Carousel, and Event Image system should work so we're aligned before implementation.
+
+Please read through this and confirm your understanding before proceeding.
+
+1. Event Image Field (Admin Side)
+
+We need a new image field in the Create Event form.
+
+Field details
+
+Label:
+Event Image
+
+Placement:
+Below the Description field in the admin event creation UI.
+
+Behavior:
+
+• File picker (JPG or PNG)
+• Max size: 5MB
+• Show thumbnail preview (80×80px) after selection
+• Field is optional
+
+Storage:
+
+Image uploads to:
+
+/api/admin/events/upload-image
+
+
+Stored on server in:
+
+uploads/events/
+
+
+Image URL saved to:
+
+events.image_url
+
+
+Admin authentication required.
+
+2. How Event Images Are Used
+
+Important clarification from the mockups:
+
+The fighter portraits are NOT replaced by the event image.
+
+The fighter photos already come from the fighters database.
+
+So the layout is:
+
+Fighter Photo (Left)
+vs
+Fighter Photo (Right)
+
+Behind those images:
+
+Event Image (background)
+
+The event image acts as a background / promotional backdrop, not the main subject.
+
+If no image exists:
+
+Use a dark arena-style gradient fallback background so the UI still looks intentional.
+
+3. Event Carousel Layout (Very Important)
+
+The carousel should focus on ONE MAIN EVENT AT A TIME.
+
+We do NOT want three cards visible.
+
+Instead:
+
+Center Card
+
+Large main promotional card.
+
+Approx size:
+
+380px × 480px
+
+
+Full opacity.
+
+This represents the upcoming event.
+
+Side Preview Cards
+
+On the left and right edges, there should be very small partial previews of the previous and next event.
+
+They should only be barely visible, like a teaser.
+
+Think of the way Fortnite shows character selection where you see the next avatar slightly off-screen.
+
+The user should not see full event cards on the sides.
+
+Just a peek that suggests another event exists.
+
+When the user presses arrow navigation, the next event slides into the center.
+
+4. Carousel Navigation
+
+Navigation methods:
+
+• Left / Right arrow buttons
+• Swipe gestures on mobile
+
+Behavior:
+
+Clicking the arrow slides the next event card into the center.
+
+Clicking the side preview should also shift it to the center.
+
+5. Carousel Card Content
+
+Each event card displays:
+
+• Two fighter portraits (main event fighters)
+• Event name
+• Event date and time
+• Venue
+• ENTER DRAFT button
+
+Fighter portraits appear:
+
+[Fighter A]   vs   [Fighter B]
+
+
+Side by side.
+
+Portrait style:
+
+object-fit: cover
+
+
+With a subtle dark gradient overlay for text readability.
+
+6. Background Rendering
+
+Behind the fighter portraits:
+
+Use:
+
+background-image: event.image_url
+
+
+Styling:
+
+• Slight dark overlay
+• Optional blur (very subtle)
+
+Fallback:
+
+If event image missing:
+
+Use a dark gradient arena background.
+
+Never show broken image icons.
+
+7. Carousel Animation
+
+Transitions should be smooth but simple.
+
+Card transitions:
+
+300ms ease-out
+
+
+Animated properties:
+
+• transform
+• opacity
+
+When switching events:
+
+The new event slides into the center and scales up.
+
+8. Hover Effects (Desktop)
+
+Only apply to center card.
+
+Effect:
+
+scale: 1.02
+
+
+With a subtle gold glow border.
+
+Nothing flashy — keep it clean.
+
+9. Click Navigation Flow
+
+User navigation flow should be:
+
+Event Carousel
+↓
+Event Card Page
+↓
+Fight Detail Page
+
+
+Routes:
+
+Click ENTER DRAFT or center card:
+
+/event/:eventId
+
+
+This opens the Event Card page.
+
+Inside the Event Card:
+
+Clicking a fight row goes to:
+
+/event/fight/:fightId
+
+
+Fight Detail page.
+
+10. Event Card Page
+
+The Event Card page header should also use the Event Image as background.
+
+Layout:
+
+Hero section:
+
+• Event image background
+• Event title
+• Venue
+• Date/time
+
+Below that:
+
+List of fights.
+
+Main event should have a VIEW FIGHT button.
+
+Other fights should simply be clickable rows with hover state.
+
+11. Responsive Handling
+
+Images use:
+
+object-fit: cover
+
+
+This prevents distortion.
+
+Behavior:
+
+Portrait images → center crop
+Landscape images → top crop
+
+Recommended admin upload size:
+
+1200 × 675 px
+
+
+But system must support any size safely.
+
+Add tooltip in admin UI explaining recommended dimensions.
+
+12. Missing Fighter Photos
+
+If a fighter profile image is missing:
+
+Show a dark silhouette placeholder.
+
+Do not break the layout.
+
+13. Carousel Data Behavior
+
+Carousel should prioritize upcoming events only.
+
+If there is only one upcoming event, it remains centered.
+
+Side previews can show:
+
+• Next upcoming event
+• Or most recent past event (dimmed)
+
+But upcoming events should always be the focus.
+
+14. Event Player Count (Future Endpoint)
+
+Mockup shows:
+
+25K PLAYERS ENTERED
+
+
+Current backend does not provide this yet.
+
+Options:
+
+Either implement endpoint:
+
+GET /api/picks/event/:eventId/count
+
+
+Or temporarily display:
+
+--
+
+
+until endpoint exists.
+
+Do not hardcode values.
+
+15. Storage Note (Important)
+
+Images currently stored on local disk.
+
+This is fine for closed beta.
+
+However, when moving to production we should migrate to object storage.
+
+Replit Object Storage is already installed and can be used later.
+
+16. Security
+
+Upload endpoint must require:
+
+requireAdmin
+
+
+Only admins can upload event images.
+
+Final Confirmation Needed
+
+Before implementation, confirm:
+
+You understand the single-center-card carousel layout
+
+You understand event images are background only
+
+You understand fighter portraits come from fighter profiles
+
+Confirm how you plan to implement side preview cards
+
+Confirm animation approach and ETA

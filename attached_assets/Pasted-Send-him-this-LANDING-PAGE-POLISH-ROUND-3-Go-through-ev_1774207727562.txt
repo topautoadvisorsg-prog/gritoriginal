@@ -1,0 +1,48 @@
+Send him this:
+
+LANDING PAGE — POLISH ROUND 3
+Go through every item below and fix them all.
+
+1. HOW IT WORKS — STEP 04 TEXT
+In step 04 Climb the Rankings — remove the line that says "Prove you belong at the top." Take it out completely. The step title and the UI mockup below it is enough. The extra line is breaking the visual sync between the four steps.
+
+2. MORE FEATURES — FANTASY PICKS AND COMMUNITY CARDS
+The UI mockups you built inside those two cards need to match the actual app. You already built the fantasy pick interface and the chat interface in the main app. Go into your own codebase, pull the actual components or at minimum replicate the exact styling, colors, and layout of what is already built. Do not invent a new UI that looks different from the product. Users landing on this page should recognize the interface when they sign up and see the real thing.
+
+3. ATMOSPHERIC BACKGROUND — FIX THIS NOW
+The background below the hero is still flat black. This has been mentioned twice. Fix it this time. Do not use the watermarked reference image. Create your own atmospheric background using CSS and SVG. Here is exactly what it needs to look like:
+Deep dark base — near black, slightly warm not blue
+Deep red light bleeding in from the bottom edges and corners — like arena lighting from below
+Subtle haze or smoke effect in the mid ground — very low opacity
+Faint octagon outline or geometric lines in the far background — barely visible, like 3 to 5 percent opacity
+Nothing literal or illustrative — pure atmosphere and color
+This needs to be on every section below the hero. The page cannot be flat black. It needs to feel like you are inside an arena the entire time you are scrolling.
+
+4. SECTION HEADER PILLS — MAKE THEM BIGGER
+The small pill-shaped section headers — the ones that say things like MORE FEATURES, HOW IT WORKS, AI ARENA — are too small right now. They look like fine print. Make them bigger. Increase the font size, increase the padding inside the pill, make them more visible. They should feel like a intentional design element, not something you almost miss.
+
+5. AI ARENA SECTION HEADER
+The pill header above the AI Arena section currently says AI ARENA. Change the wording to something that communicates what this actually is — the first platform where multiple AI models compete against each other on MMA fantasy picks in real time, each building their own accuracy record. Word it in a way that is short, punchy, and accurate. Something like:
+THE FIRST AI PREDICTION COMPETITION
+or
+AI MODELS. COMPETING LIVE.
+or
+WHERE AI PICKS GO HEAD TO HEAD.
+Pick whichever fits best or come up with something better. Just make it communicate what is unique about this feature.
+
+6. HERO SECTION — TEXT COLORS
+The hero headline text is hard to read because some of it sits on a lighter part of the video background and the colored text does not have enough contrast. Fix it like this:
+Make the primary headline words white. Solid white. Easy to read on any background.
+Selectively make certain key words deep red — not orange red, pure red like the rest of the brand. Pick the words that carry the most weight in each line and make those red. Everything else stays white.
+Example direction:
+WHERE FIGHT MINDS COMPETE — COMPETE in red, rest white
+PREDICT. TRACK. CLIMB. — CLIMB in red, rest white
+Use your judgment on which words to accent. The goal is high contrast, easy to read, red used sparingly for emphasis not decoration.
+
+7. FIGHTER IMAGES — LAY OUT THE PLACEHOLDERS NOW
+We still do not have fighter photos yet but we need the layout ready so when the photos arrive they drop straight in. Add fighter image placeholders in these specific locations:
+AI Arena section — one half body fighter image placeholder on each side of the three AI cards. Left side and right side. Half body means waist up. Correct dimensions ready for a real photo. Label each placeholder so we know what size and format to provide.
+Every Fighter Fully Decoded section — remove one of the two existing blocks and replace it with a half body fighter image placeholder. The fighter image becomes the visual centerpiece of this section.
+These placeholders should be clearly marked in the layout — outlined boxes, correct aspect ratio, labeled FIGHTER IMAGE HALF BODY. When the real photos are ready they slot straight in with no layout changes needed.
+
+Report back when all items are done. Tell me honestly what you could not complete.

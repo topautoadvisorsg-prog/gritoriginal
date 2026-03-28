@@ -1,0 +1,16 @@
+MORE FEATURES SECTION — POLISH
+Two things to fix in this section.
+1. Fantasy Picks card
+Do not leave it as just an icon and text. Add a small live-looking fantasy pick UI mockup inside the card. Show a fight matchup — two fighter names, VS in the middle, a moneyline odds line, a confidence flag selector, a lock in button. Make it look like the actual pick interface. Small, clean, fits inside the card. Users should be able to look at it and immediately understand what making a pick feels like.
+2. Community and Influencers card
+Replace the icon and text with a small chat UI mockup inside the card. Show two or three chat messages. Fighter names, short opinions, maybe a pick being shared. Dark chat bubbles, usernames, timestamps. Make it feel like a real live conversation happening right now. Not generic chat — MMA flavored. Something like:
+NightHawk: Makhachev by decision, no question
+MatWarrior: Oliveira by sub in round 2, book it
+StrikeForce: +180 on the upset, I'm in
+Clean, minimal, fits inside the card.
+
+BACKGROUND — THIS NEEDS TO BE FIXED
+You were given a reference image as an example of the atmospheric background style we wanted. You were told not to use that exact image because it has a watermark — use it as inspiration and create your own version. Instead you removed everything and left a flat black background. That is not acceptable.
+Create an original atmospheric background for the sections below the hero. It needs to feel like arena atmosphere. Think dark, deep red light bleeding in from edges or bottom, subtle smoke or haze effect, maybe faint geometric lines or octagon outline shapes in the far background at very low opacity. Nothing literal. Just atmosphere and color that makes the page feel alive instead of flat black.
+Do not use the watermarked image. Create your own. Use CSS gradients, SVG shapes, or canvas — whatever you can execute cleanly. The goal is that scrolling through the page feels immersive, not like reading a dark text document.
+Fix both of these and report back.

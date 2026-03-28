@@ -1,0 +1,83 @@
+MMA Matrix Pro — Full Audit & Smoke Test Instructions
+
+1. Smoke Test Setup
+
+Use only 2 fighters for testing purposes. No need to create more.
+
+Create 2 fight cards using those 2 fighters. Ensure:
+
+Fighters are linked correctly to their profiles
+
+Weight classes, organization, and fight details are properly set
+
+Event details are correctly displayed
+
+2. Fantasy / Points System Test
+
+Create 1–2 test users to validate fantasy scoring.
+
+Test the entire pick system:
+
+Fighter selection → verify 1 pt awarded
+
+Method selection → verify 2 pts awarded
+
+Round selection → verify 3 pts awarded (decision round logic included)
+
+Ensure points are calculated accurately and updated in leaderboard / user totals.
+
+Validate gold badge assignment for top scorer(s) and leaderboard display.
+
+3. Fighter Profile & Event History Verification
+
+Confirm all fighter stats, KO/sub wins, performance metrics are displayed correctly.
+
+Verify fight history can be:
+
+Imported via CSV for 2 fighters
+
+Edited / updated manually if needed (check missing admin edit fields)
+
+Ensure no mock/fake data beyond the 2-fighter test scenario.
+
+4. Event & Fight Card Audit
+
+Verify event creation is functional and correctly shows:
+
+Event name, date, location, venue, organization
+
+Fight card with main event, co-main, prelim placements
+
+Fighter dropdown works and filters by weight class / organization
+
+Confirm fight results can be finalized and updates points & fighter stats properly.
+
+5. Admin Verification
+
+Ensure all admin interfaces for events, fighters, fight cards, and fantasy scoring are functional.
+
+Make sure mock data is minimal, only what’s needed for this smoke test.
+
+Validate image upload logic and file replacement for fighter face/body images.
+
+6. Goal
+
+Complete a full smoke test with:
+
+2 fighters
+
+2 fight cards
+
+1–2 test users
+
+Verify all core flows work correctly, including:
+
+Event creation → fight card → fantasy picks → points → leaderboard
+
+Identify any broken areas and report clearly, so fixes can be applied.
+
+Note:
+
+Do not create extra fighters or mock data beyond what’s necessary for testing.
+
+Focus on fastest path to verify functionality across all key features.

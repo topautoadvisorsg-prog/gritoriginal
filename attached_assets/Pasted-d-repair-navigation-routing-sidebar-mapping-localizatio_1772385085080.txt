@@ -1,0 +1,219 @@
+d repair navigation routing, sidebar mapping, localization keys, tier-gating logic, and admin route integrity. The system is currently in Closed Beta Stabilization Phase.
+
+You are NOT adding new features.
+
+You are ONLY fixing structural, logical, and integration issues.
+
+Scope of Work
+✅ T001 — Fix Missing i18n Keys (3 Keys Across All Locales)
+
+Add the following keys under "sidebar" in all locale files located in:
+
+public/locales/
+
+Keys to add:
+
+"user_manager": "User Manager"
+"audit_log": "Audit Log"
+"system_settings": "System Settings"
+
+Apply these across all 9 locale folders:
+
+en
+
+en-US
+
+es
+
+es-ES
+
+fr
+
+ja
+
+ko
+
+pt
+
+ru
+
+If translation is unknown, use English placeholders.
+
+Expected Result:
+
+No console missingKey warnings.
+
+Sidebar renders readable labels (no raw keys).
+
+✅ T002 — Align Admin Navigation Paths
+
+File:
+
+src/shared/config/navigation.ts
+
+Fix adminNavItems path mapping so that:
+
+👉 Path last segment MUST match tab ID in ADMIN_TAB_COMPONENTS.
+
+Rewrite paths as follows:
+
+Current Path	New Path
+/admin/tags	/admin/admin-tags
+/admin/badges	/admin/admin-badges
+/admin/raffle	/admin/admin-raffle
+/admin/verification	/admin/admin-verification
+/admin/odds	/admin/admin-odds
+/admin/users	/admin/admin-users
+/admin/audit	/admin/admin-audit
+/admin/settings	/admin/admin-settings
+
+Do NOT modify these already-correct paths:
+
+create-event
+
+event-editor
+
+import
+
+fighter-manager
+
+create-news
+
+Also update sidebar tab title mapping to match the corrected paths.
+
+Acceptance Condition:
+
+Every admin nav item path last segment == ADMIN_TAB_COMPONENTS key
+✅ T003 — Create Admin Route Guard + Dynamic Admin Tab Router
+
+Create two new components.
+
+1. Create
+src/shared/components/RequireAdmin.tsx
+
+Implementation:
+
+import { useAuth } from '@/shared/hooks/use-auth';
+import { Navigate } from 'react-router-dom';
+
+export function RequireAdmin({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return null;
+
+  if (user?.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{children}</>;
+}
+2. Create
+src/admin/pages/AdminTabPage.tsx
+
+Implementation:
+
+import { useParams, Navigate } from 'react-router-dom';
+import { ADMIN_TAB_COMPONENTS, isAdminTab } from '@/admin/AdminPanel';
+
+export default function AdminTabPage() {
+  const { tab } = useParams<{ tab: string }>();
+
+  if (!tab || !isAdminTab(tab)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return <>{ADMIN_TAB_COMPONENTS[tab]}</>;
+}
+✅ Register Route
+
+In:
+
+src/App.tsx
+
+Add:
+
+import { RequireAdmin } from '@/shared/components/RequireAdmin';
+import AdminTabPage from '@/admin/pages/AdminTabPage';
+
+Then add route:
+
+<Route
+  path="/admin/:tab"
+  element={
+    <RequireAdmin>
+      <AdminTabPage />
+    </RequireAdmin>
+  }
+/>
+
+Place this after existing admin routes.
+
+✅ T004 — Fix Dead Tier Check in AI Predictions Tab
+
+File:
+
+src/user/components/ai/AIPredictionsTab.tsx
+
+Replace this:
+
+const isPremium =
+  (user as any)?.tier === 'premium' ||
+  (user as any)?.tier === 'admin' ||
+  (user as any)?.role === 'admin';
+
+With this:
+
+const isPremium =
+  user?.tier === 'premium' ||
+  user?.role === 'admin';
+
+Remove unsafe any casting.
+
+User type should now be AuthUser.
+
+✅ T005 — Restart Verification Tests
+
+After implementation verify:
+
+Browser console shows:
+
+No missingKey i18n warnings
+
+No React hook errors
+
+Admin Flow:
+
+Test these routes as ADMIN user:
+
+/admin/create-event
+/admin/admin-users
+/admin/admin-tags
+/admin/admin-badges
+/admin/admin-raffle
+/admin/admin-verification
+/admin/admin-odds
+/admin/admin-audit
+/admin/admin-settings
+
+Expected:
+
+Correct component renders.
+
+❗ Security Constraints
+
+Do NOT expose admin UI to non-admin users.
+
+Keep backend tier guards intact.
+
+Do NOT add Redis or authentication redesign.
+
+Do NOT modify database schema.
+
+Deliverables
+
+✅ Routing integrity restored
+✅ Sidebar mapping corrected
+✅ Localization keys fixed
+✅ Tier logic cleaned
+✅ Admin guard enforced
+✅ Console warnings eliminated

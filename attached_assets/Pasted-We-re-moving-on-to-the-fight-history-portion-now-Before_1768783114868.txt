@@ -1,0 +1,94 @@
+We’re moving on to the **fight history** portion now. Before we touch scale, we need clarity and a controlled test.
+
+### 1. Current Fight History Implementation — FACT CHECK
+
+Please confirm, **as it exists today** (no proposals yet):
+
+* How is fight history stored?
+
+  * Separate table/collection per fight?
+  * Embedded inside fighter profile?
+* How is fight history currently added or updated?
+
+  * CSV / Excel import?
+  * Manual entry?
+  * Code-only / seed data?
+* How is a fight linked to a fighter?
+
+  * Fighter ID?
+  * Name matching?
+  * Event ID?
+* Can fight history be:
+
+  * Updated for a **single fighter**?
+  * Uploaded in **bulk** (CSV/Excel)?
+* What happens on re-import?
+
+  * Overwrite?
+  * Append?
+  * Duplicate protection?
+
+We need to understand the **exact current behavior**, not intended behavior.
+
+---
+
+### 2. Required Fight History Flows (What We Expect to Support)
+
+Ultimately, fight history must support **both** of these paths:
+
+**A. Individual Fighter Update**
+
+* Select fighter
+* Add / edit a single fight record
+* No CSV required
+
+**B. Bulk Import**
+
+* Upload Excel / CSV
+* Multiple fights
+* Multiple fighters
+* Deterministic linking (no guessing)
+
+If one of these does not exist yet, call it out clearly.
+
+---
+
+### 3. Smoke Test — REAL DATA (NEXT STEP)
+
+After confirming the above, we will do a **small, real-data smoke test**:
+
+* We will provide:
+
+  * **2 real fighters**
+  * **Their real fight history**
+* You will:
+
+  * Import or attach that data using the current system
+  * Verify:
+
+    * Correct fighter association
+    * No duplication
+    * Proper ordering (most recent, etc.)
+    * No schema or logic breaks
+
+This test is strictly to validate **end-to-end correctness**, not performance or scale.
+
+---
+
+### 4. Important Boundaries
+
+* Fight history is **separate** from fighter profile base data
+* No assumptions about naming, ordering, or overwrites
+* If anything is missing or unclear in the schema or flow:
+
+  * This is the time to flag it
+
+Once we pass the 2-fighter smoke test, we’ll decide how to scale imports safely.
+
+Reply with:
+
+1. Current fight history behavior (facts only)
+2. Gaps vs requirements
+3. What path you recommend for the smoke test (individual vs CSV)
+
+Then we proceed.

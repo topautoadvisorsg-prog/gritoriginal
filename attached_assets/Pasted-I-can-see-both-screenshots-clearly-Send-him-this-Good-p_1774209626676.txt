@@ -1,0 +1,22 @@
+I can see both screenshots clearly. Send him this:
+
+Good progress on the atmospheric background — that looks right. But you broke three things that were already working. Fix them now in order.
+
+1. HERO — PREDICT TRACK CLIMB
+The three words predict, track, climb need to be on one single line together. Right now climb is sitting alone on a separate line below the others. Put all three on the same line. Do not move to the next line until all three words are together. If spacing is tight reduce the font size slightly until they all fit on one line. Do not break them up.
+
+2. HOW IT WORKS — STEP 04 IS BROKEN
+You removed the description text from step 04 Climb the Rankings and now the number 04 circle is floating out of position. Fix both things:
+First — the four number circles must be locked in a fixed horizontal row. They do not move. They do not float. They stay perfectly aligned with each other at the same vertical position regardless of what content is above or below them. Use a fixed grid or flexbox with align-items set so they cannot drift.
+Second — step 04 needs its description text back. Put it back exactly as it was before you touched it. The line you removed was already correct. Do not remove content from steps that were already working.
+The correct structure for every step is:
+UI mockup card at bottom
+Step title above it
+Description text above the title
+Number circle at the very bottom connected by the horizontal line
+All four steps must match this exact structure. All four number circles must sit in a perfectly straight horizontal line.
+
+3. AFTER THE PLANS SECTION — BROKEN LAYOUT
+Something broke below the pricing section. There is a massive gap and the fighter photo placeholders are doing something wrong causing layout issues. Fix this immediately. Go into whatever you changed in that section and revert it until the layout is clean. The fighter photo placeholder on the left side appears to be flipped or misaligned — the text reads backwards in the screenshot. Fix the placeholder orientation and tighten the spacing so there is no giant gap after the plans section.
+
+Do not touch anything that is already working while fixing these three things. Fix only what is listed. Report back when done.

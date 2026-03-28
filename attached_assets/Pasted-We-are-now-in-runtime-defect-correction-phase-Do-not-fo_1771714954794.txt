@@ -1,0 +1,85 @@
+We are now in runtime defect correction phase.
+
+Do not focus on architecture restructuring.
+
+We must fix two functional problems:
+
+---
+
+## 1. Get Started Button — Navigation / Authentication Failure
+
+The “Get Started” action is currently not triggering proper workflow.
+
+Please verify and fix:
+
+* Frontend event handler binding for the button
+* API call execution when the button is clicked
+* Response handling from authentication endpoint
+* Route navigation after successful authentication
+
+Check browser console errors.
+
+Check Network tab for failed requests.
+
+Expected behavior:
+
+Click → Authentication request → Response → Redirect → Load user/admin UI.
+
+If any step is broken, repair the wiring without rewriting authentication architecture.
+
+---
+
+## 2. Language Selector — Translation Context Not Applied
+
+The globe icon dropdown exists, but translation is not actually affecting page content.
+
+Please verify:
+
+* i18n context provider is mounted at application root level
+* Language state is stored and broadcast to components
+* Translation files are loaded before page rendering
+* Components are using translation hooks or context consumers
+
+Fix the wiring so language selection immediately updates visible text.
+
+Do not just update UI elements.
+
+The system must truly switch locale rendering.
+
+---
+
+## 3. Backend Connection Verification
+
+Confirm that:
+
+* Authentication API endpoint is reachable
+* Request is actually being sent when Get Started is clicked
+* Role-based response is returned
+
+---
+
+## 4. Development Constraint
+
+Do NOT introduce new server architecture.
+
+Do NOT split user/admin servers.
+
+Do NOT remove working logic.
+
+Only repair broken flows.
+
+---
+
+## 5. Developer Request
+
+Please report:
+
+* What exact error appears in browser console when clicking Get Started
+* Whether authentication request is being sent
+* Whether language selector state is updating internally
+
+Fix the wiring first.
+
+After these two defects are resolved, we can proceed to functional testing.
+
+Return status after patching.
