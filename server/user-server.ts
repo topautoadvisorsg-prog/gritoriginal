@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import './config/env';
 import './types/express';
+import fs from 'fs';
 import * as Sentry from "@sentry/node";
 import express from "express";
 
@@ -134,9 +135,9 @@ async function startUserServer() {
     // Start background job queue for durable outbox syncing
     initJobService().catch(err => logger.error('Failed to initialize job queue', err));
 
-    // Production-only: serve the Vite frontend build and proxy /api/admin
-    if (process.env.NODE_ENV === 'production') {
-        const distPublic = path.join(process.cwd(), 'dist/public');
+    // Serve the Vite frontend build if it exists (production deployment)
+    const distPublic = path.join(process.cwd(), 'dist/public');
+    if (fs.existsSync(path.join(distPublic, 'index.html'))) {
 
         // Proxy /api/admin/* to the admin server (keeps one public port)
         app.use('/api/admin', (req, res) => {
