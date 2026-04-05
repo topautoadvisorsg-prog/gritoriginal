@@ -455,13 +455,33 @@ async function applyFighterData(tx: any, entry: any): Promise<void> {
 }
 
 /**
+ * Normalize fight history data before DB write.
+ * Promotes location subfields into flat columns (eventCity, eventState,
+ * eventCountry, eventVenue). Flat fields in the payload take priority;
+ * falls back to extracting from the nested `location` JSONB object when present.
+ * The `location` JSONB column is retained as-is for snapshot/backward compat.
+ */
+function normalizeFightData(data: any): any {
+  const out = { ...data };
+  const loc: Record<string, string | undefined> = (out.location && typeof out.location === 'object') ? out.location : {};
+  out.eventCity    = out.eventCity    ?? loc.city    ?? undefined;
+  out.eventState   = out.eventState   ?? loc.state   ?? undefined;
+  out.eventCountry = out.eventCountry ?? loc.country ?? undefined;
+  out.eventVenue   = out.eventVenue   ?? loc.venue   ?? undefined;
+  return out;
+}
+
+/**
  * Apply fight history data updates.
  * Snapshot fields (eventName, eventDate, fightType, location) are nullable
  * in the DB and optional in syncFightHistorySchema — they are passed through
  * via spread and silently omitted when absent.
+ * Flat location columns (eventCity, eventState, eventCountry, eventVenue) are
+ * populated by normalizeFightData from either flat payload fields or the nested
+ * location object.
  */
 async function applyFightData(tx: any, entry: any): Promise<void> {
-  const fightData = entry.data;
+  const fightData = normalizeFightData(entry.data);
   
   if (entry.actionType === 'create') {
     await tx.insert(fightHistory).values({

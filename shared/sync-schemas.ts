@@ -116,6 +116,11 @@ export const syncFightHistorySchema = z.object({
     country: z.string().optional(),
     venue: z.string().optional(),
   }).optional(),
+  // Flat location fields — preferred over nested location object for direct DB mapping
+  eventCity: z.string().max(255).optional(),
+  eventState: z.string().max(100).optional(),
+  eventCountry: z.string().max(100).optional(),
+  eventVenue: z.string().max(255).optional(),
 });
 
 export const syncEventSchema = z.object({

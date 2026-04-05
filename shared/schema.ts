@@ -1,4 +1,4 @@
-import { pgTable, text, varchar, boolean, integer, jsonb, timestamp, uuid, real, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, integer, jsonb, timestamp, uuid, real, uniqueIndex, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
@@ -113,7 +113,13 @@ export const fightHistory = pgTable("fight_history", {
   boutOrder: integer("bout_order").notNull(),
   roundsScheduled: integer("rounds_scheduled"),
   roundDurationMinutes: integer("round_duration_minutes"),
-  location: jsonb("location"), // nullable — { city, state, country, venue }
+  location: jsonb("location"), // nullable — { city, state, country, venue } kept as raw snapshot
+
+  // Flat location fields — promoted for direct queryability and indexing
+  eventCity: text("event_city"),
+  eventState: text("event_state"),
+  eventCountry: text("event_country"),
+  eventVenue: text("event_venue"),
 
   // Result
   result: varchar("result", { length: 20 }).notNull(),
@@ -151,6 +157,10 @@ export const fightHistory = pgTable("fight_history", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   fighterEventUnique: uniqueIndex("fight_history_fighter_event_idx").on(table.fighterId, table.eventId),
+  fighterIdx: index("fight_history_fighter_idx").on(table.fighterId),
+  eventDateIdx: index("fight_history_event_date_idx").on(table.eventDate),
+  eventCityIdx: index("fight_history_event_city_idx").on(table.eventCity),
+  eventCountryIdx: index("fight_history_event_country_idx").on(table.eventCountry),
 }));
 
 /**
