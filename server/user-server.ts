@@ -185,7 +185,7 @@ async function startUserServer() {
         app.use(express.static(distPublic));
 
         // SPA fallback — serve index.html for all unmatched routes
-        app.get('*', (_req, res) => {
+        app.get(/(.*)/, (_req, res) => {
             res.sendFile(path.join(distPublic, 'index.html'));
         });
     }
