@@ -7,7 +7,7 @@ integrations = ["javascript_object_storage:2.0.0", "javascript_database:1.0.0", 
 channel = "stable-25_05"
 
 [deployment]
-deploymentTarget = "vm"
+deploymentTarget = "autoscale"
 run = ["npx", "tsx", "server/production.ts"]
 build = ["npm", "run", "build"]
 
