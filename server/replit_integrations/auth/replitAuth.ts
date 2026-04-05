@@ -55,6 +55,10 @@ async function getOIDCConfig(): Promise<Configuration> {
 
 // Determine the absolute callback URL from environment variables
 function getCallbackURL(): string {
+  // Explicit override for production custom domain (e.g. grtix.replit.app)
+  if (process.env.CUSTOM_DOMAIN) {
+    return `https://${process.env.CUSTOM_DOMAIN}/api/callback`;
+  }
   if (env.REPLIT_DEV_DOMAIN) {
     return `https://${env.REPLIT_DEV_DOMAIN}/api/callback`;
   }

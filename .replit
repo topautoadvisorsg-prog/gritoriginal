@@ -45,3 +45,6 @@ externalPort = 80
 ADMIN_EMAIL = "gritperez23@yahoo.com"
 DATA_ENGINE_API_KEY = "de_bcde5cbbd72f7d9b0f2dac9b1e19c6153c97b108dd96bf4cc67220b9b646badf"
 DATA_ENGINE_AUTO_APPLY = "true"
+
+[userenv.production]
+CUSTOM_DOMAIN = "grtix.replit.app"
