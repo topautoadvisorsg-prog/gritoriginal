@@ -276,7 +276,8 @@
 }
 
 .lp-section-title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: clamp(2.5rem, 5vw, 4rem);
   letter-spacing: .04em;
   line-height: 1.05;
@@ -374,7 +375,8 @@
 }
 
 .lp-nav__name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.4rem;
   letter-spacing: .1em;
   background: linear-gradient(135deg, var(--text-primary), #b30000);
@@ -675,10 +677,12 @@
 
 /* Hero Title */
 .lp-hero__title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: clamp(3.5rem, 10vw, 8rem);
-  line-height: 1.05;
-  letter-spacing: .05em;
+  line-height: 1.0;
+  letter-spacing: .02em;
+  text-transform: uppercase;
   margin-bottom: 12px;
   overflow: hidden;
   animation: hero-reveal .8s ease-out .4s both;
@@ -692,9 +696,10 @@
 .lp-hero__title-accent {
   display: block;
   position: relative;
+  font-weight: 900;
   color: hsl(0 0% 96%);
-  letter-spacing: .07em;
-  white-space: nowrap;
+  letter-spacing: .02em;
+  white-space: normal;
   font-size: clamp(2.5rem, 7.5vw, 6.5rem);
 }
 
@@ -707,9 +712,11 @@
 
 /* Hero description */
 .lp-hero__subtitle-wrap {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
   font-size: clamp(1.3rem, 3vw, 1.9rem);
-  letter-spacing: .06em;
+  letter-spacing: .04em;
+  text-transform: uppercase;
   color: hsl(0 0% 95%);
   margin-bottom: 48px;
   animation: hero-reveal .8s ease-out .55s both;
@@ -895,7 +902,8 @@
 }
 
 .lp-model-card__name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.4rem;
   letter-spacing: .05em;
   color: var(--text-primary);
@@ -1001,7 +1009,8 @@
 }
 
 .lp-proof__value {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 2.6rem;
   letter-spacing: .02em;
   background: linear-gradient(135deg, var(--cyan-glow), hsl(354 90% 45%));
@@ -1046,7 +1055,8 @@
 }
 
 .lp-intro__text h3 {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 2.2rem;
   letter-spacing: .03em;
   margin-bottom: 16px;
@@ -1136,7 +1146,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.8rem;
   color: var(--cyan);
   flex-shrink: 0;
@@ -1148,7 +1159,8 @@
 }
 
 .lp-mock-fighter__name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.3rem;
   letter-spacing: .04em;
   margin-bottom: 4px;
@@ -1261,7 +1273,8 @@
 }
 
 .lp-showcase__text h3 {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: clamp(2rem, 4vw, 3rem);
   letter-spacing: .04em;
   line-height: 1.05;
@@ -1476,7 +1489,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 2rem;
   color: var(--cyan);
   background: hsl(220 25% 8%);
@@ -1543,7 +1557,8 @@
 }
 
 .lp-competitive__text h3 {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 2.4rem;
   letter-spacing: .03em;
   margin-bottom: 16px;
@@ -1670,7 +1685,8 @@
 }
 
 .lp-lb__rank {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.3rem;
   width: 36px;
   text-align: center;
@@ -1826,7 +1842,8 @@
 }
 
 .lp-price-card__name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.8rem;
   letter-spacing: .06em;
   color: hsl(210 40% 88%);
@@ -1834,7 +1851,8 @@
 }
 
 .lp-price-card__price {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 3.2rem;
   color: var(--cyan);
   margin-bottom: 6px;
@@ -1967,7 +1985,8 @@
 .lp-footer-cta__corner--br::after { bottom: 0; right: 0; }
 
 .lp-footer-cta__title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: clamp(3rem, 7vw, 5.5rem);
   letter-spacing: .04em;
   line-height: .95;
@@ -2016,7 +2035,8 @@
 }
 
 .lp-footer__name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.1rem;
   letter-spacing: .08em;
   color: hsl(210 40% 80%);
@@ -2341,7 +2361,8 @@
 }
 
 .lp-showcase-fighters__name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.5rem;
   letter-spacing: .04em;
   color: var(--text-primary);
@@ -2774,7 +2795,8 @@
 }
 
 .lp-picks-mockup__name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: .8rem;
   letter-spacing: .08em;
   color: hsl(210 40% 88%);
@@ -2796,7 +2818,8 @@
 }
 
 .lp-picks-mockup__vs {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1rem;
   color: hsl(210 20% 30%);
   letter-spacing: .06em;
@@ -2854,7 +2877,8 @@
   border-radius: 8px;
   background: linear-gradient(135deg, hsl(354 90% 48%), hsl(354 90% 36%));
   border: none;
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: .85rem;
   letter-spacing: .1em;
   color: hsl(0 0% 100%);
@@ -3117,7 +3141,8 @@
 }
 
 .lp-slip-card__placeholder-text {
-  font-family: "Bebas Neue", sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.4rem;
   letter-spacing: .12em;
   color: hsl(210 25% 16%);
@@ -3256,7 +3281,8 @@
 }
 
 .lp-core-feature-tile__label {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1.1rem;
   letter-spacing: .06em;
   color: var(--text-primary);
@@ -3347,7 +3373,8 @@
 }
 
 .lp-ai-banner__title {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: clamp(1.6rem, 3.2vw, 2.4rem);
   letter-spacing: .04em;
   line-height: 1.1;
@@ -3407,7 +3434,8 @@
 }
 
 .lp-ai-banner__card-name {
-  font-family: 'Bebas Neue', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
   font-size: 1rem;
   letter-spacing: .06em;
   color: var(--text-primary);
