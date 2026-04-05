@@ -1,0 +1,117 @@
+MAIN APP – FIGHT HISTORY STRUCTURE (ALIGNMENT + FLEXIBILITY)
+
+We need to confirm that the fight history system is structured correctly for ingestion, filtering, and future analytics.
+
+This is specifically about how fight history data is stored and accessed, not the full feature set.
+
+1. Structure Expectation (Examples, Not Limits)
+
+We expect fight history to be stored as individual structured records, not as a single blob or compressed field.
+
+Example fields (for reference only):
+
+fighter_id
+opponent_id
+result
+method
+round
+time
+
+event.name
+event.date
+event.location
+
+⚠️ Important:
+
+These are examples only
+We understand there are additional fields in your system
+Any additional fields should follow the same principle:
+Stored as structured, accessible fields
+Not buried in a non-queryable object or text blob
+2. Event Data Inside Fight Records
+
+We understand:
+
+The main app owns standalone events
+
+However, within fight history:
+
+Event data should still exist as structured subfields inside each fight record
+
+✅ Confirm:
+
+Event fields (name, date, etc.) are individually accessible
+Not stored as a single serialized object that limits querying
+3. Field Accessibility + Filtering
+
+We need to ensure that fight history supports filtering across all relevant fields.
+
+Examples:
+
+Event name/date
+Opponent
+Result
+Method
+
+⚠️ Again:
+
+These are examples
+Any additional fields in your schema should also be:
+Queryable
+Filterable
+Not requiring parsing to access
+4. Storage Model
+
+Confirm:
+
+Each fight is its own record (table/collection)
+Fight history is not stored as:
+A single JSON blob
+A text field inside fighter profiles
+5. Schema Flexibility (Your Side)
+
+We are intentionally not defining the full schema, since your system may include:
+
+Additional stats
+Advanced metrics
+Extended metadata
+
+That’s fine.
+
+✅ Requirement:
+
+All fields, including yours, must follow:
+Structured storage
+Direct accessibility
+Compatibility with filtering/querying
+6. Data Pipeline Compatibility
+
+We will send structured:
+
+fighter records
+fight records (including event subfields)
+
+Confirm:
+
+These can be ingested without restructuring
+Field mapping aligns with your schema
+7. If There’s Any Misalignment
+
+Provide:
+
+Current structure (how fight history is actually stored)
+Any limitations (e.g., fields not queryable)
+Required updates:
+Schema changes
+Field restructuring
+Indexing improvements
+8. Output Required
+
+Return:
+
+Confirmation (aligned / not aligned)
+Overview of your fight history schema
+Any differences from the expected structure
+Plan to resolve gaps (if any)
+
+Goal: Ensure fight history is fully structured, extensible, and queryable—regardless of how many fields exist.
