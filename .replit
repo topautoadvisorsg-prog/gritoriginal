@@ -8,7 +8,7 @@ channel = "stable-25_05"
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["node", "--import", "tsx/esm", "server/production.ts"]
+run = ["npm", "start"]
 build = ["npm", "run", "build"]
 
 [workflows]
@@ -36,28 +36,12 @@ waitForPort = 5000
 outputType = "webview"
 
 [[ports]]
-localPort = 3001
-externalPort = 3001
-
-[[ports]]
-localPort = 3002
-externalPort = 3003
-
-[[ports]]
 localPort = 5000
 externalPort = 80
-
-[[ports]]
-localPort = 5001
-externalPort = 3000
-
-[[ports]]
-localPort = 5904
-externalPort = 3002
 
 [userenv]
 
 [userenv.shared]
-ADMIN_EMAIL = "saraimateo1612@proton.me"
+ADMIN_EMAIL = "gritperez23@yahoo.com"
 DATA_ENGINE_API_KEY = "de_bcde5cbbd72f7d9b0f2dac9b1e19c6153c97b108dd96bf4cc67220b9b646badf"
 DATA_ENGINE_AUTO_APPLY = "true"

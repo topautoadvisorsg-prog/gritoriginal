@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "tsx server/production.ts",
     "dev": "concurrently \"tsx watch server/user-server.ts\" \"tsx watch server/admin-server.ts\" \"vite\"",
     "dev:frontend": "vite",
     "dev:backend-user": "tsx watch server/user-server.ts",
