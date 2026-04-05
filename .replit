@@ -8,7 +8,7 @@ channel = "stable-25_05"
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["npx", "tsx", "server/production.ts"]
+run = ["node", "--import", "tsx/esm", "server/production.ts"]
 build = ["npm", "run", "build"]
 
 [workflows]

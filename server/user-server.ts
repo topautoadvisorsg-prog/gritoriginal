@@ -190,7 +190,7 @@ async function startUserServer() {
         });
     }
 
-    const PORT = process.env.USER_PORT || process.env.PORT || 3001;
+    const PORT = process.env.PORT || process.env.USER_PORT || 5000;
     const server = app.listen(PORT, () => {
         logger.info(`User API server running on port ${PORT}`);
     });
