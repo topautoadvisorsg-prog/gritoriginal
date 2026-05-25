@@ -545,97 +545,51 @@
   pointer-events: none;
 }
 
-.lp-hero__bg {
+/* Cinematic vignette — replaces pulsing red blobs.
+   Subtle radial darkening at edges, lets the video breathe at center. */
+.lp-hero__vignette {
   position: absolute;
   inset: 0;
-  z-index: 0;
-}
-
-.lp-hero__bg::before {
-  content: '';
-  position: absolute;
-  top: -40%;
-  left: -15%;
-  width: 700px;
-  height: 700px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 0, 0, .12), transparent 70%);
-  animation: glow-pulse 7s ease-in-out infinite;
-}
-
-.lp-hero__bg::after {
-  content: '';
-  position: absolute;
-  bottom: -30%;
-  right: -15%;
-  width: 600px;
-  height: 600px;
-  border-radius: 50%;
-  background: radial-gradient(circle, hsl(355 85% 55% / .1), transparent 70%);
-  animation: glow-pulse 9s ease-in-out infinite 2s;
-}
-
-.lp-hero__scan {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
   z-index: 1;
   pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 65% at 50% 45%, transparent 0%, transparent 50%, hsla(220, 25%, 4%, .55) 85%, hsla(220, 30%, 2%, .9) 100%),
+    linear-gradient(180deg, hsla(220, 25%, 4%, .35) 0%, transparent 22%, transparent 65%, hsla(220, 30%, 2%, .85) 100%);
 }
 
-.lp-hero__scan::before {
-  content: '';
+/* Film-grain texture for premium cinematic feel */
+.lp-hero__grain {
   position: absolute;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(139, 0, 0, .15), transparent);
-  animation: scan-line 8s linear infinite;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: .35;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 .lp-hero__grid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(139, 0, 0, .025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(139, 0, 0, .025) 1px, transparent 1px);
-  background-size: 60px 60px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent);
+    linear-gradient(rgba(180, 180, 180, .018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(180, 180, 180, .018) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, transparent 30%, black 75%);
   z-index: 1;
+  pointer-events: none;
 }
 
-/* Floating octagons */
-.lp-hero__octagon {
+/* Seamless fade into the next section — no hard cut */
+.lp-hero__fade-bottom {
   position: absolute;
-  border: 1px solid rgba(139, 0, 0, .08);
-  border-radius: 8px;
-  transform: rotate(22.5deg);
-  z-index: 1;
-}
-
-.lp-hero__octagon--1 {
-  width: 120px;
-  height: 120px;
-  top: 15%;
-  left: 8%;
-  animation: octa-spin 40s linear infinite, float 6s ease-in-out infinite;
-}
-
-.lp-hero__octagon--2 {
-  width: 80px;
-  height: 80px;
-  top: 25%;
-  right: 12%;
-  animation: octa-spin 30s linear infinite reverse, float 5s ease-in-out infinite 1s;
-  border-color: hsl(355 85% 55% / .08);
-}
-
-.lp-hero__octagon--3 {
-  width: 60px;
-  height: 60px;
-  bottom: 20%;
-  left: 15%;
-  animation: octa-spin 35s linear infinite, float 7s ease-in-out infinite 2s;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 140px;
+  z-index: 3;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 0%, hsl(220 25% 6%) 100%);
 }
 
 
@@ -650,29 +604,44 @@
 .lp-hero__badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 11px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: .78rem;
+  font-size: .72rem;
   font-weight: 600;
-  letter-spacing: .22em;
+  letter-spacing: .28em;
   text-transform: uppercase;
-  color: #b30000;
+  color: hsl(0 0% 78%);
   padding: 9px 22px;
-  border: 1px solid rgba(139, 0, 0, .25);
+  border: 1px solid hsl(0 0% 100% / .08);
   border-radius: 100px;
-  background: rgba(139, 0, 0, .06);
-  backdrop-filter: blur(8px);
-  margin-bottom: 36px;
+  background: hsl(220 20% 8% / .55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  margin-bottom: 40px;
   animation: hero-reveal .8s ease-out .2s both;
 }
 
 .lp-hero__badge-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--cyan);
-  box-shadow: 0 0 10px rgba(139, 0, 0, .8);
-  animation: glow-pulse 1.5s ease-in-out infinite;
+  background: #ef4444;
+  position: relative;
+}
+
+.lp-hero__badge-dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #ef4444;
+  opacity: .35;
+  animation: pulse-soft 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: .35; transform: scale(1); }
+  50% { opacity: 0; transform: scale(1.8); }
 }
 
 /* Hero Title */
@@ -704,8 +673,13 @@
 }
 
 .lp-hero__title-red {
-  color: #8B0000;
-  text-shadow: 0 0 28px rgba(139, 0, 0, .45);
+  color: #c1272d;
+  background: linear-gradient(180deg, #e63946 0%, #8B0000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 12px rgba(139, 0, 0, .22));
 }
 
 /* Glitch effect removed for clean readability */
