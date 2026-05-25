@@ -106,8 +106,8 @@
         "desc": "Net units rank you — sum of all your wins and losses across moneyline picks. No accuracy weighting. No participation gimmicks. Just net units. Climb the badge ladder, earn keys for perfect cards, and stack stars for consistent ROI.",
         "feat1": "Per-event, monthly, and yearly leaderboards",
         "feat2": "Badges: Ninja → Samurai → Master → Grandmaster → GOAT",
-        "feat3": "Keys ($100 prize each) for clean-sweep events",
-        "feat4": "5 keys collected = Gold Key + $1,000 prize"
+        "feat3": "Earn Keys for clean-sweep events — cash prize per key",
+        "feat4": "Collect 5 Keys to forge a Gold Key — bigger cash prize"
     },
     "tier2": {
         "label": "Built On Real Data",
@@ -128,7 +128,7 @@
         "step3_title": "3. Score In Real Time",
         "step3_desc": "Results post as the night unfolds. Your net units move with every fight. Stars award when you finish positive.",
         "step4_title": "4. Climb The Ranks",
-        "step4_desc": "Climb the global leaderboard. Earn keys for perfect cards. Win the $550 monthly bonus pool. Stack badges that don't reset."
+        "step4_desc": "Climb the global leaderboard. Earn Keys for perfect cards. Top finishers and lucky Challengers split the monthly bonus pool. Stack badges that don't reset."
     },
     "leaderboard": {
         "label": "Live Leaderboard",
@@ -166,9 +166,9 @@
         "label": "Creator Economy",
         "title": "SELL YOUR PICKS LEGITIMATELY.",
         "desc": "MMA pick-selling has a scam problem. GRIT fixes it. Verified analysts list picks free (donations) or paid. Pick visibility per pick — public, subscriber-only, or reveal after the fight. Stripe escrow for 1-on-1 paid chat sessions with auto-refund if you don't show. No more Telegram pumps, no more vanishing creators.",
-        "feat1": "Free Creator (donations): Day 1, no rank gate. 95% creator / 5% platform.",
-        "feat2": "Paid Creator: 30-day age + 3 qualified events + 2FA. 85% creator / 15% platform.",
-        "feat3": "1-on-1 text chat sessions: Stripe escrow. 10-min no-show auto-refund. 80% creator.",
+        "feat1": "Free Creator (donations): start day one, no rank gate. Creator-friendly split disclosed at signup.",
+        "feat2": "Paid Creator: unlocks after account age, qualified events, and 2FA. Transparent terms in the Creator Agreement.",
+        "feat3": "1-on-1 text chat sessions with Stripe escrow. 10-minute no-show auto-refund built in.",
         "feat4": "Pick visibility enforced at the database level — no leaks."
     },
     "pricing": {
@@ -194,7 +194,7 @@
         "plus_feat2": "Founder Badge if you're in the first 1,000 — permanent on cancel",
         "plus_feat3": "Full Emoji Mart + slip sharing in chat",
         "plus_feat4": "Intelligence Alerts — injury news, camp changes, sharp money",
-        "plus_feat5": "$550 monthly bonus pool eligibility (top-3 ROI + 2 random Challengers)",
+        "plus_feat5": "Monthly bonus pool eligibility (top-ROI Challengers + random draws)",
         "plus_feat6": "Raffle entry from month 2 (auto-entered every event)",
         "plus_feat7": "Right to purchase AI tokens for analysis features",
         "plus_cta": "Become a Challenger",
@@ -219,7 +219,7 @@
         "compare_feat3": "Founder Badge (first 1,000)",
         "compare_feat4": "Slip sharing + full emoji",
         "compare_feat5": "Intelligence Alerts",
-        "compare_feat6": "$550 monthly bonus pool",
+        "compare_feat6": "Monthly bonus pool",
         "compare_feat7": "Buy AI tokens",
         "compare_header": "Feature"
     },
