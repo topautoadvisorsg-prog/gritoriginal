@@ -88,6 +88,11 @@ async function startUserServer() {
 
     app.use(express.json({ limit: '50mb' }));
 
+    // Health check — must be BEFORE auth so Railway healthchecks succeed
+    app.get('/api/health', (_req, res) => {
+      res.status(200).json({ status: 'ok', uptime: process.uptime() });
+    });
+
     // Shared Auth (Passport & Session)
     await setupAuth(app);
     registerAuthRoutes(app);
