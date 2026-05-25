@@ -5,8 +5,8 @@ import { db } from "../../db";
 import { userPicks, fightResults } from "../../../shared/models/auth";
 import { events, eventFights, userSettings } from "../../../shared/schema";
 import { eq, and, inArray, desc, sql } from "drizzle-orm";
-import { calculateProfit } from "../../roiCalculator";
 import { logger } from '../../utils/logger';
+import { pointsAwardedToNetUnits } from '../../utils/netUnits';
 
 export function registerStatsRoutes(app: Express): void {
     // GET /api/me/stats — aggregated user pick statistics
@@ -110,19 +110,14 @@ export function registerStatsRoutes(app: Express): void {
                         if (isWin) {
                             status = 'win';
                             wins++;
-                            // USE LOCKED ODDS (odds at submission time, not current odds)
-                            const pickUnits = pick.units || 1;
-                            const lockedOdds = pick.lockedOdds;
-                            
-                            profit = lockedOdds ? calculateProfit(lockedOdds, pickUnits) : pickUnits;
+                            profit = pointsAwardedToNetUnits(pick.pointsAwarded);
 
                             if (streakActive) currentStreak++;
                             bestStreak = Math.max(bestStreak, currentStreak);
                         } else {
                             status = 'loss';
                             losses++;
-                            const lossUnits = pick.units || 1;
-                            profit = -lossUnits; // Lost wagered units
+                            profit = pointsAwardedToNetUnits(pick.pointsAwarded);
                             streakActive = false;
                             currentStreak = 0;
                         }

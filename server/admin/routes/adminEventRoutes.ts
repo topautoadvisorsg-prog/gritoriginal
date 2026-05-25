@@ -1,7 +1,8 @@
+import type { Express, Request, Response } from 'express';
 import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { storage } from "../../storage";
 import { syncEventToSupabase } from '../../services/outboundSyncService';
-import { insertEventSchema, CARD_PLACEMENTS } from "../../../shared/schema";
+import { insertEventSchema, CARD_PLACEMENTS, type CardPlacement } from "../../../shared/schema";
 import { v4 as uuidv4 } from "uuid";
 import { createLeaderboardSnapshot } from "../../services/leaderboardService";
 import { logger } from '../../utils/logger';
@@ -13,6 +14,14 @@ import path from 'path';
 import multer from 'multer';
 
 const EVENTS_UPLOAD_DIR = path.join(process.cwd(), 'uploads', 'events');
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error';
+}
+
+function isCardPlacement(value: unknown): value is CardPlacement {
+  return typeof value === 'string' && CARD_PLACEMENTS.includes(value as CardPlacement);
+}
 
 const eventImageUpload = multer({
   storage: multer.diskStorage({
@@ -48,9 +57,9 @@ export function registerAdminEventRoutes(app: Express) {
         }
         const url = `/objects/events/${req.file.filename}`;
         res.json({ url });
-      } catch (error: any) {
+      } catch (error: unknown) {
         logger.error('Event image upload error:', error);
-        res.status(400).json({ error: error.message || 'Upload failed' });
+        res.status(400).json({ error: getErrorMessage(error) || 'Upload failed' });
       }
     }
   );
@@ -75,7 +84,7 @@ export function registerAdminEventRoutes(app: Express) {
       if (!eventValidation.success) {
         return res.status(400).json({
           error: "Invalid event data",
-          details: (eventValidation.error as any).errors,
+          details: eventValidation.error.issues,
         });
       }
 
@@ -84,7 +93,7 @@ export function registerAdminEventRoutes(app: Express) {
       }
 
       for (const fight of body.fights) {
-        if (!CARD_PLACEMENTS.includes(fight.cardPlacement as any)) {
+        if (!isCardPlacement(fight.cardPlacement)) {
           return res.status(400).json({
             error: `Invalid card placement: ${fight.cardPlacement}. Must be one of: ${CARD_PLACEMENTS.join(", ")}`,
           });
@@ -122,7 +131,7 @@ export function registerAdminEventRoutes(app: Express) {
       const createdFights = await storage.createEventFights(fightsToCreate);
 
       // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncEventToSupabase(createdEvent as any, 'create').catch((e) =>
+      setImmediate(() => syncEventToSupabase(createdEvent, 'create').catch((e) =>
         logger.error('[OutboundSync] Event create sync failed:', e)
       ));
 
@@ -163,7 +172,7 @@ export function registerAdminEventRoutes(app: Express) {
       }
 
       // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncEventToSupabase(updatedEvent as any).catch((e) =>
+      setImmediate(() => syncEventToSupabase(updatedEvent).catch((e) =>
         logger.error('[OutboundSync] Event update sync failed:', e)
       ));
 
@@ -202,6 +211,13 @@ export function registerAdminEventRoutes(app: Express) {
 
       if (status === 'Live' && event.status !== 'Live') {
         await storage.lockPicksForEvent(id as string);
+
+        // Push "Event Going Live" notification (Blueprint §11).
+        // Skips gracefully if OneSignal is not configured.
+        const { notifyEventStartingSoon } = await import('../../services/notificationService');
+        notifyEventStartingSoon(id as string, event.name).catch(err =>
+          logger.warn('[Event Live] notifyEventStartingSoon failed:', err)
+        );
       }
 
       if (status === 'Completed' && event.status !== 'Completed') {
@@ -210,14 +226,14 @@ export function registerAdminEventRoutes(app: Express) {
 
       if (status === 'Closed' && event.status !== 'Closed') {
         await createLeaderboardSnapshot('event', id as string);
-        
+
         // Trigger raffle draw
         const { drawRaffleWinner } = await import('../../services/raffleService');
         const winner = await drawRaffleWinner(id as string);
         if (winner) {
           logger.info(`[Event Close] Raffle winner drawn: User ${winner.winnerId}, Pool: $${(winner.poolTotal / 100).toFixed(2)}`);
         }
-        
+
         // Trigger user progression calculations
         const { runEventProgression } = await import('../../services/progressionService');
         await runEventProgression(id as string);

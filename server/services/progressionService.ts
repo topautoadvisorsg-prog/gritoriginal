@@ -24,6 +24,62 @@ interface ProgressionResult {
     reason: string;
 }
 
+type ProgressionRuleInput = {
+    oldStars: number;
+    oldBadge: BadgeTier;
+    roi: number;
+    netUnits: number;
+    hasMetPickMinimum: boolean;
+    validPicksCount: number;
+    requiredPicks: number;
+};
+
+export function applyProgressionRules(input: ProgressionRuleInput) {
+    const {
+        oldStars,
+        oldBadge,
+        roi,
+        netUnits,
+        hasMetPickMinimum,
+        validPicksCount,
+        requiredPicks,
+    } = input;
+
+    let newStars = oldStars;
+    let newBadge = oldBadge;
+    let reason = '';
+
+    if (netUnits >= -config.ROI_LOSS_TOLERANCE_UNITS && roi <= 0) {
+        reason = `Neutral ROI (${validPicksCount}/${requiredPicks} picks, ${netUnits.toFixed(2)}u). No change.`;
+    } else if (roi > 0 && hasMetPickMinimum) {
+        const starGain = roi > config.ROI_BONUS_THRESHOLD_PCT ? 2 : 1;
+
+        if (oldStars < config.STAR_CAP) {
+            newStars = Math.min(config.STAR_CAP, oldStars + starGain);
+            reason = `+${newStars - oldStars} star(s): ${validPicksCount}/${requiredPicks} picks, ${roi}% ROI`;
+        } else {
+            const currentIdx = Math.max(0, BADGE_TIERS.indexOf(oldBadge));
+            const newIdx = Math.min(BADGE_TIERS.length - 1, currentIdx + 1);
+            newBadge = BADGE_TIERS[newIdx];
+            reason = `Badge: ${oldBadge} → ${newBadge} (${validPicksCount}/${requiredPicks} picks, ${roi}% ROI)`;
+        }
+    } else if (netUnits < -config.ROI_LOSS_TOLERANCE_UNITS) {
+        if (oldStars < config.STAR_CAP || (oldStars === config.STAR_CAP && BADGE_TIERS.indexOf(oldBadge) <= 1)) {
+            newStars = Math.max(0, oldStars - 1);
+            reason = `-1 star: loss exceeded ${config.ROI_LOSS_TOLERANCE_UNITS}u (${netUnits.toFixed(2)}u). Stars: ${oldStars} → ${newStars}`;
+        } else {
+            const currentIdx = Math.max(1, BADGE_TIERS.indexOf(oldBadge));
+            const newIdx = Math.max(1, currentIdx - 1);
+            newBadge = BADGE_TIERS[newIdx];
+            reason = `Badge regression: ${oldBadge} → ${newBadge} (${netUnits.toFixed(2)}u)`;
+        }
+    } else {
+        reason = `Insufficient picks (${validPicksCount}/${requiredPicks} required). No change.`;
+    }
+
+    return { newStars, newBadge, reason };
+}
+
 /**
  * Calculate user's star/badge progression PER EVENT (not monthly).
  * Triggered when an event closes.
@@ -33,11 +89,11 @@ interface ProgressionResult {
  * - RED flag is excluded from all competitive calculations
  * - Points awarded on ALL picks regardless of flag
  * - ≥70% participation AND positive ROI → +1 star (+2 if ROI > 15%)
- * - Neutral ROI (0) → no change
- * - Negative ROI → -1 star (min 0)
+ * - Lose 0–1 unit → no change
+ * - Lose more than 1 unit → -1 star (min 0)
  * - Max 5 stars
  * - Post-5-star: same rules but advance/regress badge tier
- *   - Tiers: none → ninja → samurai → master → goat
+ *   - Tiers: none → ninja → samurai → master → grandmaster → goat
  *   - Regression floor is 'ninja' (never drops back to 'none' once earned)
  * 
  * Cancelled fights are excluded from the participation denominator.
@@ -149,44 +205,15 @@ export async function calculateUserProgressionPerEvent(
     const roi = totalUnits > 0 ? Math.round((totalProfit / totalUnits) * 10000) / 100 : 0;
 
     // 6. Apply progression rules
-    let newStars = oldStars;
-    let newBadge = oldBadge;
-    let reason = '';
-
-    if (roi === 0) {
-        // Neutral ROI → no change
-        reason = `Neutral ROI (${validPicksCount}/${requiredPicks} picks). No change.`;
-    } else if (roi > 0 && hasMetPickMinimum) {
-        // Positive ROI + sufficient participation → advance
-        const starGain = roi > config.ROI_BONUS_THRESHOLD_PCT ? 2 : 1;
-
-        if (oldStars < config.STAR_CAP) {
-            newStars = Math.min(config.STAR_CAP, oldStars + starGain);
-            reason = `+${newStars - oldStars} star(s): ${validPicksCount}/${requiredPicks} picks, ${roi}% ROI`;
-        } else {
-            // Already at 5 stars → advance badge
-            const currentIdx = BADGE_TIERS.indexOf(oldBadge);
-            const newIdx = Math.min(BADGE_TIERS.length - 1, currentIdx + 1);
-            newBadge = BADGE_TIERS[newIdx];
-            reason = `Badge: ${oldBadge} → ${newBadge} (${validPicksCount}/${requiredPicks} picks, ${roi}% ROI)`;
-        }
-    } else if (roi < 0) {
-        // Negative ROI → regress
-        if (oldStars < config.STAR_CAP || (oldStars === config.STAR_CAP && BADGE_TIERS.indexOf(oldBadge) <= 1)) {
-            // Still in star phase or at ninja badge → reduce stars
-            newStars = Math.max(0, oldStars - 1);
-            reason = `-1 star: negative ROI (${roi}%). Stars: ${oldStars} → ${newStars}`;
-        } else {
-            // In badge phase → regress badge (floor: ninja)
-            const currentIdx = BADGE_TIERS.indexOf(oldBadge);
-            const newIdx = Math.max(1, currentIdx - 1); // Floor at 'ninja' (index 1)
-            newBadge = BADGE_TIERS[newIdx];
-            reason = `Badge regression: ${oldBadge} → ${newBadge} (${roi}% ROI)`;
-        }
-    } else {
-        // Positive ROI but below required pick minimum
-        reason = `Insufficient picks (${validPicksCount}/${requiredPicks} required). No change.`;
-    }
+    let { newStars, newBadge, reason } = applyProgressionRules({
+        oldStars,
+        oldBadge,
+        roi,
+        netUnits: totalProfit,
+        hasMetPickMinimum,
+        validPicksCount,
+        requiredPicks,
+    });
 
     // 6.b Login Bonus (Gamification)
     const loginBonus = Math.min(config.LOGIN_BONUS_MAX, (user.monthlyLoginCount || 0) * (config.LOGIN_BONUS_MAX / config.LOGIN_BONUS_LOGINS_REQUIRED));
@@ -399,36 +426,15 @@ export async function calculateUserProgression(
     const roi = totalUnits > 0 ? Math.round((totalProfit / totalUnits) * 10000) / 100 : 0;
 
     // 6. Apply progression rules (identical to per-event logic)
-    let newStars = oldStars;
-    let newBadge = oldBadge;
-    let reason = '';
-
-    if (roi === 0) {
-        reason = `Neutral ROI (${validPicksCount}/${requiredPicks} picks). No change.`;
-    } else if (roi > 0 && hasMetPickMinimum) {
-        const starGain = roi > config.ROI_BONUS_THRESHOLD_PCT ? 2 : 1;
-        if (oldStars < config.STAR_CAP) {
-            newStars = Math.min(config.STAR_CAP, oldStars + starGain);
-            reason = `+${newStars - oldStars} star(s): ${validPicksCount}/${requiredPicks} picks, ${roi}% ROI`;
-        } else {
-            const currentIdx = BADGE_TIERS.indexOf(oldBadge);
-            const newIdx = Math.min(BADGE_TIERS.length - 1, currentIdx + 1);
-            newBadge = BADGE_TIERS[newIdx];
-            reason = `Badge: ${oldBadge} → ${newBadge} (${validPicksCount}/${requiredPicks} picks, ${roi}% ROI)`;
-        }
-    } else if (roi < 0) {
-        if (oldStars < config.STAR_CAP || (oldStars === config.STAR_CAP && BADGE_TIERS.indexOf(oldBadge) <= 1)) {
-            newStars = Math.max(0, oldStars - 1);
-            reason = `-1 star: negative ROI (${roi}%). Stars: ${oldStars} → ${newStars}`;
-        } else {
-            const currentIdx = BADGE_TIERS.indexOf(oldBadge);
-            const newIdx = Math.max(1, currentIdx - 1);
-            newBadge = BADGE_TIERS[newIdx];
-            reason = `Badge regression: ${oldBadge} → ${newBadge} (${roi}% ROI)`;
-        }
-    } else {
-        reason = `Insufficient picks (${validPicksCount}/${requiredPicks} required). No change.`;
-    }
+    const { newStars, newBadge, reason } = applyProgressionRules({
+        oldStars,
+        oldBadge,
+        roi,
+        netUnits: totalProfit,
+        hasMetPickMinimum,
+        validPicksCount,
+        requiredPicks,
+    });
 
     // 7. Persist changes
     await db.update(users)

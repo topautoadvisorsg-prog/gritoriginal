@@ -1,6 +1,7 @@
 import { db } from '../db';
 import { groups, groupMembers, users } from '../../shared/schema';
-import { eq, and, or, sql } from 'drizzle-orm';
+import type { Group, GroupMember } from '../../shared/schema';
+import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger';
 
@@ -103,7 +104,7 @@ export async function getUserGroups(userId: string): Promise<GroupWithMembers[]>
     .from(groups)
     .where(or(
         eq(groups.ownerId, userId),
-        sql`${groups.id} IN (${sql.join(groupIds.map(id => sql.lit(id)))})`
+        inArray(groups.id, groupIds)
     ));
 
     const result: GroupWithMembers[] = [];
@@ -127,7 +128,7 @@ export async function browsePublicGroups(limit: number = 20, offset: number = 0)
         .where(eq(groups.isPrivate, false))
         .limit(limit)
         .offset(offset)
-        .orderBy(sql`${groups.createdAt} DESC`);
+        .orderBy(desc(groups.createdAt));
 }
 
 /**

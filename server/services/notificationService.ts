@@ -108,7 +108,7 @@ export async function notifyEventStartingSoon(eventId: string, eventName: string
     try {
         // Get all users who have made picks for this event
         const { db } = await import('../db');
-        const { userPicks } = await import('../db/schema');
+        const { userPicks } = await import('../../shared/schema');
         const { eq } = await import('drizzle-orm');
         
         const picks = await db.select({
@@ -137,11 +137,11 @@ export async function notifyEventStartingSoon(eventId: string, eventName: string
 export async function notifyPicksLockingSoon(eventId: string, eventName: string): Promise<void> {
     try {
         const { db } = await import('../db');
-        const { events } = await import('../db/schema');
+        const { events } = await import('../../shared/schema');
         const { eq } = await import('drizzle-orm');
         
         // Get all active users (users with picks in the system)
-        const { userPicks } = await import('../db/schema');
+        const { userPicks } = await import('../../shared/schema');
         const picks = await db.select({
             userId: userPicks.userId,
         }).from(userPicks).where(eq(userPicks.fightId, eventId));

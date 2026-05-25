@@ -16,9 +16,9 @@ export const anthropicService = {
      * Generates a message using the Anthropic API.
      * @param systemPrompt The system prompt to guide the AI behavior.
      * @param userMessage The user message or question.
-     * @param model Assistant model (default: 'claude-3-5-sonnet-20240620').
+     * @param model Assistant model (default: 'claude-sonnet-4-6').
      */
-    async generateMessage(systemPrompt: string, userMessage: string, model: string = 'claude-3-5-sonnet-20240620') {
+    async generateMessage(systemPrompt: string, userMessage: string, model: string = 'claude-sonnet-4-6') {
         if (!anthropic) {
             throw new Error('Anthropic service is not configured');
         }
@@ -41,7 +41,7 @@ export const anthropicService = {
     /**
      * Generates a streaming message using the Anthropic API.
      */
-    async generateMessageStream(systemPrompt: string, userMessage: string, model: string = 'claude-3-5-sonnet-20240620') {
+    async generateMessageStream(systemPrompt: string, userMessage: string, model: string = 'claude-sonnet-4-6') {
         if (!anthropic) {
             throw new Error('Anthropic service is not configured');
         }

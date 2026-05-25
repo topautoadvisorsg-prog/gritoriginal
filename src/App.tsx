@@ -11,7 +11,12 @@ import { useAuth } from "@/shared/hooks/use-auth";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
 import Index from "./user/pages/Index";
 import LandingPage from "./user/pages/LandingPage";
-import WelcomeModal from "@/user/components/WelcomeModal";
+import OnboardingFlow from "@/user/components/OnboardingFlow";
+import TermsOfService from "./legal/TermsOfService";
+import PrivacyPolicy from "./legal/PrivacyPolicy";
+import CookiePolicy from "./legal/CookiePolicy";
+import CreatorAgreement from "./legal/CreatorAgreement";
+import AcceptableUsePolicy from "./legal/AcceptableUsePolicy";
 import FightDetail from "./user/pages/FightDetail";
 import Settings from "./user/pages/Settings";
 import AdminFightCards from "@/admin/pages/AdminFightCards";
@@ -28,7 +33,10 @@ import { ChatHub } from "@/user/components/chat/ChatHub";
 import { FighterIndex } from "@/user/components/fighter/FighterIndex";
 import { NewsPage } from "@/user/components/news/NewsPage";
 import NewsArticlePage from "./user/pages/NewsArticlePage";
+import Rules from "./user/pages/Rules";
 import { MobileBottomNav } from "@/user/components/layout/MobileBottomNav";
+import { GroupsHub } from "./user/pages/GroupsHub";
+import { GroupDetailPage } from "./user/pages/GroupDetailPage";
 import { useRequestNotificationPermission } from "@/shared/hooks/use-request-notification-permission";
 
 const queryClient = new QueryClient({
@@ -91,7 +99,7 @@ function AppRoutes() {
   return (
     <>
       {needsOnboarding && (
-        <WelcomeModal onComplete={() => setOnboardingDismissed(true)} />
+        <OnboardingFlow onComplete={() => setOnboardingDismissed(true)} />
       )}
       <Routes>
         <Route path="/" element={<Index />}>
@@ -107,11 +115,20 @@ function AppRoutes() {
           <Route path="ai" element={<AIPredictionsTab />} />
           <Route path="chat" element={<ChatHub />} />
           <Route path="settings" element={<Settings />} />
+          <Route path="rules" element={<Rules />} />
           <Route path="news" element={<NewsPage />} />
           <Route path="news/:id" element={<NewsArticlePage />} />
+          <Route path="groups" element={<GroupsHub />} />
+          <Route path="groups/:groupId" element={<GroupDetailPage />} />
           <Route path="admin/fight-cards" element={<RequireAdmin><AdminFightCards /></RequireAdmin>} />
           <Route path="admin/:tab" element={<RequireAdmin><AdminTabPage /></RequireAdmin>} />
         </Route>
+        {/* Legal pages — public, outside the layout shell */}
+        <Route path="/tos" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/cookie" element={<CookiePolicy />} />
+        <Route path="/creator-agreement" element={<CreatorAgreement />} />
+        <Route path="/aup" element={<AcceptableUsePolicy />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <MobileBottomNav />

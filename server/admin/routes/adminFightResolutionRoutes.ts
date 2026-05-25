@@ -7,6 +7,10 @@ import { verifyFightState } from '../../middleware/fightState';
 import { syncEventFightToSupabase } from '../../services/outboundSyncService';
 import { storage } from '../../storage';
 
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Unknown error';
+}
+
 /**
  * Admin-only route for finalizing fight results.
  * Protected by isAuthenticated + requireAdmin middleware.
@@ -27,7 +31,7 @@ export function registerAdminFightResolutionRoutes(app: Express): void {
                 try {
                     const fight = await storage.getEventFight(fightId);
                     if (fight) {
-                        await syncEventFightToSupabase(fight as any, 'update');
+                        await syncEventFightToSupabase(fight, 'update');
                     }
                 } catch (syncErr) {
                     logger.error('[OutboundSync] EventFight post-resolution sync failed:', syncErr);
@@ -38,11 +42,12 @@ export function registerAdminFightResolutionRoutes(app: Express): void {
                 message: "Fight result saved successfully",
                 result,
             });
-        } catch (error: any) {
-            if (error.message === 'FIGHT_NOT_FOUND') {
+        } catch (error: unknown) {
+            const errorMessage = getErrorMessage(error);
+            if (errorMessage === 'FIGHT_NOT_FOUND') {
                 return res.status(404).json({ message: "Fight not found" });
             }
-            if (error.message === 'FIGHT_ALREADY_FINALIZED') {
+            if (errorMessage === 'FIGHT_ALREADY_FINALIZED') {
                 return res.status(409).json({ message: "Fight has already been finalized. Re-finalization is blocked for integrity." });
             }
             logger.error("Error saving fight result:", error);

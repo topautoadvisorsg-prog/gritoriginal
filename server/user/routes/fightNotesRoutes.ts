@@ -1,6 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { db } from "../../db";
-import { fightNotes, eventFights, events, fightResults } from "../../../shared/schema";
+import { fightNotes, fightResults } from "../../../shared/schema";
 import { eq, and } from "drizzle-orm";
 import { isAuthenticated } from "../../auth/guards";
 import { logger } from "../../utils/logger";
@@ -11,7 +11,7 @@ export function registerFightNotesRoutes(app: Express): void {
   app.get("/api/fights/:fightId/notes", isAuthenticated, async (req: Request, res: Response) => {
     try {
       const { fightId } = req.params;
-      const userId = (req.user as any).id;
+      const userId = req.user.id;
 
       const [note] = await db
         .select()
@@ -29,7 +29,7 @@ export function registerFightNotesRoutes(app: Express): void {
   app.post("/api/fights/:fightId/notes", isAuthenticated, verifyFightState(['CLOSED']), async (req: Request, res: Response) => {
     try {
       const { fightId } = req.params;
-      const userId = (req.user as any).id;
+      const userId = req.user.id;
       const { content } = req.body;
 
       if (!content || typeof content !== 'string') {

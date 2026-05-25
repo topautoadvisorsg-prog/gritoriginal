@@ -22,6 +22,7 @@ import { StatsComparison } from '@/user/components/fightdetail/StatsComparison';
 import { BettingOddsSection } from '@/user/components/fightdetail/BettingOddsSection';
 import { FantasyPickSection } from '@/user/components/fightdetail/FantasyPickSection';
 import { PostFightNotes } from '@/user/components/fightdetail/PostFightNotes';
+import { RateFighterCard } from '@/user/components/fightdetail/RateFighterCard';
 import { WarRoomAnalytics } from '@/user/components/fightdetail/WarRoomAnalytics';
 import { AIChatTab } from '@/user/components/aichat/AIChatTab';
 import { logClientError, trackMetric } from '@/shared/lib/logger';
@@ -522,8 +523,8 @@ const FightDetail: React.FC = () => {
             onSelectUnits={setSelectedUnits}
             confidenceFlag={selectedConfidenceFlag}
             onSelectConfidenceFlag={setSelectedConfidenceFlag}
-            flagBudget={5} // TODO: Calculate from event card size and participation formula
-            flagsUsed={0} // TODO: Track from user's existing picks for this event
+            flagBudget={qualificationStatus?.flagBudget ?? 0}
+            flagsUsed={qualificationStatus?.flagsUsed ?? 0}
           />
         </section>
 
@@ -559,6 +560,22 @@ const FightDetail: React.FC = () => {
           isFightCompleted={isFightCompleted}
           completedAt={fightResult?.completedAt}
         />
+
+        {/* Rate the Fighters — 5 dimensions, 1–10 stars (blueprint §9) */}
+        <section className="grid md:grid-cols-2 gap-6">
+          <RateFighterCard
+            fighter={fighter1}
+            fightId={fightId!}
+            isFightCompleted={isFightCompleted}
+            completedAt={fightResult?.completedAt}
+          />
+          <RateFighterCard
+            fighter={fighter2}
+            fightId={fightId!}
+            isFightCompleted={isFightCompleted}
+            completedAt={fightResult?.completedAt}
+          />
+        </section>
 
         {/* Fight Analyst AI */}
         <section>

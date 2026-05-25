@@ -95,7 +95,7 @@ export async function setupAuth(app: Express) {
         const user = await storage.getUser(id);
         if (!user) return done(null, false);
 
-        const ADMIN_EMAIL_VALUE = env.ADMIN_EMAIL ?? "saraimateo1612@proton.me";
+        const ADMIN_EMAIL_VALUE = env.ADMIN_EMAIL;
         if (ADMIN_EMAIL_VALUE && user.email === ADMIN_EMAIL_VALUE && user.role !== "admin") {
           await storage.upsertUser({ id: user.id, role: "admin" });
           user.role = "admin";
@@ -202,7 +202,7 @@ export function registerReplitOIDCRoutes(app: Express) {
         }
       }
 
-      const ADMIN_EMAIL = env.ADMIN_EMAIL ?? "saraimateo1612@proton.me";
+      const ADMIN_EMAIL = env.ADMIN_EMAIL;
       const emailValue = String(profile.email ?? claims?.email ?? "") || null;
 
       const user = await storage.upsertUser({
@@ -211,7 +211,7 @@ export function registerReplitOIDCRoutes(app: Express) {
         firstName: String(profile.first_name ?? claims?.first_name ?? "") || null,
         lastName: String(profile.last_name ?? claims?.last_name ?? "") || null,
         profileImageUrl: String(profile.profile_image_url ?? claims?.profile_image_url ?? "") || null,
-        ...(emailValue === ADMIN_EMAIL ? { role: "admin" } : {}),
+        ...(ADMIN_EMAIL && emailValue === ADMIN_EMAIL ? { role: "admin" } : {}),
       });
 
       req.login(user as Express.User, (err) => {

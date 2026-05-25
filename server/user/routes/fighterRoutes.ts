@@ -1,7 +1,9 @@
 import type { Express, Request, Response } from "express";
 import { isAuthenticated } from '../../auth/guards';
+import { eq } from "drizzle-orm";
+import { fightHistory } from "../../../shared/schema";
+import { db } from "../../db";
 import { storage } from "../../storage";
-import { insertFighterSchema, type Fighter } from "../../../shared/schema";
 import { logger } from '../../utils/logger';
 import { parsePagination, paginatedResponse } from '../../utils/pagination';
 import { z } from 'zod';
@@ -59,9 +61,6 @@ export function registerFighterRoutes(app: Express) {
 
   app.get("/api/fights/unlinked", async (_req: Request, res: Response) => {
     try {
-      const { db } = await import("../db");
-      const { fightHistory } = await import("../../shared/schema");
-      const { eq } = await import("drizzle-orm");
       const unlinked = await db.select().from(fightHistory).where(eq(fightHistory.opponentLinked, false));
       res.json(unlinked);
     } catch (error) {
@@ -92,7 +91,7 @@ export function registerFighterRoutes(app: Express) {
       }
       const correction = await storage.createFighterCorrection({
         fighterId: req.params.id as string,
-        submittedBy: (req as any).user?.id ?? null,
+        submittedBy: req.user?.id ?? null,
         whatIsWrong: parsed.data.whatIsWrong,
         sourceLink: parsed.data.sourceLink || null,
         status: 'pending',

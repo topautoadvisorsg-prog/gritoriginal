@@ -10,32 +10,77 @@ const earlyLogger = {
 const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().url().min(1),
-  
+  DIRECT_URL: z.string().url().optional(),
+  DB_MAX_CONNECTIONS: z.string().regex(/^\d+$/).optional(),
+
   // Session Security
   SESSION_SECRET: z.string().min(32, 'SESSION_SECRET must be at least 32 characters'),
-  
-  // External Services (optional but validated if present)
+
+  // Supabase
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_ANON_KEY: z.string().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+  SUPABASE_PROJECT_REF: z.string().optional(),
+
+  // Stripe
   STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
   STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
+  STRIPE_PUBLISHABLE_KEY: z.string().startsWith('pk_').optional(),
+  STRIPE_CONNECT_CLIENT_ID: z.string().optional(),
+
+  // AI
   ANTHROPIC_API_KEY: z.string().startsWith('sk-ant-').optional(),
   OPENAI_API_KEY: z.string().startsWith('sk-').optional(),
+  OPEN_AI_KEY: z.string().optional(), // alternate name used in openaiClient.ts
   OPENMETER_API_KEY: z.string().optional(),
+  OPENMETER_BASE_URL: z.string().url().optional(),
+
+  // Notifications
   ONESIGNAL_APP_ID: z.string().optional(),
   ONESIGNAL_API_KEY: z.string().optional(),
+
+  // Data Engine Integration
   DATA_ENGINE_API_URL: z.string().url().optional(),
   DATA_ENGINE_API_KEY: z.string().optional(),
-  WEBHOOK_KEY: z.string().min(16, "WEBHOOK_KEY must be 16 chars min").optional(),
-  
+  WEBHOOK_KEY: z.string().min(16, 'WEBHOOK_KEY must be 16 chars min').optional(),
+
+  // Phase 1 — Clerk (replaces Replit OIDC in Week 1)
+  CLERK_SECRET_KEY: z.string().optional(),
+  CLERK_PUBLISHABLE_KEY: z.string().optional(),
+  CLERK_WEBHOOK_SECRET: z.string().optional(),
+
+  // Phase 1 — Inngest (background jobs, replaces node-cron/pg-boss in Week 8)
+  INNGEST_EVENT_KEY: z.string().optional(),
+  INNGEST_SIGNING_KEY: z.string().optional(),
+
+  // Phase 1 — Upstash Redis (leaderboard cache + rate limiting)
+  UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
+
+  // Phase 1 — Resend (transactional email)
+  RESEND_API_KEY: z.string().optional(),
+
+  // Phase 1 — PostHog (analytics + feature flags)
+  POSTHOG_API_KEY: z.string().optional(),
+  POSTHOG_HOST: z.string().url().optional(),
+
+  // Observability
+  SENTRY_DSN: z.string().optional(),
+  LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).optional(),
+
   // Environment
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.string().regex(/^\d+$/).default('3001'),
   USER_PORT: z.string().regex(/^\d+$/).default('3001'),
   ADMIN_PORT: z.string().regex(/^\d+$/).default('3002'),
-  
+
   // Admin Configuration
   ADMIN_EMAIL: z.string().email().optional(),
-  
-  // Replit (if using OIDC)
+
+  // Optional override for OIDC return URL (reverse-proxy setups)
+  CUSTOM_DOMAIN: z.string().optional(),
+
+  // Legacy Replit OIDC (removed when Clerk ships)
   REPL_ID: z.string().optional(),
   REPLIT_DEV_DOMAIN: z.string().optional(),
   REPLIT_DOMAINS: z.string().optional(),
@@ -49,6 +94,7 @@ export const config = {
   // Progression system
   STAR_CAP: 5,
   ROI_BONUS_THRESHOLD_PCT: 15,
+  ROI_LOSS_TOLERANCE_UNITS: 1,
   LOGIN_BONUS_MAX: 0.25,
   LOGIN_BONUS_LOGINS_REQUIRED: 8,
   
@@ -69,7 +115,7 @@ export const config = {
   DEFAULT_TIMEZONE_OFFSET: -8,
   
   // Badge tiers
-  BADGE_TIERS: ['none', 'ninja', 'samurai', 'master', 'goat'] as const,
+  BADGE_TIERS: ['none', 'ninja', 'samurai', 'master', 'grandmaster', 'goat'] as const,
   
   // Confidence flags
   CONFIDENCE_FLAGS: ['none', 'yellow', 'red', 'green'] as const,
@@ -85,9 +131,22 @@ export type Config = typeof config;
 
 export type EnvConfig = z.infer<typeof envSchema>;
 
+/**
+ * Empty .env lines (e.g., `STRIPE_SECRET_KEY=`) reach Node as empty strings, not undefined.
+ * Optional Zod fields treat empty string as "present but invalid". Strip them so optionals work.
+ */
+function stripEmptyStringEnv(source: NodeJS.ProcessEnv): Record<string, string | undefined> {
+  const out: Record<string, string | undefined> = {};
+  for (const [k, v] of Object.entries(source)) {
+    out[k] = v === '' ? undefined : v;
+  }
+  return out;
+}
+
 export function validateEnv(): EnvConfig {
   try {
-    const env = envSchema.parse(process.env);
+    const cleaned = stripEmptyStringEnv(process.env);
+    const env = envSchema.parse(cleaned);
     earlyLogger.info('Environment validation passed');
     return env;
   } catch (error) {

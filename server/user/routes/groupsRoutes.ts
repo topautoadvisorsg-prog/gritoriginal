@@ -2,8 +2,8 @@ import { Router, Request } from 'express';
 import { isAuthenticated } from '../../auth/guards';
 import * as groupService from '../../services/groupService';
 import { db } from '../../db';
-import { groups, groupMembers } from '../../../shared/schema';
-import { eq, desc, and } from 'drizzle-orm';
+import { groupChat } from '../../../shared/schema';
+import { desc, eq } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../../utils/logger';
 
@@ -15,7 +15,7 @@ const router = Router();
 router.post('/', isAuthenticated, async (req: Request, res) => {
     try {
         const { name, description, isPrivate, maxMembers, avatarUrl } = req.body;
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -47,7 +47,7 @@ router.post('/', isAuthenticated, async (req: Request, res) => {
  */
 router.get('/my', isAuthenticated, async (req: Request, res) => {
     try {
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -83,7 +83,7 @@ router.get('/browse', async (req: Request, res) => {
 router.get('/:id', isAuthenticated, async (req: Request, res) => {
     try {
         const groupId = req.params.id as string;
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -96,7 +96,7 @@ router.get('/:id', isAuthenticated, async (req: Request, res) => {
         }
 
         // Check access: if private, only members can view
-        if ((group as any).isPrivate) {
+        if (group.isPrivate) {
             const isMember = await groupService.isGroupMember(groupId, userId);
             if (!isMember) {
                 return res.status(403).json({ message: 'Access denied. This group is private.' });
@@ -117,7 +117,7 @@ router.post('/:id/members', isAuthenticated, async (req: Request, res) => {
     try {
         const groupId = req.params.id as string;
         const { userId, role } = req.body;
-        const currentUserId = (req as any).user?.id;
+        const currentUserId = req.user?.id;
 
         if (!currentUserId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -144,7 +144,7 @@ router.delete('/:id/members/:userId', isAuthenticated, async (req: Request, res)
     try {
         const groupId = req.params.id as string;
         const targetUserId = req.params.userId as string;
-        const currentUserId = (req as any).user?.id;
+        const currentUserId = req.user?.id;
 
         if (!currentUserId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -178,7 +178,7 @@ router.patch('/:id/members/:userId/role', isAuthenticated, async (req: Request, 
         const groupId = req.params.id as string;
         const targetUserId = req.params.userId as string;
         const { role } = req.body;
-        const currentUserId = (req as any).user?.id;
+        const currentUserId = req.user?.id;
 
         if (!currentUserId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -209,7 +209,7 @@ router.post('/:id/transfer', isAuthenticated, async (req: Request, res) => {
     try {
         const groupId = req.params.id as string;
         const { newOwnerId } = req.body;
-        const currentUserId = (req as any).user?.id;
+        const currentUserId = req.user?.id;
 
         if (!currentUserId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -217,7 +217,7 @@ router.post('/:id/transfer', isAuthenticated, async (req: Request, res) => {
 
         // Only owner can transfer ownership
         const group = await groupService.getGroupById(groupId);
-        if (!group || (group as any).ownerId !== currentUserId) {
+        if (!group || group.ownerId !== currentUserId) {
             return res.status(403).json({ message: 'Only group owner can transfer ownership' });
         }
 
@@ -235,14 +235,14 @@ router.post('/:id/transfer', isAuthenticated, async (req: Request, res) => {
 router.delete('/:id', isAuthenticated, async (req: Request, res) => {
     try {
         const groupId = req.params.id as string;
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
         const group = await groupService.getGroupById(groupId);
-        if (!group || (group as any).ownerId !== userId) {
+        if (!group || group.ownerId !== userId) {
             return res.status(403).json({ message: 'Only group owner can delete the group' });
         }
 
@@ -260,7 +260,7 @@ router.delete('/:id', isAuthenticated, async (req: Request, res) => {
 router.get('/:id/chat', isAuthenticated, async (req: Request, res) => {
     try {
         const groupId = req.params.id as string;
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -296,7 +296,7 @@ router.post('/:id/chat', isAuthenticated, async (req: Request, res) => {
     try {
         const groupId = req.params.id as string;
         const { content } = req.body;
-        const userId = (req as any).user?.id;
+        const userId = req.user?.id;
 
         if (!userId) {
             return res.status(401).json({ message: 'Unauthorized' });
@@ -327,7 +327,7 @@ router.post('/:id/chat', isAuthenticated, async (req: Request, res) => {
                 userId,
                 content: content.trim(),
                 createdAt: new Date(),
-                username: (req as any).user?.username || 'User',
+                username: req.user?.username || 'User',
             }];
         });
 

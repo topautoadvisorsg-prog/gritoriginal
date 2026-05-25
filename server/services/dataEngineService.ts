@@ -375,7 +375,7 @@ async function applyEventData(tx: any, entry: any): Promise<string | undefined> 
     // Outbound sync for each event fight (non-blocking, after transaction)
     setImmediate(() => {
       for (const row of fightRows) {
-        syncEventFightToSupabase(row as any, 'update').catch((err) =>
+        syncEventFightToSupabase(row, 'update').catch((err) =>
           logger.error('[OutboundSync] EventFight (from event payload) sync failed:', err)
         );
       }

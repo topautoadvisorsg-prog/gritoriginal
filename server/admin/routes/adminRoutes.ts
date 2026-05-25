@@ -135,7 +135,7 @@ export function registerAdminRoutes(app: Express): void {
             res.send(csv);
 
             await adminService.logAdminAction(
-                (req.user as any).id,
+                req.user.id,
                 "EXPORT_DATA",
                 "FIGHTERS",
                 "all",
@@ -157,7 +157,7 @@ export function registerAdminRoutes(app: Express): void {
             res.send(csv);
 
             await adminService.logAdminAction(
-                (req.user as any).id,
+                req.user.id,
                 "EXPORT_DATA",
                 "FIGHT_HISTORY",
                 "all",

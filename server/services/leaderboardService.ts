@@ -1,16 +1,15 @@
 import { db } from "../db";
 import { leaderboardSnapshots, users, userPicks, eventFights, events } from "../../shared/schema";
-import { desc, eq, and, sql, count, gte, lte, inArray, ne } from "drizzle-orm";
+import { eq, and, sql, gte, lte, inArray, ne } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../utils/logger";
 
 /**
  * Create leaderboard snapshot using NET UNITS ONLY formula.
- * 
- * Formula: Net Units = Sum of all profit/loss from moneyline picks
- * - Win: profit = calculateProfit(lockedOdds, units)
- * - Loss: profit = -units
- * 
+ *
+ * Formula: Net Units = Sum of stored pick net-unit scores.
+ * points_awarded is legacy storage for net-unit hundredths until the schema is renamed.
+ *
  * No accuracy weighting. No participation rate. No recent form.
  * Just pure net units. Highest net units = Rank 1.
  */
@@ -38,18 +37,16 @@ export async function createLeaderboardSnapshot(
 
     // Get all users with picks in the specified period
     let userPicksQuery;
-    
+
     if (type === 'event' && eventId) {
         // Per-event: only picks from this specific event
         userPicksQuery = db.select({
             userId: userPicks.userId,
-            lockedOdds: userPicks.lockedOdds,
-            units: userPicks.units,
             pointsAwarded: userPicks.pointsAwarded,
             fightId: userPicks.fightId,
         })
         .from(userPicks)
-        .innerJoin(eventFights, eq(userPicks.fightId, eventFights.id))
+        .innerJoin(eventFights, sql`${userPicks.fightId}::uuid = ${eventFights.id}`)
         .where(and(
             eq(eventFights.eventId, eventId),
             eq(eventFights.status, 'Completed'),
@@ -60,13 +57,11 @@ export async function createLeaderboardSnapshot(
         // Monthly/Yearly: picks within date range
         userPicksQuery = db.select({
             userId: userPicks.userId,
-            lockedOdds: userPicks.lockedOdds,
-            units: userPicks.units,
             pointsAwarded: userPicks.pointsAwarded,
             fightId: userPicks.fightId,
         })
         .from(userPicks)
-        .innerJoin(eventFights, eq(userPicks.fightId, eventFights.id))
+        .innerJoin(eventFights, sql`${userPicks.fightId}::uuid = ${eventFights.id}`)
         .innerJoin(events, eq(eventFights.eventId, events.id))
         .where(and(
             eq(eventFights.status, 'Completed'),
@@ -82,39 +77,13 @@ export async function createLeaderboardSnapshot(
 
     const allPicks = await userPicksQuery;
 
-    // Calculate net units per user
+    // Calculate net units per user from the canonical stored score.
     const userNetUnits = new Map<string, number>();
-    
+
     for (const pick of allPicks) {
-        const isWin = pick.pointsAwarded > 0;
-        let profit = 0;
-        
-        if (isWin) {
-            // Use locked odds for profit calculation
-            if (pick.lockedOdds) {
-                const oddsNum = parseFloat(pick.lockedOdds.replace('+', ''));
-                if (!isNaN(oddsNum)) {
-                    if (oddsNum > 0) {
-                        // Underdog: +200 → profit = (1 × 200) / 100 = +2.00
-                        profit = (pick.units * oddsNum) / 100;
-                    } else {
-                        // Favorite: -150 → profit = (1 × 100) / 150 = +0.67
-                        profit = (pick.units * 100) / Math.abs(oddsNum);
-                    }
-                } else {
-                    profit = pick.units; // Default if odds invalid
-                }
-            } else {
-                profit = pick.units; // Default if no odds
-            }
-        } else {
-            // Loss: lose wagered units
-            profit = -pick.units;
-        }
-        
-        // Accumulate net units for this user
+        const netUnits = Number(pick.pointsAwarded || 0) / 100;
         const currentNet = userNetUnits.get(pick.userId) || 0;
-        userNetUnits.set(pick.userId, currentNet + profit);
+        userNetUnits.set(pick.userId, currentNet + netUnits);
     }
 
     // Convert to rankings array
@@ -136,9 +105,7 @@ export async function createLeaderboardSnapshot(
         username: users.username,
         currentStreak: users.currentStreak,
     }).from(users).where(inArray(users.id, userIds)); // Batch fetch usernames and streaks
-    
-    const userMap = new Map(userData.map(u => [u.id, u.username]));
-    
+
     const finalRankings = rankings.map(r => {
         const user = userData.find(u => u.id === r.userId);
         return {
@@ -159,10 +126,64 @@ export async function createLeaderboardSnapshot(
             snapshotType: type,
             eventId: eventId || null,
             snapshotDate: new Date(),
-            rankings: finalRankings as any,
+            rankings: finalRankings,
             createdAt: new Date(),
         })
         .returning();
 
+    // Fire rank-change notifications (Blueprint §11) by comparing this snapshot
+    // against the previous one of the same type+scope. Best-effort: a failure here
+    // never blocks snapshot creation. Skips gracefully without OneSignal keys.
+    notifyRankChangesSinceLastSnapshot(type, eventId, finalRankings).catch(err =>
+        logger.warn('[Leaderboard] rank-change notification failed:', err)
+    );
+
     return snapshot;
+}
+
+/**
+ * Compare this snapshot to the most recent prior snapshot of the same scope.
+ * For any user whose rank changed, push a OneSignal "Rank Up/Down" notification.
+ * No-op if no prior snapshot exists or if OneSignal is unconfigured.
+ */
+async function notifyRankChangesSinceLastSnapshot(
+    type: 'event' | 'monthly' | 'yearly',
+    eventId: string | undefined,
+    currentRankings: Array<{ rank: number; userId: string }>,
+) {
+    const { notifyRankChanged } = await import('./notificationService');
+
+    // Find the previous snapshot for this scope (event or global timeframe).
+    const prior = await db
+        .select()
+        .from(leaderboardSnapshots)
+        .where(and(
+            eq(leaderboardSnapshots.snapshotType, type),
+            eventId
+                ? eq(leaderboardSnapshots.eventId, eventId)
+                : sql`event_id IS NULL`,
+        ))
+        .orderBy(sql`snapshot_date DESC`)
+        .limit(2);
+
+    // The most recent is the one we just inserted; the one BEFORE it is what we compare to.
+    const previousSnapshot = prior[1];
+    if (!previousSnapshot) return; // first-ever snapshot for this scope
+
+    const previousRankings = (previousSnapshot.rankings as Array<{ userId: string; rank: number }> | null) ?? [];
+    const previousRankByUser = new Map(previousRankings.map(r => [r.userId, r.rank]));
+
+    let notified = 0;
+    for (const cur of currentRankings) {
+        const oldRank = previousRankByUser.get(cur.userId);
+        if (oldRank && oldRank !== cur.rank) {
+            // Fire and forget — OneSignal skip is logged inside the helper if unconfigured.
+            notifyRankChanged(cur.userId, oldRank, cur.rank).catch(() => {});
+            notified++;
+        }
+    }
+
+    if (notified > 0) {
+        logger.info(`[Leaderboard] Queued ${notified} rank-change notifications`);
+    }
 }

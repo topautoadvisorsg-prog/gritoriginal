@@ -48,7 +48,7 @@ export function requireTier(minTier: UserTier): RequestHandler {
         }
 
         // Admins bypass all tier gates
-        if ((req.user as any).role === 'admin') {
+        if (req.user.role === 'admin') {
             return next();
         }
 

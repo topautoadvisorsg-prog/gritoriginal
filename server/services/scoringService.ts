@@ -8,64 +8,48 @@ import {
     fighters,
     fightHistory,
     userKeys,
+    badgeAudit,
 } from "../../shared/schema";
-import { eq, and, sql, inArray } from "drizzle-orm";
+import { eq, and, sql, inArray, ne, gt } from "drizzle-orm";
 import { logger } from '../utils/logger';
 import { config } from '../config/env';
 import { v4 as uuidv4 } from "uuid";
 import { sendNotificationToUser } from './notificationService';
+import { calculateProfit, formatProfit } from '../roiCalculator';
 
 // ──────────────────────────────────────
 // Scoring Functions
 // ──────────────────────────────────────
 
-/**
- * Calculate points for a pick based on fight result.
- * Scoring: Fighter correct (1pt) + Method correct (2pts) + Round correct (3pts) = max 6 points
- * Decision picks auto-award 3pts for round when fighter and method are correct.
- * Draw/No Contest: No points awarded to any pick (no winner to match).
- */
-export function calculatePoints(
-    pick: { pickedFighterId: string; pickedMethod: string; pickedRound: number | null },
-    result: { winnerId: string | null; method: string | null; round: number | null }
+export function calculateNetUnits(
+    pick: { pickedFighterId: string; lockedOdds?: string | null; units?: number | null },
+    result: { winnerId: string | null }
 ): number {
-    // Handle Draw/No Contest - no points for anyone
     if (!result.winnerId || result.winnerId === 'draw' || result.winnerId === 'no_contest') {
-        logger.debug(`[Fight Result] Draw/No Contest - no points awarded`);
         return 0;
     }
 
-    let points = 0;
-
-    // Fighter correct: 1 point
-    if (pick.pickedFighterId === result.winnerId) {
-        points += 1;
-    } else {
-        return 0; // If fighter is wrong, no points at all
+    const units = pick.units || 1;
+    if (pick.pickedFighterId !== result.winnerId) {
+        return -units;
     }
 
-    // Method correct: 2 points
-    const normalizedPickMethod = normalizeMethod(pick.pickedMethod);
-    const normalizedResultMethod = normalizeMethod(result.method || '');
+    return Math.round(calculateProfit(pick.lockedOdds || '+100', units) * 100) / 100;
+}
 
-    logger.debug(`[Fight Result] Method comparison: picked="${normalizedPickMethod}" vs result="${normalizedResultMethod}"`);
+export function calculateNetUnitScore(
+    pick: { pickedFighterId: string; lockedOdds?: string | null; units?: number | null },
+    result: { winnerId: string | null }
+): number {
+    return Math.round(calculateNetUnits(pick, result) * 100);
+}
 
-    if (normalizedPickMethod === normalizedResultMethod) {
-        points += 2;
-
-        // Round points: 3 points
-        // For decisions: auto-award 3pts when fighter and method are correct (no round prediction needed)
-        // For finishes (KO/TKO, Submission): only award if round matches
-        if (normalizedPickMethod === 'decision') {
-            // Decisions auto-award round points when fighter + method correct
-            points += 3;
-        } else if (pick.pickedRound === result.round) {
-            // Finishes require matching round
-            points += 3;
-        }
-    }
-
-    return points;
+/** @deprecated Use calculateNetUnitScore. Kept for old scripts/tests during the rewrite. */
+export function calculatePoints(
+    pick: { pickedFighterId: string; lockedOdds?: string | null; units?: number | null },
+    result: { winnerId: string | null }
+): number {
+    return calculateNetUnitScore(pick, result);
 }
 
 /**
@@ -135,7 +119,7 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             .set({ status: 'Completed' })
             .where(eq(eventFights.id, fightId));
 
-        // Calculate and update points for all picks on this fight
+        // Calculate and update net-unit scores for all picks on this fight
         const picks = await tx
             .select()
             .from(userPicks)
@@ -145,46 +129,47 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
         logger.debug(`[Fight Result] Fight result: winnerId=${fightResult.winnerId}, method=${fightResult.method}, round=${fightResult.round}`);
 
         for (const pick of picks) {
-            logger.debug(`[Fight Result] Pick: userId=${pick.userId}, pickedFighterId=${pick.pickedFighterId}, method=${pick.pickedMethod}, round=${pick.pickedRound}`);
+            logger.debug(`[Fight Result] Pick: userId=${pick.userId}, pickedFighterId=${pick.pickedFighterId}, odds=${pick.lockedOdds}, units=${pick.units}`);
 
-            const points = calculatePoints(
+            const netUnitScore = calculateNetUnitScore(
                 {
                     pickedFighterId: pick.pickedFighterId,
-                    pickedMethod: pick.pickedMethod,
-                    pickedRound: pick.pickedRound,
+                    lockedOdds: pick.lockedOdds,
+                    units: pick.units,
                 },
                 {
                     winnerId: fightResult.winnerId,
-                    method: fightResult.method,
-                    round: fightResult.round,
                 }
             );
+            const netUnits = netUnitScore / 100;
 
-            logger.debug(`[Fight Result] Calculated points: ${points} for user ${pick.userId}`);
+            logger.debug(`[Fight Result] Calculated net units: ${formatProfit(netUnits)} (${netUnitScore}) for user ${pick.userId}`);
 
-            // Update pick with points
+            // Update pick with net-unit score. Legacy column stores hundredths until schema is renamed.
             await tx
                 .update(userPicks)
                 .set({
-                    pointsAwarded: points,
+                    pointsAwarded: netUnitScore,
                     isLocked: true,
                     updatedAt: new Date(),
                 })
                 .where(eq(userPicks.id, pick.id));
+            pick.pointsAwarded = netUnitScore;
 
-            logger.debug(`[Fight Result] Updated pick ${pick.id} with ${points} points`);
+            logger.debug(`[Fight Result] Updated pick ${pick.id} with ${netUnitScore} net-unit score`);
             
             // Send notification to user about their pick result
-            if (points > 0) {
+            if (netUnitScore > 0) {
                 try {
                     const [userPick] = await tx.select().from(userPicks).where(eq(userPicks.id, pick.id));
                     const [pickedFighter] = await tx.select().from(fighters).where(eq(fighters.id, userPick.pickedFighterId));
                     
                     await sendNotificationToUser(pick.userId, '✅ Correct Pick!', 
-                        `Your pick ${pickedFighter.firstName} ${pickedFighter.lastName} earned you ${points} points`, {
+                        `Your pick ${pickedFighter.firstName} ${pickedFighter.lastName} earned ${formatProfit(netUnits)}`, {
                             type: 'fight_result',
                             fightId: fightId,
-                            points: points.toString(),
+                            netUnits: formatProfit(netUnits),
+                            netUnitScore: netUnitScore.toString(),
                             correct: 'true'
                         });
                 } catch (notifError) {
@@ -198,8 +183,8 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
         for (const userId of affectedUserIds) {
             // Find the specific pick for this user on this fight to determine streak impact
             const userPickOnThisFight = picks.find(p => p.userId === userId);
-            const earnedPoints = userPickOnThisFight?.pointsAwarded || 0;
-            const isCorrect = earnedPoints > 0;
+            const earnedNetUnitScore = userPickOnThisFight?.pointsAwarded || 0;
+            const isCorrect = earnedNetUnitScore > 0;
 
             // Fetch current user data for streak logic
             const [user] = await tx.select().from(users).where(eq(users.id, userId));
@@ -430,7 +415,7 @@ async function checkEventCleanSweep(tx: any, eventId: string, userId: string) {
     const totalFights = Number(eventFightsData[0]?.count || 0);
     if (totalFights === 0) return;
 
-    // 2. Count user's correct picks (points > 0 means fighter guess was right)
+    // 2. Count user's correct no-flag/green picks (score > 0 means fighter guess was right)
     // We only care about picks for this event's fights.
     // NOTE: user_picks.fight_id is varchar; event_fights.id is uuid — cast required.
     const userCorrectPicksData = await tx.select({ count: sql<number>`count(*)` })
@@ -439,7 +424,8 @@ async function checkEventCleanSweep(tx: any, eventId: string, userId: string) {
         .where(and(
             eq(eventFights.eventId, eventId),
             eq(userPicks.userId, userId),
-            gt(userPicks.pointsAwarded, 0)
+            gt(userPicks.pointsAwarded, 0),
+            sql`${userPicks.confidenceFlag} IN ('none', 'green')`
         ));
 
     const correctPicksCount = Number(userCorrectPicksData[0]?.count || 0);

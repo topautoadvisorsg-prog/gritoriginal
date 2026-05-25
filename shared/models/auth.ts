@@ -151,8 +151,10 @@ export const leaderboardSnapshots = pgTable("leaderboard_snapshots", {
   rankings: jsonb("rankings").$type<{
     userId: string;
     rank: number;
-    totalPoints: number;
+    totalPoints?: number;
+    netUnits?: number;
     username?: string;
+    currentStreak?: number;
   }[]>().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });

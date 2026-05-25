@@ -35,7 +35,7 @@ const DEFAULT_SETTINGS: UserSettingsType = {
 
 router.get('/me/settings', isAuthenticated, async (req: Request, res: Response) => {
     try {
-        const userId = (req.user as any)?.id;
+        const userId = req.user?.id;
         if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
         const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
@@ -66,7 +66,7 @@ router.get('/me/settings', isAuthenticated, async (req: Request, res: Response) 
 
 router.put('/me/settings', isAuthenticated, async (req: Request, res: Response) => {
     try {
-        const userId = (req.user as any)?.id;
+        const userId = req.user?.id;
         if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
         const updates = req.body as Partial<UserSettingsType>;
@@ -101,7 +101,7 @@ router.put('/me/settings', isAuthenticated, async (req: Request, res: Response) 
 
 router.patch('/me/settings', isAuthenticated, async (req: Request, res: Response) => {
     try {
-        const userId = (req.user as any)?.id;
+        const userId = req.user?.id;
         if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
         const { key, value } = req.body as { key: keyof UserSettingsType; value: any };

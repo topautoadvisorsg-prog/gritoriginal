@@ -6,16 +6,15 @@ import { useScrollAnimation } from './hooks';
 const FEATURE_COLORS = ['#38bdf8', '#f43f5e', '#facc15', '#34d399', '#a78bfa'];
 const FEATURE_ICONS = [LayoutDashboard, Target, Users, MessageSquare, Brain];
 
-function FighterFlank({ side }: { side: 'left' | 'right' }) {
+function FighterFlank({ side, src }: { side: 'left' | 'right'; src: string }) {
     return (
-        <div className={`lp-competition__flanker lp-competition__flanker--${side}`}>
-            <div className="lp-fighter-photo-placeholder lp-fighter-photo-placeholder--flanker">
-                <span className="lp-fighter-photo-placeholder__icon">◈</span>
-                <span className="lp-fighter-photo-placeholder__label">
-                    FIGHTER IMAGE<br />HALF BODY
-                </span>
-                <span className="lp-fighter-photo-placeholder__sub">460 × 600 px · PNG cutout</span>
-            </div>
+        <div className={`lp-competition__flanker lp-competition__flanker--${side}`} aria-hidden="true">
+            <img
+                src={src}
+                alt=""
+                className={`lp-fighter-photo lp-fighter-photo--flanker lp-fighter-photo--${side}`}
+                loading="lazy"
+            />
         </div>
     );
 }
@@ -34,8 +33,8 @@ export function CoreFeaturesSection() {
 
     return (
         <section className="lp-section lp-core-features" id="features" ref={ref}>
-            <FighterFlank side="left" />
-            <FighterFlank side="right" />
+            <FighterFlank side="left" src="/fighters/fighter-2.png" />
+            <FighterFlank side="right" src="/fighters/fighter-3.png" />
             <div className="lp-section__inner lp-core-features__inner">
                 <div className="lp-animate" style={{ textAlign: 'center', marginBottom: 48 }}>
                     <span className="lp-section-label">

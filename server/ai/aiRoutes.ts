@@ -1,4 +1,4 @@
-import type { Express, Response } from 'express';
+import type { Express, Request, Response } from 'express';
 import { isAuthenticated } from '../auth/guards';
 import { requireTier } from '../auth/tierMiddleware';
 import { generatePrediction } from './openaiClient';
@@ -10,10 +10,14 @@ import { eq } from 'drizzle-orm';
 import { logger } from '../utils/logger';
 import { openmeterService } from '../services/openmeterService';
 
+function getErrorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : 'Unknown error';
+}
+
 export function registerAIRoutes(app: Express) {
 
     // Get AI prediction for a specific fight (Premium only)
-    app.post('/api/ai/predict', isAuthenticated, requireTier('premium'), async (req: any, res: Response) => {
+    app.post('/api/ai/predict', isAuthenticated, requireTier('premium'), async (req: Request, res: Response) => {
         try {
             const { fightId } = req.body;
 
@@ -49,27 +53,28 @@ export function registerAIRoutes(app: Express) {
             });
 
             // Track usage asynchronously (only for new predictions, not cache hits)
-            const userId = (req.user as any)?.id;
+            const userId = req.user?.id;
             if (userId) {
-                openmeterService.trackUsage(userId, 'ai_prediction');
+                void openmeterService.trackUsage(userId, 'ai_prediction');
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const errorMessage = getErrorMessage(error);
             logger.error('AI prediction error:', error);
 
-            if (error.message?.includes('API key')) {
+            if (errorMessage.includes('API key')) {
                 return res.status(500).json({ message: 'AI service not configured' });
             }
 
             res.status(500).json({
                 message: 'Failed to generate prediction',
-                error: error.message,
+                error: errorMessage,
             });
         }
     });
 
     // Get cached prediction for a fight (Premium only)
-    app.get('/api/ai/predictions/:fightId', isAuthenticated, requireTier('premium'), async (req: any, res: Response) => {
+    app.get('/api/ai/predictions/:fightId', isAuthenticated, requireTier('premium'), async (req: Request, res: Response) => {
         try {
             const { fightId } = req.params;
 
@@ -86,7 +91,7 @@ export function registerAIRoutes(app: Express) {
     });
 
     // Get all fights for an event that can be analyzed (Premium only)
-    app.get('/api/ai/event/:eventId/fights', isAuthenticated, requireTier('premium'), async (req: any, res: Response) => {
+    app.get('/api/ai/event/:eventId/fights', isAuthenticated, requireTier('premium'), async (req: Request, res: Response) => {
         try {
             const { eventId } = req.params;
 

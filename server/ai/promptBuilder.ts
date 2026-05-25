@@ -1,7 +1,17 @@
 import { db } from '../db';
-import { fighters, fightHistory, events, eventFights } from '../../shared/schema';
+import { fighters, fightHistory, events, eventFights, type Fighter, type FightHistory } from '../../shared/schema';
 import { eq, desc } from 'drizzle-orm';
 import type { FightContext } from './openaiClient';
+
+type JsonObject = Record<string, unknown>;
+
+function asJsonObject(value: unknown): JsonObject {
+    return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonObject : {};
+}
+
+function getNumber(value: unknown): number {
+    return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
 
 /**
  * Build context for AI prediction from database
@@ -51,27 +61,27 @@ export async function buildFightContext(fightId: string): Promise<FightContext> 
     };
 
     // Extract record from fighter data
-    const getRecord = (fighter: any) => {
-        const record = fighter.record as any || {};
+    const getRecord = (fighter: Fighter) => {
+        const record = asJsonObject(fighter.record);
         return {
-            wins: record.wins || 0,
-            losses: record.losses || 0,
-            draws: record.draws || 0,
+            wins: getNumber(record.wins),
+            losses: getNumber(record.losses),
+            draws: getNumber(record.draws),
         };
     };
 
     // Map fight history to simple format
-    const mapHistory = (history: any[]) => history.map(h => ({
+    const mapHistory = (history: FightHistory[]) => history.map(h => ({
         opponent: h.opponentName || 'Unknown',
         result: h.result || 'Unknown',
         method: h.method || 'Unknown',
     }));
 
     // Get performance data
-    const getFinishRate = (fighter: any): number | null => {
-        const perf = fighter.performance as any || {};
-        const koWins = perf.ko_wins || 0;
-        const subWins = perf.submission_wins || 0;
+    const getFinishRate = (fighter: Fighter): number | null => {
+        const perf = asJsonObject(fighter.performance);
+        const koWins = getNumber(perf.ko_wins);
+        const subWins = getNumber(perf.submission_wins);
         const totalWins = getRecord(fighter).wins;
         if (totalWins === 0) return null;
         return (koWins + subWins) / totalWins;

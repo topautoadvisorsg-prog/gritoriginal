@@ -22,7 +22,7 @@ export function registerAdminFighterRoutes(app: Express) {
       await storage.linkUnlinkedFightHistory(fullName, fighter.id);
 
       // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncFighterToSupabase(fighter as any, 'create').catch((e) =>
+      setImmediate(() => syncFighterToSupabase(fighter, 'create').catch((e) =>
         logger.error('[OutboundSync] Fighter create sync failed:', e)
       ));
 
@@ -56,7 +56,7 @@ export function registerAdminFighterRoutes(app: Express) {
       }
 
       // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncFighterToSupabase(fighter as any).catch((e) =>
+      setImmediate(() => syncFighterToSupabase(fighter).catch((e) =>
         logger.error('[OutboundSync] Fighter update sync failed:', e)
       ));
 

@@ -8,3 +8,21 @@ build/
 *.zip
 *.tar
 *.gz
+
+# Local-only Replit / dev junk — never push
+.local/
+tmp/
+uploads/
+
+# Credentials & secrets — never commit
+pw api.*
+*.pem
+*.key
+*credentials*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

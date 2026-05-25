@@ -21,6 +21,7 @@ import {
     Ticket,
     TrendingUp,
     Info,
+    BookOpenCheck,
     Settings,
     Zap
 } from 'lucide-react';
@@ -41,6 +42,7 @@ export const userNavItems: NavItem[] = [
     { id: 'news', labelKey: 'sidebar.news', icon: Newspaper, path: '/news' },
     { id: 'ai', labelKey: 'sidebar.ai_fight_analyst', icon: Brain, path: '/ai' },
     { id: 'chat', labelKey: 'sidebar.chat', icon: MessageSquare, path: '/chat' },
+    { id: 'rules', labelKey: 'sidebar.rules', icon: BookOpenCheck, path: '/rules' },
 ];
 
 // Admin-only tabs
@@ -74,6 +76,7 @@ export const tabTitles: Record<string, { title: string; subtitle: string }> = {
     news: { title: 'News', subtitle: 'Latest MMA news and fighter updates' },
     ai: { title: 'AI Fight Analyst', subtitle: 'Premium fight matchup analysis' },
     chat: { title: 'Chat', subtitle: 'Global, event, and country chat rooms' },
+    rules: { title: 'Rules', subtitle: 'Picks, scoring, progression, prizes, and platform rules' },
     settings: { title: 'Settings', subtitle: 'Manage your profile and preferences' },
     // Admin tabs
     'create-event': { title: 'Create Event', subtitle: 'Admin - Create new events' },

@@ -1,7 +1,14 @@
 import type { RequestHandler, Request, Response, NextFunction } from 'express';
 import { env } from '../config/env';
 
-const ADMIN_EMAIL = env.ADMIN_EMAIL ?? "saraimateo1612@proton.me";
+const ADMIN_EMAIL = env.ADMIN_EMAIL;
+
+if (!ADMIN_EMAIL) {
+    // Fail loudly at boot rather than silently granting admin via a hardcoded fallback.
+    throw new Error(
+        'ADMIN_EMAIL environment variable is required. Set it in your environment before starting the server.'
+    );
+}
 
 /**
  * Standard authentication check.
@@ -74,11 +81,11 @@ export function requireTier(minTier: UserTier): RequestHandler {
         }
 
         // Admins bypass all tier gates
-        if ((req.user as any).role === 'admin') {
+        if (req.user.role === 'admin') {
             return next();
         }
 
-        const userTier = (req.user as any).tier || 'free';
+        const userTier = req.user.tier || 'free';
 
         const userLevel = TIER_LEVELS[userTier] ?? 0;
         const requiredLevel = TIER_LEVELS[minTier] ?? 0;
@@ -105,7 +112,7 @@ export function requireFeature(feature: string): RequestHandler {
             return res.status(401).json({ message: 'Unauthorized: Not authenticated' });
         }
 
-        const userTier = (req.user as any).tier || 'free';
+        const userTier = req.user.tier || 'free';
         const requiredTier = FEATURE_REQUIREMENTS[feature];
 
         if (requiredTier) {

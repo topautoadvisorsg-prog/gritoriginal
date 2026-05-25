@@ -3069,6 +3069,46 @@
   background: rgba(139, 0, 0, .04);
 }
 
+/* ===============================================
+   FIGHTER PHOTO — REAL IMAGES (cutouts)
+   =============================================== */
+.lp-fighter-photo {
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.lp-fighter-photo--centerpiece {
+  width: 100%;
+  height: 260px;
+  object-fit: contain;
+  object-position: center bottom;
+  border-radius: 12px;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, .55));
+}
+
+.lp-fighter-photo--flanker {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 8px 20px rgba(139, 0, 0, .25));
+  opacity: .85;
+}
+
+.lp-fighter-photo--right {
+  transform: scaleX(-1);
+}
+
+.lp-fighter-photo--footer {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, .55));
+  opacity: .9;
+}
+
 .lp-showcase-fighters__centerpiece-overlay {
   padding: 14px 16px 10px;
   border-bottom: 1px solid hsl(210 20% 10%);

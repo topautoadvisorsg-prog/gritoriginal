@@ -7,6 +7,7 @@ import { lt } from 'drizzle-orm';
 import { createLeaderboardSnapshot } from './leaderboardService';
 import { runMonthlyProgression } from './progressionService';
 import { retryFailedEntries } from './dataEngineService';
+import { expirationService } from './expirationService';
 import { logger } from '../utils/logger';
 
 /**
@@ -51,11 +52,17 @@ export function initCrons() {
         }
     });
 
-    // 3. Daily "Safety" Check for Event Closure
+    // 3. Daily Subscription Expiration Check
     // Schedule: Daily at 03:00
-    cron.schedule('0 3 * * *', () => {
-        logger.info('[Cron] Running daily system health check...');
-        // Placeholder for future maintenance tasks (e.g. cleaning expired tokens, vacuuming DB)
+    // Downgrades users whose Stripe subscription period has ended back to 'free' tier.
+    // Without this, cancelled subscribers keep paid access indefinitely (revenue leak).
+    cron.schedule('0 3 * * *', async () => {
+        logger.info('[Cron] Running daily subscription expiration check...');
+        try {
+            await expirationService.checkExpirations();
+        } catch (error) {
+            logger.error('[Cron] Subscription expiration check failed:', error);
+        }
     });
 
     // 4. Daily Slip Expiry Cleanup
@@ -104,6 +111,27 @@ export function initCrons() {
             }
         } catch (error) {
             logger.error('[Cron] Pipeline retry failed:', error);
+        }
+    });
+
+    // 6. Monthly Bonus Draw (Blueprint §7 — $550 pool)
+    // Schedule: 1st of every month at 00:05 UTC (5 min after monthly snapshot at 00:01)
+    // Gated by MONTHLY_BONUS_DRAW_ENABLED env var because it writes to cash_payouts,
+    // which only exists once the Week 2 migration is applied. Flip the env var to 'true'
+    // (or unset it after migration apply if you want it default-on) the moment migration
+    // applies and the draw will start firing on the next 1st-of-month tick.
+    cron.schedule('5 0 1 * *', async () => {
+        if (process.env.MONTHLY_BONUS_DRAW_ENABLED !== 'true') {
+            logger.info('[Cron] Monthly bonus draw skipped — MONTHLY_BONUS_DRAW_ENABLED is not "true" (waiting on Week 2 migration)');
+            return;
+        }
+        logger.info('[Cron] Running monthly bonus draw...');
+        try {
+            const { runMonthlyBonusDraw } = await import('./monthlyBonusDrawJob');
+            const result = await runMonthlyBonusDraw();
+            logger.info(`[Cron] Monthly bonus draw completed: ${result.winners} winner(s), total $${(result.totalCents / 100).toFixed(2)}`);
+        } catch (error) {
+            logger.error('[Cron] Monthly bonus draw failed:', error);
         }
     });
 

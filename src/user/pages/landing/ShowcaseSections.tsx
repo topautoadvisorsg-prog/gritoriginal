@@ -52,13 +52,12 @@ export function ShowcaseFighters() {
                 <div className="lp-showcase__visual lp-showcase-fighters__card lp-animate lp-animate-delay-2">
                     <div className="lp-showcase-fighters__card-inner">
                         <div className="lp-showcase-fighters__centerpiece">
-                            <div className="lp-fighter-photo-placeholder lp-fighter-photo-placeholder--centerpiece">
-                                <span className="lp-fighter-photo-placeholder__icon" style={{ fontSize: '2.2rem' }}>◈</span>
-                                <span className="lp-fighter-photo-placeholder__label" style={{ fontSize: '.6rem' }}>
-                                    FIGHTER IMAGE<br />HALF BODY · 460 × 600 px
-                                </span>
-                                <span className="lp-fighter-photo-placeholder__sub">PNG cutout · transparent bg</span>
-                            </div>
+                            <img
+                                src="/fighters/fighter-1.png"
+                                alt="Showcase fighter"
+                                className="lp-fighter-photo lp-fighter-photo--centerpiece"
+                                loading="lazy"
+                            />
                             <div className="lp-showcase-fighters__centerpiece-overlay">
                                 <div className="lp-showcase-fighters__name">Alex Volkanovski</div>
                                 <div className="lp-showcase-fighters__record">26-4-0 · Featherweight</div>

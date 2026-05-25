@@ -100,7 +100,7 @@ export async function generatePrediction(
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : content);
 
-            return formatPrediction(fightId, context, parsed, 'claude-3-5-sonnet');
+            return formatPrediction(fightId, context, parsed, 'claude-sonnet-4-6');
         } catch (anthropicError) {
             logger.error('Both OpenAI and Anthropic predictions failed');
             throw anthropicError;

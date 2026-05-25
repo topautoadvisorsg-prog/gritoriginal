@@ -9,16 +9,15 @@ const TEAL_BORDER = 'hsl(190 90% 50% / .4)';
 const TEAL_ICON_BG = 'hsl(190 90% 50% / .2)';
 const TEAL_SHADOW = '0 0 30px -10px hsl(190 90% 50% / .15)';
 
-function FighterHalfPlaceholder({ side }: { side: 'left' | 'right' }) {
+function FighterHalfPlaceholder({ side, src }: { side: 'left' | 'right'; src: string }) {
     return (
-        <div className={`lp-competition__flanker lp-competition__flanker--${side}`}>
-            <div className="lp-fighter-photo-placeholder lp-fighter-photo-placeholder--flanker">
-                <span className="lp-fighter-photo-placeholder__icon">◈</span>
-                <span className="lp-fighter-photo-placeholder__label">
-                    FIGHTER IMAGE<br />HALF BODY
-                </span>
-                <span className="lp-fighter-photo-placeholder__sub">460 × 600 px · PNG cutout</span>
-            </div>
+        <div className={`lp-competition__flanker lp-competition__flanker--${side}`} aria-hidden="true">
+            <img
+                src={src}
+                alt=""
+                className={`lp-fighter-photo lp-fighter-photo--flanker lp-fighter-photo--${side}`}
+                loading="lazy"
+            />
         </div>
     );
 }
@@ -29,8 +28,8 @@ export function AICompetitionSection() {
 
     return (
         <section className="lp-section lp-competition" ref={ref}>
-            <FighterHalfPlaceholder side="left" />
-            <FighterHalfPlaceholder side="right" />
+            <FighterHalfPlaceholder side="left" src="/fighters/fighter-4.png" />
+            <FighterHalfPlaceholder side="right" src="/fighters/fighter-5.png" />
             <div className="lp-competition__inner">
                 <div className="lp-competition__header lp-animate">
                     <span className="lp-section-label"><Brain size={14} /> {t('ai_arena.label')}</span>

@@ -6,8 +6,8 @@ import { users, userPicks, events, eventFights, newsArticles, userKeys, userSett
 import { leaderboardSnapshots, type User } from "../../../shared/models/auth";
 import { eq, desc, sql, and, gte, lte, inArray, ne } from "drizzle-orm";
 import { config } from '../../config/env';
-import { calculateProfit } from "../../roiCalculator";
 import { logger } from '../../utils/logger';
+import { pointsAwardedToMoney, pointsAwardedToNetUnits } from '../../utils/netUnits';
 
 export function registerDashboardRoutes(app: Express): void {
     app.get("/api/me/dashboard", isAuthenticated, async (req, res) => {
@@ -54,7 +54,7 @@ export function registerDashboardRoutes(app: Express): void {
                     const userRank = rankings[userRankIdx];
                     leaderboardContext = {
                         rank: userRank.rank,
-                        netUnits: (userRank as any).netUnits || 0,
+                        netUnits: userRank.netUnits || 0,
                         above: rankings[userRankIdx - 1] || null,
                         below: rankings[userRankIdx + 1] || null,
                     };
@@ -81,11 +81,7 @@ export function registerDashboardRoutes(app: Express): void {
                 let profit = 0;
                 for (const p of activePicks) {
                     wagered += (p.units || 1) * unitSize;
-                    if (p.pointsAwarded > 0 && p.lockedOdds) {
-                        profit += calculateProfit(p.lockedOdds, p.units || 1) * unitSize;
-                    } else if (p.pointsAwarded < 0) {
-                        profit -= (p.units || 1) * unitSize;
-                    }
+                    profit += pointsAwardedToMoney(p.pointsAwarded, unitSize);
                 }
                 bettingStats = {
                     unitSize: unitSize,
@@ -117,8 +113,7 @@ export function registerDashboardRoutes(app: Express): void {
 
                 for (const p of picks) {
                     if (p.pointsAwarded > 0) correctPicks++;
-                    if (p.pointsAwarded > 0 && p.lockedOdds) eventProfit += calculateProfit(p.lockedOdds, p.units || 1);
-                    else if (p.pointsAwarded < 0) eventProfit -= (p.units || 1);
+                    eventProfit += pointsAwardedToNetUnits(p.pointsAwarded);
                 }
                 
                 let isNearPerfect = false;

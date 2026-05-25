@@ -12,48 +12,7 @@ import { config } from '../../config/env';
 import { type User } from "../../../shared/models/auth";
 import { pickAggregator } from '../../services/pickAggregationService';
 import { eventCache } from '../../utils/eventCache';
-
-/**
- * Parse a fight's scheduledTime string (e.g. "7:00 PM PST") combined with the
- * event date string (e.g. "2026-03-15") into a Date object, then subtract
- * lockBeforeMinutes to get the time at which picks should lock.
- * Returns null if parsing fails.
- */
-function parseFightLockTime(eventDate: string | Date, scheduledTime: string, lockBeforeMinutes: number): Date | null {
-  try {
-    // Normalise to YYYY-MM-DD string regardless of whether Drizzle returned a Date or a string
-    let dateStr: string;
-    if (eventDate instanceof Date) {
-      dateStr = eventDate.toISOString().slice(0, 10);
-    } else {
-      // Handles "2026-03-14T00:00:00.000Z", plain "2026-03-14", etc.
-      dateStr = String(eventDate).slice(0, 10);
-    }
-    const timeMatch = scheduledTime.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)/i);
-    if (!timeMatch) return null;
-    let hours = parseInt(timeMatch[1]);
-    const minutes = parseInt(timeMatch[2]);
-    const period = timeMatch[3].toUpperCase();
-    if (period === 'PM' && hours !== 12) hours += 12;
-    if (period === 'AM' && hours === 12) hours = 0;
-    // Detect timezone suffix — default PST = UTC-8
-    const tzOffset = scheduledTime.toUpperCase().includes('EST') ? -5 :
-                     scheduledTime.toUpperCase().includes('CST') ? -6 :
-                     scheduledTime.toUpperCase().includes('MST') ? -7 :
-                     scheduledTime.toUpperCase().includes('PDT') ? -7 :
-                     scheduledTime.toUpperCase().includes('EDT') ? -4 : -8; // PST default
-    // Build ISO-8601 string with explicit offset
-    const pad = (n: number) => String(n).padStart(2, '0');
-    const sign = tzOffset >= 0 ? '+' : '-';
-    const absOffset = Math.abs(tzOffset);
-    const isoStr = `${dateStr}T${pad(hours)}:${pad(minutes)}:00${sign}${pad(absOffset)}:00`;
-    const fightStart = new Date(isoStr);
-    if (isNaN(fightStart.getTime())) return null;
-    return new Date(fightStart.getTime() - lockBeforeMinutes * 60 * 1000);
-  } catch {
-    return null;
-  }
-}
+import { parseFightLockTime } from '../../utils/fightLockTime';
 
 export function registerPicksRoutes(app: Express): void {
   // Get user's picks for a specific event
@@ -132,11 +91,23 @@ export function registerPicksRoutes(app: Express): void {
         .orderBy(eventFights.boutOrder);
 
       if (fights.length === 0) {
-        return res.json({ currentPicks: 0, requiredPicks: 0, isQualified: false });
+        return res.json({
+          currentPicks: 0,
+          requiredPicks: 0,
+          isQualified: false,
+          flagBudget: 0,
+          flagsUsed: 0,
+          totalFights: 0,
+        });
       }
 
       const fightIds = fights.map(f => f.id);
-      const requiredPicks = config.getRequiredPicks(fights.length);
+      const totalFights = fights.length;
+      const requiredPicks = config.getRequiredPicks(totalFights);
+
+      // Flag budget = picks the user is allowed to NOT make competitively (yellow/red).
+      // Equals total fights minus minimum competitive picks required for the card.
+      const flagBudget = totalFights - requiredPicks;
 
       // 2. Get user's picks for this event
       const picks = await db
@@ -149,18 +120,27 @@ export function registerPicksRoutes(app: Express): void {
           )
         );
 
-      // 3. Calculate how many VALID moneyline picks they have made.
-      // - Must have picked a fighter
-      // - Must NOT be a red flag (red flags exclude the pick from the record)
-      const currentPicks = picks.filter(p => 
-        p.pickedFighterId != null && 
+      // 3. Count competitive picks (no-flag + green-flag + yellow-flag count toward qualification).
+      // Red flag picks excluded from ranking entirely. See blueprint §5.
+      const currentPicks = picks.filter(p =>
+        p.pickedFighterId != null &&
         p.confidenceFlag !== 'red'
+      ).length;
+
+      // 4. Count yellow/red flag picks for budget enforcement display.
+      // Computed fresh from picks rather than the cached users.yellowRedFlagsUsed counter
+      // (counter is set lazily on first pick; this endpoint is read-only and must show truth).
+      const flagsUsed = picks.filter(p =>
+        p.confidenceFlag === 'yellow' || p.confidenceFlag === 'red'
       ).length;
 
       res.json({
         currentPicks,
         requiredPicks,
-        isQualified: currentPicks >= requiredPicks
+        isQualified: currentPicks >= requiredPicks,
+        flagBudget,
+        flagsUsed,
+        totalFights,
       });
     } catch (error) {
       logger.error("Error fetching event qualification status:", error);
@@ -386,7 +366,7 @@ export function registerPicksRoutes(app: Express): void {
       logger.metric('picks_success', 1, { userId, fightId: pickData.fightId });
       res.json(result);
     } catch (error) {
-      logger.metric('picks_fail', 1, { userId: (req as any).user?.id });
+      logger.metric('picks_fail', 1, { userId: req.user?.id ?? 'unknown' });
       logger.error("Error saving pick:", error);
       res.status(500).json({ message: "Failed to save pick" });
     }

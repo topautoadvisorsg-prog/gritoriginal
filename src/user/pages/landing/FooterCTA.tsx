@@ -3,16 +3,15 @@ import { Swords, ChevronRight } from 'lucide-react';
 import { useScrollAnimation } from './hooks';
 import { useTranslation } from 'react-i18next';
 
-function FighterPlaceholder({ side }: { side: 'left' | 'right' }) {
+function FighterPlaceholder({ side, src }: { side: 'left' | 'right'; src: string }) {
     return (
         <div className={`lp-footer-cta__fighter-${side}`} aria-hidden="true">
-            <div className="lp-footer-cta__fighter-placeholder">
-                <div className="lp-footer-cta__fighter-placeholder-label">
-                    <span className="lp-footer-cta__fighter-placeholder-icon">◈</span>
-                    <span>FIGHTER PHOTO</span>
-                    <span style={{ opacity: 0.5, fontSize: '.6rem' }}>Full body cutout</span>
-                </div>
-            </div>
+            <img
+                src={src}
+                alt=""
+                className={`lp-fighter-photo lp-fighter-photo--footer lp-fighter-photo--${side}`}
+                loading="lazy"
+            />
         </div>
     );
 }
@@ -24,8 +23,8 @@ export function FooterCTA({ onSignIn }: { onSignIn: () => void }) {
         <>
             <section className="lp-section lp-footer-cta" ref={ref}>
                 <div className="lp-footer-cta__glow" />
-                <FighterPlaceholder side="left" />
-                <FighterPlaceholder side="right" />
+                <FighterPlaceholder side="left" src="/fighters/fighter-6.png" />
+                <FighterPlaceholder side="right" src="/fighters/fighter-1.png" />
                 <div className="lp-footer-cta__corner lp-footer-cta__corner--tl" />
                 <div className="lp-footer-cta__corner lp-footer-cta__corner--tr" />
                 <div className="lp-footer-cta__corner lp-footer-cta__corner--bl" />

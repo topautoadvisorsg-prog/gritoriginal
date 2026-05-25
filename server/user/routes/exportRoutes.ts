@@ -3,7 +3,7 @@ import { isAuthenticated, requireTier } from "../../auth/guards";
 import { db } from "../../db";
 import { userPicks } from "../../../shared/models/auth";
 import { eventFights, events } from "../../../shared/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { logger } from "../../utils/logger";
 
 export function registerExportRoutes(app: Express) {
@@ -13,7 +13,7 @@ export function registerExportRoutes(app: Express) {
     requireTier("premium"),
     async (req: Request, res: Response) => {
       try {
-        const userId = (req.user as any)?.id;
+        const userId = req.user?.id;
         if (!userId) {
           return res.status(401).json({ message: "Unauthorized" });
         }

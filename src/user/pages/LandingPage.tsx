@@ -12,6 +12,8 @@ import { LeaderboardPreview } from './landing/LeaderboardPreview';
 import { CommunitySection } from './landing/CommunitySection';
 import { EventPicksSection } from './landing/EventPicksSection';
 import { HowItWorks } from './landing/HowItWorks';
+import { FounderBadgesSection } from './landing/FounderBadgesSection';
+import { CreatorEconomySection } from './landing/CreatorEconomySection';
 import { PricingSection } from './landing/PricingSection';
 import { FooterCTA } from './landing/FooterCTA';
 
@@ -46,14 +48,16 @@ export default function LandingPage() {
             />
             <Navbar onSignIn={handleSignIn} />
             <HeroSection onSignIn={handleSignIn} />
-            <CoreFeaturesSection />
             <SocialProofStrip />
-            <ShowcaseFighters />
-            <AICompetitionBanner />
-            <LeaderboardPreview />
-            <CommunitySection />
-            <EventPicksSection />
+            <CoreFeaturesSection />
             <HowItWorks />
+            <EventPicksSection />
+            <ShowcaseFighters />
+            <LeaderboardPreview />
+            <CreatorEconomySection />
+            <AICompetitionBanner />
+            <CommunitySection />
+            <FounderBadgesSection onSignIn={handleSignIn} />
             <PricingSection onSignIn={handleSignIn} />
             <FooterCTA onSignIn={handleSignIn} />
         </div>

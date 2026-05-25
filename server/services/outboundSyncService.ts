@@ -90,9 +90,13 @@ function toSnakeCase(obj: Record<string, unknown>): Record<string, unknown> {
   return result;
 }
 
+function toRecord(data: object): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(data));
+}
+
 /** Pick only the fields that exist in Supabase fighters table. */
-function mapFighterToSupabase(data: Record<string, unknown>): Record<string, unknown> {
-  const snake = toSnakeCase(data);
+function mapFighterToSupabase(data: object): Record<string, unknown> {
+  const snake = toSnakeCase(toRecord(data));
   // Supabase fighters fields (all known columns)
   const allowed = new Set([
     'id','first_name','last_name','nickname','date_of_birth','nationality','gender',
@@ -107,8 +111,8 @@ function mapFighterToSupabase(data: Record<string, unknown>): Record<string, unk
 }
 
 /** Pick only the fields that exist in Supabase events table. */
-function mapEventToSupabase(data: Record<string, unknown>): Record<string, unknown> {
-  const snake = toSnakeCase(data);
+function mapEventToSupabase(data: object): Record<string, unknown> {
+  const snake = toSnakeCase(toRecord(data));
   const allowed = new Set([
     'id','name','date','venue','city','state','country',
     'organization','description','status',
@@ -117,8 +121,8 @@ function mapEventToSupabase(data: Record<string, unknown>): Record<string, unkno
 }
 
 /** Pick only the fields that exist in Supabase fight_history table. */
-function mapFightHistoryToSupabase(data: Record<string, unknown>): Record<string, unknown> {
-  const snake = toSnakeCase(data);
+function mapFightHistoryToSupabase(data: object): Record<string, unknown> {
+  const snake = toSnakeCase(toRecord(data));
   const allowed = new Set([
     'id','fighter_id','event_id','fighter_name','fighter_nickname',
     'opponent_id','opponent_name','opponent_nickname','opponent_linked',
@@ -135,8 +139,8 @@ function mapFightHistoryToSupabase(data: Record<string, unknown>): Record<string
 }
 
 /** Pick only the fields that exist in Supabase news_articles table. */
-function mapNewsToSupabase(data: Record<string, unknown>): Record<string, unknown> {
-  const snake = toSnakeCase(data);
+function mapNewsToSupabase(data: object): Record<string, unknown> {
+  const snake = toSnakeCase(toRecord(data));
   const allowed = new Set([
     'id','title','subtitle','excerpt','content','author','image_url','tags',
     'event_reference','fighter_reference','read_time','is_published','published_at',
@@ -145,8 +149,8 @@ function mapNewsToSupabase(data: Record<string, unknown>): Record<string, unknow
 }
 
 /** Pick only the fields that exist in Supabase event_fights table. */
-function mapEventFightToSupabase(data: Record<string, unknown>): Record<string, unknown> {
-  const snake = toSnakeCase(data);
+function mapEventFightToSupabase(data: object): Record<string, unknown> {
+  const snake = toSnakeCase(toRecord(data));
   // scheduledTime not in Supabase — excluded via allowed set
   const allowed = new Set([
     'id','event_id','fighter1_id','fighter2_id','card_placement','bout_order',
@@ -182,7 +186,7 @@ async function _syncEntity(
 }
 
 export async function syncFighterToSupabase(
-  data: Record<string, unknown>,
+  data: object,
   action: SyncAction = 'update',
 ): Promise<void> {
   try {
@@ -193,7 +197,7 @@ export async function syncFighterToSupabase(
 }
 
 export async function syncEventToSupabase(
-  data: Record<string, unknown>,
+  data: object,
   action: SyncAction = 'update',
 ): Promise<void> {
   try {
@@ -204,7 +208,7 @@ export async function syncEventToSupabase(
 }
 
 export async function syncFightHistoryToSupabase(
-  data: Record<string, unknown>,
+  data: object,
   action: SyncAction = 'update',
 ): Promise<void> {
   try {
@@ -215,7 +219,7 @@ export async function syncFightHistoryToSupabase(
 }
 
 export async function syncNewsToSupabase(
-  data: Record<string, unknown>,
+  data: object,
   action: SyncAction = 'update',
 ): Promise<void> {
   try {
@@ -226,7 +230,7 @@ export async function syncNewsToSupabase(
 }
 
 export async function syncEventFightToSupabase(
-  data: Record<string, unknown>,
+  data: object,
   action: SyncAction = 'update',
 ): Promise<void> {
   try {
