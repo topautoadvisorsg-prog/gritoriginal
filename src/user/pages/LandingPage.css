@@ -851,7 +851,7 @@ a:focus-visible,
    AI COMPETITION — MODELS LEAGUE
    =============================================== */
 .lp-competition {
-  padding: 80px 24px;
+  padding: 120px 24px;
   background: hsl(220 20% 4% / .91);
   position: relative;
   z-index: 2;
@@ -2064,18 +2064,34 @@ a:focus-visible,
 .lp-footer-cta__fighter-right {
   position: absolute;
   bottom: 0;
-  width: 320px;
-  height: 560px;
+  width: 360px;
+  height: 580px;
   color: rgba(139, 0, 0, .06);
   pointer-events: none;
+  /* Soft fade at the top + content-facing edge so the fighter dissolves
+     into the section rather than cropping hard. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 100%);
+          mask-image: linear-gradient(180deg, transparent 0%, #000 18%, #000 100%);
 }
 
 .lp-footer-cta__fighter-left {
-  left: 0;
+  left: -60px;
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
+          mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 100%);
 }
 
 .lp-footer-cta__fighter-right {
-  right: 0;
+  right: -60px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 45%, #000 100%);
+}
+
+/* Hide on narrower viewports — content area takes priority */
+@media (max-width: 1100px) {
+  .lp-footer-cta__fighter-left,
+  .lp-footer-cta__fighter-right {
+    display: none;
+  }
 }
 
 .lp-footer-cta__corner {
@@ -2912,18 +2928,28 @@ a:focus-visible,
 .lp-competition__flanker {
   position: absolute;
   bottom: 0;
-  width: 190px;
-  height: 480px;
+  width: 240px;
+  height: 520px;
   pointer-events: none;
   z-index: 0;
+  /* Soft fade at the content-facing edge so the cutout dissolves
+     toward the section copy instead of cropping hard. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 100%);
+          mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 100%);
 }
 
 .lp-competition__flanker--left {
-  left: 0;
+  left: -40px;
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 50%, transparent 100%),
+                       linear-gradient(180deg, transparent 0%, #000 12%, #000 100%);
+  -webkit-mask-composite: source-in;
+          mask-image: linear-gradient(90deg, #000 0%, #000 50%, transparent 100%);
 }
 
 .lp-competition__flanker--right {
-  right: 0;
+  right: -40px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 50%, #000 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 50%, #000 100%);
 }
 
 .lp-fighter-photo-placeholder--flanker {
@@ -2934,7 +2960,10 @@ a:focus-visible,
   background: rgba(139, 0, 0, .03);
 }
 
-@media (max-width: 1200px) {
+/* Hide flankers on narrower viewports where they collide with content.
+   1200 was too aggressive — content sits within ~1200px max-width container,
+   flankers were bleeding into copy until 1440+. */
+@media (max-width: 1440px) {
   .lp-competition__flanker {
     display: none;
   }
@@ -3741,7 +3770,7 @@ a:focus-visible,
    CORE FEATURES SECTION
    =============================================== */
 .lp-core-features {
-  padding: 80px 24px;
+  padding: 120px 24px;
   background: hsl(220 20% 4% / .95);
   position: relative;
   z-index: 2;
