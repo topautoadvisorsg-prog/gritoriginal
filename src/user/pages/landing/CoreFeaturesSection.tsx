@@ -52,6 +52,7 @@ export function CoreFeaturesSection() {
                             <div
                                 key={f.label}
                                 className={`lp-core-feature-tile lp-animate lp-animate-delay-${i + 1}`}
+                                style={{ '--tile-accent': f.color } as React.CSSProperties}
                             >
                                 <div
                                     className="lp-core-feature-tile__icon"

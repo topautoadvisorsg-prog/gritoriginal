@@ -2297,10 +2297,19 @@ a:focus-visible,
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #8B0000;
-  box-shadow: 0 0 10px rgba(139, 0, 0, .8);
-  animation: glow-pulse 1.5s ease-in-out infinite;
+  background: #ef4444;
   flex-shrink: 0;
+  position: relative;
+}
+
+.lp-ticker__dot::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: #ef4444;
+  opacity: .35;
+  animation: pulse-soft 2.4s ease-in-out infinite;
 }
 
 .lp-ticker__track {
@@ -2308,6 +2317,10 @@ a:focus-visible,
   overflow: hidden;
   display: flex;
   align-items: center;
+  position: relative;
+  /* Soft fade on both edges so items don't hard-clip against the label/edge */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
 }
 
 .lp-ticker__inner {
@@ -2315,6 +2328,125 @@ a:focus-visible,
   align-items: center;
   animation: ticker-scroll 80s linear infinite;
   white-space: nowrap;
+  /* Pause when the user hovers — lets them read items they care about */
+}
+
+.lp-ticker:hover .lp-ticker__inner {
+  animation-play-state: paused;
+}
+
+/* ===============================================
+   AI TOKEN PACKS — refactored from inline styles
+   =============================================== */
+.lp-tokens {
+  margin-top: 56px;
+  padding: 32px 24px;
+  background: rgba(0, 201, 255, .04);
+  border: 1px solid rgba(0, 201, 255, .18);
+  border-radius: 14px;
+}
+
+.lp-tokens__head {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.lp-tokens__label {
+  color: rgb(0, 201, 255) !important;
+  justify-content: center;
+}
+
+.lp-tokens__title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: .03em;
+  margin: 12px 0 8px;
+  color: hsl(0 0% 96%);
+}
+
+.lp-tokens__subtitle {
+  font-size: .9rem;
+  color: rgba(255, 255, 255, .65);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.lp-tokens__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.lp-tokens__card {
+  position: relative;
+  padding: 22px 16px 18px;
+  background: rgba(20, 20, 28, .55);
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 12px;
+  text-align: center;
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.lp-tokens__card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 201, 255, .35);
+  box-shadow: 0 12px 32px -16px rgba(0, 201, 255, .35);
+}
+
+.lp-tokens__card--best {
+  border-color: rgba(0, 201, 255, .6);
+}
+
+.lp-tokens__card--best:hover {
+  border-color: rgba(0, 201, 255, .85);
+  box-shadow: 0 16px 40px -16px rgba(0, 201, 255, .5);
+}
+
+.lp-tokens__card-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  background: rgb(0, 201, 255);
+  color: hsl(220 25% 8%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem;
+  font-weight: 800;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.lp-tokens__card-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .62rem;
+  letter-spacing: .2em;
+  color: rgba(255, 255, 255, .5);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.lp-tokens__card-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: rgb(0, 201, 255);
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.lp-tokens__card-value {
+  font-size: .9rem;
+  color: rgba(255, 255, 255, .78);
+  margin-bottom: 4px;
+}
+
+.lp-tokens__card-rate {
+  font-size: .7rem;
+  color: rgba(255, 255, 255, .45);
+  font-family: 'JetBrains Mono', monospace;
 }
 
 .lp-ticker__item {
@@ -3336,8 +3468,15 @@ a:focus-visible,
 
 .lp-core-feature-tile:hover {
   transform: translateY(-4px);
-  border-color: hsl(210 25% 22%);
-  box-shadow: 0 12px 32px -12px hsl(0 0% 0% / .3);
+  border-color: color-mix(in srgb, var(--tile-accent, hsl(210 25% 22%)) 40%, transparent);
+  box-shadow:
+    0 12px 32px -12px hsl(0 0% 0% / .45),
+    0 0 0 1px color-mix(in srgb, var(--tile-accent, transparent) 18%, transparent);
+}
+
+.lp-core-feature-tile:hover .lp-core-feature-tile__icon {
+  transform: scale(1.08);
+  transition: transform .25s ease;
 }
 
 .lp-core-feature-tile__icon {

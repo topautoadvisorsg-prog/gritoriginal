@@ -124,53 +124,25 @@ export function PricingSection({ onSignIn }: { onSignIn: () => void }) {
                 </div>
 
                 {/* AI Token Add-On — separate purchase, Challenger-gated */}
-                <div className="lp-animate lp-animate-delay-4" style={{ marginTop: 56, padding: '32px 24px', background: 'rgba(0, 201, 255, 0.04)', border: '1px solid rgba(0, 201, 255, 0.18)', borderRadius: 10 }}>
-                    <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                        <span className="lp-section-label" style={{ justifyContent: 'center', color: 'rgb(0, 201, 255)' }}>
+                <div className="lp-tokens lp-animate lp-animate-delay-4">
+                    <div className="lp-tokens__head">
+                        <span className="lp-section-label lp-tokens__label">
                             <Coins size={14} /> {t('pricing.tokens_label')}
                         </span>
-                        <h3 style={{ fontSize: 22, fontWeight: 800, letterSpacing: '0.5px', margin: '12px 0 8px' }}>
-                            {t('pricing.tokens_title')}
-                        </h3>
-                        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', maxWidth: 560, margin: '0 auto' }}>
-                            {t('pricing.tokens_subtitle')}
-                        </p>
+                        <h3 className="lp-tokens__title">{t('pricing.tokens_title')}</h3>
+                        <p className="lp-tokens__subtitle">{t('pricing.tokens_subtitle')}</p>
                     </div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>
+                    <div className="lp-tokens__grid">
                         {tokenPacks.map((pack, i) => (
-                            <div key={i} style={{
-                                padding: '18px 16px',
-                                background: 'rgba(20, 20, 28, 0.55)',
-                                border: pack.badge
-                                    ? '1px solid rgba(0, 201, 255, 0.6)'
-                                    : '1px solid rgba(255, 255, 255, 0.08)',
-                                borderRadius: 8,
-                                position: 'relative',
-                                textAlign: 'center',
-                            }}>
-                                {pack.badge && (
-                                    <div style={{
-                                        position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)',
-                                        padding: '3px 10px',
-                                        background: 'rgb(0, 201, 255)',
-                                        color: 'hsl(220 25% 8%)',
-                                        fontFamily: "'JetBrains Mono', monospace",
-                                        fontSize: 10, fontWeight: 800, letterSpacing: 1.5, textTransform: 'uppercase',
-                                        borderRadius: 4,
-                                    }}>{pack.badge}</div>
-                                )}
-                                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, letterSpacing: 2, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>
-                                    {pack.label}
-                                </div>
-                                <div style={{ fontSize: 30, fontWeight: 800, color: 'rgb(0, 201, 255)', marginBottom: 4 }}>
-                                    {pack.price}
-                                </div>
-                                <div style={{ fontSize: 14, color: 'rgba(255,255,255,0.78)', marginBottom: 2 }}>
-                                    {pack.value}
-                                </div>
-                                <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.45)', fontFamily: "'JetBrains Mono', monospace" }}>
-                                    {pack.rate}
-                                </div>
+                            <div
+                                key={i}
+                                className={`lp-tokens__card${pack.badge ? ' lp-tokens__card--best' : ''}`}
+                            >
+                                {pack.badge && <div className="lp-tokens__card-badge">{pack.badge}</div>}
+                                <div className="lp-tokens__card-label">{pack.label}</div>
+                                <div className="lp-tokens__card-price">{pack.price}</div>
+                                <div className="lp-tokens__card-value">{pack.value}</div>
+                                <div className="lp-tokens__card-rate">{pack.rate}</div>
                             </div>
                         ))}
                     </div>
