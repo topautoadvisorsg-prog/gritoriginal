@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { LineChart, TrendingUp, TrendingDown, Loader2, DollarSign, Activity } from 'lucide-react';
+import { Spinner } from '@/shared/components/ui/spinner';
 
 export const BettingTrackerWidget: React.FC<{ stats?: any }> = ({ stats: propStats }) => {
     const { data: queryStats, isLoading: queryLoading } = useQuery<any>({
@@ -14,7 +15,7 @@ export const BettingTrackerWidget: React.FC<{ stats?: any }> = ({ stats: propSta
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-12 bg-[#111] border border-white/10 rounded-3xl">
-                <Loader2 className="h-6 w-6 animate-spin text-[#E8A020]" />
+                <Spinner size="md" />
             </div>
         );
     }

@@ -7,6 +7,7 @@ import { NewsArticleDetail } from './NewsArticleDetail';
 import { toast } from 'sonner';
 import { Loader2, Newspaper } from 'lucide-react';
 import { EmptyState } from '@/shared/components/ui/empty-state';
+import { Spinner } from '@/shared/components/ui/spinner';
 import { NewsArticle } from '@/shared/types/fighter';
 
 export const NewsPage: React.FC = () => {
@@ -49,7 +50,7 @@ export const NewsPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Spinner size="lg" label="Loading news" />
       </div>
     );
   }
