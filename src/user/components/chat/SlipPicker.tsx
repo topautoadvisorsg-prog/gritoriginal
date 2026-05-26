@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X, Loader2, ImageOff } from 'lucide-react';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 
 interface Slip {
     id: string;
@@ -52,11 +53,12 @@ export const SlipPicker: React.FC<SlipPickerProps> = ({ onSelect, onClose, coold
                         <span className="text-white/40 text-sm">Loading slips…</span>
                     </div>
                 ) : approved.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 gap-2 text-center">
-                        <ImageOff className="w-8 h-8 text-white/20" />
-                        <p className="text-white/40 text-sm">No approved slips yet.</p>
-                        <p className="text-white/25 text-xs">Upload slips in Settings → My Slips, then wait for admin approval.</p>
-                    </div>
+                    <EmptyState
+                        icon={ImageOff}
+                        variant="compact"
+                        title="No approved slips yet"
+                        description="Upload slips in Settings → My Slips, then wait for admin approval."
+                    />
                 ) : (
                     <div className="grid grid-cols-3 gap-2">
                         {approved.map(slip => (

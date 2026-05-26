@@ -2,6 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { TagDisplay } from './TagDisplay';
 import { Loader2, Tags } from 'lucide-react';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 
 interface FighterTag {
     id: string;
@@ -47,10 +48,12 @@ export const FighterTagsSection: React.FC<FighterTagsSectionProps> = ({ fighterI
 
     if (error || !tags || tags.length === 0) {
         return (
-            <div className="text-center py-4">
-                <Tags className="h-6 w-6 mx-auto text-muted-foreground mb-2 opacity-50" />
-                <p className="text-xs text-muted-foreground">No scouting tags assigned yet</p>
-            </div>
+            <EmptyState
+                icon={Tags}
+                variant="compact"
+                title="No scouting tags yet"
+                description="Tags are assigned by admins to highlight notable patterns."
+            />
         );
     }
 

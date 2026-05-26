@@ -2,6 +2,7 @@ import React from 'react';
 import { FileText, AlertTriangle, User, Shield } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { FighterNote } from '@/shared/types/fighter';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 
 interface FighterNotesProps {
   notes?: FighterNote[];
@@ -49,13 +50,12 @@ export const FighterNotes: React.FC<FighterNotesProps> = ({ notes = [], classNam
     return (
       <div className={cn('glass-card rounded-xl p-6', className)}>
         <h3 className="section-header mb-4">Notes & Context</h3>
-        <div className="flex flex-col items-center justify-center py-8 text-center">
-          <FileText className="h-8 w-8 text-muted-foreground/30 mb-3" />
-          <p className="text-sm text-muted-foreground">No notes available</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">
-            Notes will appear here when added
-          </p>
-        </div>
+        <EmptyState
+          icon={FileText}
+          variant="compact"
+          title="No notes yet"
+          description="Notes will appear here when added."
+        />
       </div>
     );
   }

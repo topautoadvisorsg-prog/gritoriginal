@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import {
     Target, TrendingUp, Flame, Trophy, BarChart3,
     Loader2, CheckCircle2, XCircle, Clock, ArrowUp, ArrowDown
@@ -76,9 +77,12 @@ export function MyStatsTab() {
                         My Stats
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="py-12 text-center">
-                    <Target className="w-12 h-12 mx-auto text-muted-foreground/30 mb-4" />
-                    <p className="text-muted-foreground">No picks yet. Head to an event and make your first pick!</p>
+                <CardContent>
+                    <EmptyState
+                        icon={Target}
+                        title="No picks yet"
+                        description="Head to an event and make your first pick to start tracking your stats."
+                    />
                 </CardContent>
             </Card>
         );

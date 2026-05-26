@@ -1,7 +1,8 @@
 import React from 'react';
 import { OddsData } from '@/shared/types/fighter';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 
 interface BettingOddsProps {
   odds?: OddsData;
@@ -13,7 +14,12 @@ export const BettingOdds: React.FC<BettingOddsProps> = ({ odds, isLive = false }
     return (
       <div className="glass-card rounded-xl p-6">
         <h3 className="section-header mb-4">Betting Data</h3>
-        <p className="text-sm text-muted-foreground">No betting data available</p>
+        <EmptyState
+          icon={DollarSign}
+          variant="compact"
+          title="No betting data yet"
+          description="Odds will appear once the sportsbook lines open."
+        />
       </div>
     );
   }
