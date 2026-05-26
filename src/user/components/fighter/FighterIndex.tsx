@@ -6,6 +6,7 @@ import { WeightClassSection } from './WeightClassSection';
 import { Input } from '@/shared/components/ui/input';
 import { Search, Filter, Users, Trophy, Upload, Database } from 'lucide-react';
 import { Badge } from '@/shared/components/ui/badge';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import { Button } from '@/shared/components/ui/button';
 import {
   Select,
@@ -189,13 +190,11 @@ export const FighterIndex: React.FC<FighterIndexProps> = ({ onFighterSelect, onN
         ))}
         
         {Object.keys(fightersByWeightClass).length === 0 && fighters.length > 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Users className="h-12 w-12 text-muted-foreground/50 mb-4" />
-            <p className="text-muted-foreground">No fighters found matching your criteria.</p>
-            <p className="text-sm text-muted-foreground/70 mt-1">
-              Try adjusting your search or filters.
-            </p>
-          </div>
+          <EmptyState
+            icon={Users}
+            title="No fighters found"
+            description="Try adjusting your search or filters."
+          />
         )}
       </div>
     </div>

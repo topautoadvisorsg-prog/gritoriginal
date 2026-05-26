@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Loader2, Trophy, ImageOff } from 'lucide-react';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 
 interface FeaturedSlip {
     id: string;
@@ -97,11 +98,11 @@ export const SlipWall: React.FC = () => {
                         <span className="text-white/40 text-sm">Loading Slip Wall…</span>
                     </div>
                 ) : slips.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
-                        <ImageOff className="w-10 h-10 text-white/15" />
-                        <p className="font-black uppercase tracking-wider text-white/20 text-sm">No featured slips yet</p>
-                        <p className="text-xs text-white/20">The wall fills up as Challengers post big hits.</p>
-                    </div>
+                    <EmptyState
+                        icon={ImageOff}
+                        title="No featured slips yet"
+                        description="The wall fills up as Challengers post big hits."
+                    />
                 ) : (
                     <div className="columns-2 md:columns-3 gap-3 space-y-3">
                         {slips.map(slip => (

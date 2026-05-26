@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useFighters } from '@/shared/hooks/useFighters';
 import { Loader2, ChevronLeft, ChevronRight, Calendar, MapPin, Flame, Users } from 'lucide-react';
 import { Skeleton } from '@/shared/components/ui/skeleton';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import { cn } from '@/shared/lib/utils';
 import SEO from '@/shared/components/SEO';
 
@@ -312,10 +313,11 @@ export const EventListPage = () => {
 
   if (sortedEvents.length === 0) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center">
-        <Calendar className="h-10 w-10 text-white/15 mb-3" />
-        <p className="text-white/30 text-sm uppercase tracking-widest">No events yet</p>
-      </div>
+      <EmptyState
+        icon={Calendar}
+        title="No events yet"
+        description="The arena is quiet for now. Check back soon for the next card."
+      />
     );
   }
 

@@ -580,6 +580,23 @@
     100% { opacity: 1; transform: translateY(0); }
   }
 
+  /* Branded inline spinner — conic-gradient ring, premium feel */
+  .brand-spinner-ring {
+    display: inline-block;
+    border-radius: 50%;
+    background:
+      conic-gradient(from 0deg, transparent 0%, hsl(38 92% 55% / 0.15) 30%, hsl(38 92% 55%) 100%);
+    -webkit-mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+            mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 2px));
+    animation: brandSpinnerRotate 0.8s linear infinite;
+  }
+  @keyframes brandSpinnerRotate {
+    to { transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brand-spinner-ring { animation-duration: 1.5s; }
+  }
+
   /* Branded skeleton shimmer — diagonal moving highlight on a muted base */
   .skeleton-shimmer {
     background-color: hsl(220 25% 11%);

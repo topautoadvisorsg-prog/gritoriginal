@@ -6,6 +6,7 @@ import { NewsCard } from './NewsCard';
 import { NewsArticleDetail } from './NewsArticleDetail';
 import { toast } from 'sonner';
 import { Loader2, Newspaper } from 'lucide-react';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import { NewsArticle } from '@/shared/types/fighter';
 
 export const NewsPage: React.FC = () => {
@@ -79,13 +80,11 @@ export const NewsPage: React.FC = () => {
       />
 
       {articles.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <Newspaper className="h-12 w-12 text-muted-foreground/50 mb-4" />
-          <p className="text-muted-foreground">No news articles yet</p>
-          <p className="text-sm text-muted-foreground/70 mt-1">
-            Check back later for MMA news and analysis
-          </p>
-        </div>
+        <EmptyState
+          icon={Newspaper}
+          title="No news yet"
+          description="Check back later for MMA news and analysis."
+        />
       ) : (
         <div className="space-y-4">
           {articles.map((article) => (
