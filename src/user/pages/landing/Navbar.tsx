@@ -73,12 +73,12 @@ export function Navbar({ onSignIn }: { onSignIn: () => void }) {
                     <span className="lp-nav__name">GRIT</span>
                 </div>
                 <div className="lp-nav__links">
-                    <span className="lp-nav__link lp-nav__link--desktop" onClick={() => go('features')}>{t('nav.features')}</span>
-                    <span className="lp-nav__link lp-nav__link--desktop" onClick={() => go('how-it-works')}>{t('nav.how_it_works')}</span>
-                    <span className="lp-nav__link lp-nav__link--desktop" onClick={() => go('pricing')}>{t('nav.pricing')}</span>
+                    <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('features')}>{t('nav.features')}</button>
+                    <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('how-it-works')}>{t('nav.how_it_works')}</button>
+                    <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('pricing')}>{t('nav.pricing')}</button>
                     <LanguageSelector />
-                    <span className="lp-nav__link lp-nav__login" onClick={onSignIn}>{t('common.login')}</span>
-                    <button className="lp-btn lp-btn--primary lp-nav__cta" onClick={onSignIn}>{t('nav.get_started')}</button>
+                    <button type="button" className="lp-nav__link lp-nav__login" onClick={onSignIn}>{t('common.login')}</button>
+                    <button type="button" className="lp-btn lp-btn--primary lp-nav__cta" onClick={onSignIn}>{t('nav.get_started')}</button>
                 </div>
             </div>
         </nav>

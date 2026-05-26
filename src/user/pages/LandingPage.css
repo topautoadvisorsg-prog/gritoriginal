@@ -2,6 +2,57 @@
    LANDING PAGE V3 — GRIT — NEXT-GEN COMPETITIVE EXPERIENCE
    ================================================================= */
 
+/* --- POLISH FOUNDATION -------------------------------------------------------
+   Universal refinements applied across the whole landing page.
+   Improves accessibility, perceived quality, and motion comfort.
+   -----------------------------------------------------------------------------*/
+
+/* Smooth scroll for in-page anchor jumps */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* clears the fixed navbar */
+}
+
+/* Branded selection — replaces default blue browser highlight */
+::selection {
+  background: hsl(354 80% 45% / .35);
+  color: hsl(0 0% 98%);
+}
+
+/* Branded focus ring — keyboard nav now feels intentional */
+*:focus-visible {
+  outline: 2px solid hsl(354 85% 55% / .85);
+  outline-offset: 3px;
+  border-radius: 4px;
+  transition: outline-offset .15s ease;
+}
+
+button:focus-visible,
+a:focus-visible,
+.lp-btn:focus-visible {
+  outline: 2px solid hsl(354 85% 60%);
+  outline-offset: 4px;
+}
+
+/* Tap response — needs explicit press state for desktop + mobile */
+.lp-btn:active {
+  transform: translateY(-1px) scale(.99);
+  transition: transform .08s ease;
+}
+
+/* Honor user OS preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* --- END POLISH FOUNDATION ------------------------------------------------- */
+
 /* --- KEYFRAMES ---------------------------------------------------------------- */
 @keyframes float {
 
@@ -399,6 +450,11 @@
   position: relative;
   transition: color .3s;
   letter-spacing: .01em;
+  /* Button reset — links are now <button> elements for keyboard a11y */
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
 }
 
 .lp-nav__link::after {
