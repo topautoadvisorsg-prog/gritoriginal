@@ -50,12 +50,15 @@ const Index = () => {
       <main
         className={cn(
           'pb-8 px-4 lg:px-8 transition-all duration-300',
-          isAdmin 
-            ? (isSidebarCollapsed ? 'ml-16 pt-20' : 'ml-64 pt-20') 
+          isAdmin
+            ? (isSidebarCollapsed ? 'ml-16 pt-20' : 'ml-64 pt-20')
             : 'ml-0 pt-[130px]' // 16px (1rem) higher than 120 buffer to prevent content being under fixed top nav
         )}
       >
-        <Outlet />
+        {/* keyed wrapper triggers page-fade animation on every route change */}
+        <div key={location.pathname} className="page-fade">
+          <Outlet />
+        </div>
       </main>
       <AdBanner />
     </div>

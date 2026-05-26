@@ -108,6 +108,7 @@
     @apply scroll-smooth;
     overflow-x: hidden;
     width: 100%;
+    scroll-padding-top: 80px; /* clears fixed headers */
   }
 
   body {
@@ -123,16 +124,106 @@
     font-family: 'Outfit', sans-serif;
     @apply tracking-tight;
   }
+
+  /* --- APP-WIDE FOUNDATION POLISH --------------------------------------
+     Mirrors the landing foundation but applies to every in-app page.
+     -------------------------------------------------------------------- */
+
+  /* Branded text selection */
+  ::selection {
+    background: hsl(355 85% 55% / 0.35);
+    color: hsl(0 0% 98%);
+  }
+
+  /* Branded focus ring for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid hsl(190 90% 55% / 0.85);
+    outline-offset: 3px;
+    border-radius: 4px;
+    transition: outline-offset 0.15s ease;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid hsl(190 90% 60%);
+    outline-offset: 4px;
+  }
+
+  /* Custom scrollbars across the whole app (not just .custom-scrollbar) */
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: hsl(220 25% 5%);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: hsl(210 25% 18%);
+    border-radius: 8px;
+    border: 2px solid hsl(220 25% 5%);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: hsl(210 25% 28%);
+  }
+
+  /* Firefox */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(210 25% 22%) hsl(220 25% 5%);
+  }
+
+  /* Subtle press feedback on every button — no more dead taps */
+  button:not(:disabled):active {
+    transform: translateY(0.5px);
+  }
+
+  /* Honor user OS reduced-motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  /* --- END APP-WIDE FOUNDATION POLISH --------------------------------- */
 }
 
 @layer components {
-  /* Glass Card Effect */
+  /* Glass Card Effect — subtle inner highlight gives premium depth */
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50 shadow-lg;
+    box-shadow:
+      0 8px 32px -8px hsl(220 25% 4% / 0.7),
+      inset 0 1px 0 hsl(0 0% 100% / 0.03);
   }
 
   .glass-card-elevated {
     @apply bg-card-elevated/90 backdrop-blur-xl border border-border/60 shadow-xl;
+    box-shadow:
+      0 12px 40px -12px hsl(220 25% 4% / 0.8),
+      inset 0 1px 0 hsl(0 0% 100% / 0.05);
+  }
+
+  /* Interactive variant — adds smooth hover lift */
+  .glass-card-interactive {
+    @apply glass-card;
+    @apply transition-all duration-200;
+    cursor: pointer;
+  }
+
+  .glass-card-interactive:hover {
+    @apply border-border/80;
+    transform: translateY(-2px);
+    box-shadow:
+      0 12px 36px -8px hsl(220 25% 4% / 0.8),
+      inset 0 1px 0 hsl(0 0% 100% / 0.05);
   }
 
   /* Stat Cards */
@@ -477,6 +568,15 @@
   }
   @keyframes slideUpFadeIn {
     0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Page-fade — every route change triggers this on the Outlet wrapper */
+  .page-fade {
+    animation: pageFade 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes pageFade {
+    0% { opacity: 0; transform: translateY(6px); }
     100% { opacity: 1; transform: translateY(0); }
   }
 }
