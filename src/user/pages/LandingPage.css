@@ -997,6 +997,81 @@ a:focus-visible,
   color: var(--gold);
 }
 
+/* Featured AI model card (Grok 3 in mock) — teal accent, leading position */
+.lp-model-card--featured {
+  border-color: hsl(190 90% 50% / .45);
+  box-shadow:
+    0 0 0 1px hsl(190 90% 50% / .12),
+    0 18px 50px -18px hsl(190 90% 40% / .35);
+  background: linear-gradient(180deg, hsl(190 60% 8% / .6), var(--bg-card));
+}
+
+.lp-model-card--featured:hover {
+  border-color: hsl(190 90% 55% / .7);
+  box-shadow:
+    0 0 0 1px hsl(190 90% 50% / .18),
+    0 24px 60px -16px hsl(190 90% 40% / .5);
+}
+
+.lp-model-card--featured .lp-model-card__icon {
+  background: hsl(190 90% 50% / .15);
+  color: hsl(190 90% 75%);
+  border-color: hsl(190 90% 50% / .35);
+}
+
+.lp-model-card--featured .lp-model-card__name {
+  color: hsl(190 90% 65%);
+}
+
+.lp-model-card--featured .lp-model-card__confidence--featured {
+  background: hsl(190 90% 50% / .14);
+  color: hsl(190 90% 70%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .85rem;
+  font-weight: 700;
+}
+
+.lp-model-card--featured .lp-model-card__units {
+  color: hsl(190 90% 65%);
+}
+
+.lp-model-card__badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 3px 9px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .56rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: hsl(220 50% 6%);
+  background: hsl(190 90% 60%);
+  border-radius: 4px;
+  box-shadow: 0 4px 14px -4px hsl(190 90% 40% / .55);
+}
+
+.lp-model-card__desc {
+  font-size: .85rem;
+  margin-top: 8px;
+  color: hsl(210 20% 70%);
+  line-height: 1.55;
+}
+
+.lp-competition__footnote {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 1.05rem;
+  color: hsl(210 20% 60%);
+  letter-spacing: .04em;
+  font-style: italic;
+}
+
 
 /* ===============================================
    SOCIAL PROOF STRIP
@@ -2363,6 +2438,74 @@ a:focus-visible,
 .lp-ticker:hover .lp-ticker__inner {
   animation-play-state: paused;
 }
+
+/* ===============================================
+   CREATOR ECONOMY — purple-accent feature grid
+   =============================================== */
+.lp-creator__inner {
+  padding: 0 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.lp-creator__head {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.lp-creator__label { justify-content: center; }
+
+.lp-creator__title { margin: 16px auto 16px; }
+
+.lp-creator__desc {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, .72);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.lp-creator__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.lp-creator__feat {
+  display: flex;
+  gap: 12px;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, hsl(270 70% 50% / .07), hsl(270 70% 40% / .03));
+  border: 1px solid hsl(270 70% 60% / .22);
+  border-radius: 10px;
+  font-size: .82rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, .82);
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+
+.lp-creator__feat:hover {
+  transform: translateY(-3px);
+  border-color: hsl(270 70% 65% / .45);
+  box-shadow: 0 12px 28px -14px hsl(270 70% 50% / .4);
+}
+
+.lp-creator__feat-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: hsl(270 80% 60% / .15);
+  color: hsl(270 80% 75%);
+  border: 1px solid hsl(270 80% 60% / .3);
+}
+
+.lp-creator__feat-text { flex: 1; }
 
 /* ===============================================
    FOUNDER BADGES — scarcity grid

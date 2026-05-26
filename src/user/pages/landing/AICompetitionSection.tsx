@@ -3,11 +3,7 @@ import { Brain, Zap } from 'lucide-react';
 import { useScrollAnimation } from './hooks';
 import { useTranslation } from 'react-i18next';
 
-const TEAL = 'hsl(190 90% 52%)';
-const TEAL_BG = 'hsl(190 90% 50% / .15)';
-const TEAL_BORDER = 'hsl(190 90% 50% / .4)';
-const TEAL_ICON_BG = 'hsl(190 90% 50% / .2)';
-const TEAL_SHADOW = '0 0 30px -10px hsl(190 90% 50% / .15)';
+// Featured (Grok 3) styling moved to CSS — see .lp-model-card--featured
 
 function FighterHalfPlaceholder({ side, src }: { side: 'left' | 'right'; src: string }) {
     return (
@@ -48,7 +44,7 @@ export function AICompetitionSection() {
                         <div className="lp-model-card__body">
                             <div className="lp-model-card__label">{t('ai_arena.prediction')}</div>
                             <div className="lp-model-card__pick lp-model-card__pick--red">Makhachev</div>
-                            <div className="lp-feature2-card__desc" style={{ fontSize: '.85rem', marginTop: 8 }}>
+                            <div className="lp-feature2-card__desc lp-model-card__desc">
                                 Superior wrestling metrics and top control time neutralize Oliveira's offensive guard. Decision win.
                             </div>
                         </div>
@@ -60,23 +56,24 @@ export function AICompetitionSection() {
                         </div>
                     </div>
 
-                    <div className="lp-model-card lp-animate lp-animate-delay-2" style={{ borderColor: TEAL_BORDER, boxShadow: TEAL_SHADOW }}>
+                    <div className="lp-model-card lp-model-card--featured lp-animate lp-animate-delay-2">
+                        <span className="lp-model-card__badge">LEADING</span>
                         <div className="lp-model-card__header">
-                            <div className="lp-model-card__icon" style={{ background: TEAL_ICON_BG, color: TEAL }}>🚀</div>
-                            <div className="lp-model-card__name" style={{ color: TEAL }}>Grok 3</div>
+                            <div className="lp-model-card__icon">🚀</div>
+                            <div className="lp-model-card__name">Grok 3</div>
                         </div>
                         <div className="lp-model-card__body">
                             <div className="lp-model-card__label">{t('ai_arena.prediction')}</div>
                             <div className="lp-model-card__pick lp-model-card__pick--red">Makhachev</div>
-                            <div className="lp-feature2-card__desc" style={{ fontSize: '.85rem', marginTop: 8, color: 'hsl(210 20% 70%)' }}>
+                            <div className="lp-feature2-card__desc lp-model-card__desc">
                                 Oliveira absorbs 3.2 sig strikes per minute. Clinch control and defensive striking dictates the pace throughout.
                             </div>
                         </div>
                         <div className="lp-model-card__footer">
-                            <div className="lp-model-card__confidence lp-model-card__confidence--high" style={{ color: TEAL, background: TEAL_BG }}>
+                            <div className="lp-model-card__confidence lp-model-card__confidence--featured">
                                 <Zap size={14} /> 94% {t('ai_arena.confidence')}
                             </div>
-                            <div className="lp-model-card__label" style={{ color: TEAL }}>5 Units</div>
+                            <div className="lp-model-card__label lp-model-card__units">5 Units</div>
                         </div>
                     </div>
 
@@ -88,7 +85,7 @@ export function AICompetitionSection() {
                         <div className="lp-model-card__body">
                             <div className="lp-model-card__label">{t('ai_arena.prediction')}</div>
                             <div className="lp-model-card__pick lp-model-card__pick--blue">Oliveira</div>
-                            <div className="lp-feature2-card__desc" style={{ fontSize: '.85rem', marginTop: 8 }}>
+                            <div className="lp-feature2-card__desc lp-model-card__desc">
                                 Makhachev has never faced a submission threat at this level. Oliveira's front chokes negate the wrestling entry entirely.
                             </div>
                         </div>
@@ -100,7 +97,7 @@ export function AICompetitionSection() {
                         </div>
                     </div>
                 </div>
-                <p className="lp-animate" style={{ textAlign: 'center', marginTop: 32, fontSize: '1.15rem', color: 'hsl(210 20% 65%)', letterSpacing: '.04em' }}>
+                <p className="lp-animate lp-competition__footnote">
                     Every AI builds its own accuracy record. The leaderboard does not lie.
                 </p>
             </div>

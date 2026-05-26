@@ -16,40 +16,24 @@ export function CreatorEconomySection() {
 
   return (
     <section className="lp-section lp-creator-economy" ref={ref}>
-      <div className="lp-section__inner lp-animate" style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <span className="lp-section-label" style={{ justifyContent: 'center' }}>
+      <div className="lp-section__inner lp-creator__inner lp-animate">
+        <div className="lp-creator__head">
+          <span className="lp-section-label lp-creator__label">
             <Users size={14} /> {t('creator.label')}
           </span>
-          <h2 className="lp-section-title" style={{ margin: '16px auto 16px' }}>
+          <h2 className="lp-section-title lp-creator__title">
             {t('creator.title')}
           </h2>
-          <p style={{ fontSize: 16, lineHeight: 1.65, color: 'rgba(255,255,255,0.72)', maxWidth: 720, margin: '0 auto' }}>
-            {t('creator.desc')}
-          </p>
+          <p className="lp-creator__desc">{t('creator.desc')}</p>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: 14,
-          maxWidth: 920,
-          margin: '0 auto',
-        }}>
+        <div className="lp-creator__grid">
           {features.map((f, i) => (
-            <div key={i} style={{
-              display: 'flex',
-              gap: 12,
-              padding: '16px 18px',
-              background: 'rgba(181, 123, 255, 0.06)',
-              border: '1px solid rgba(181, 123, 255, 0.25)',
-              borderRadius: 6,
-              fontSize: 13,
-              lineHeight: 1.55,
-              color: 'rgba(255,255,255,0.85)',
-            }}>
-              <Check size={16} style={{ color: 'rgb(181, 123, 255)', flexShrink: 0, marginTop: 2 }} />
-              <span>{f}</span>
+            <div key={i} className="lp-creator__feat">
+              <span className="lp-creator__feat-icon">
+                <Check size={14} />
+              </span>
+              <span className="lp-creator__feat-text">{f}</span>
             </div>
           ))}
         </div>
