@@ -23,62 +23,36 @@ export function FounderBadgesSection({ onSignIn }: { onSignIn: () => void }) {
 
   return (
     <section className="lp-section lp-founder-badges" ref={ref}>
-      <div className="lp-section__inner lp-animate" style={{ padding: '80px 24px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <span className="lp-section-label" style={{ justifyContent: 'center' }}>
+      <div className="lp-section__inner lp-founder-badges__inner lp-animate">
+        <div className="lp-founder-badges__head">
+          <span className="lp-section-label lp-founder-badges__label">
             <Lock size={14} /> {t('founder_badges.label')}
           </span>
-          <h2 className="lp-section-title" style={{ margin: '16px auto 16px' }}>
+          <h2 className="lp-section-title lp-founder-badges__title">
             {t('founder_badges.title')}
           </h2>
-          <p style={{ fontSize: 16, lineHeight: 1.65, color: 'rgba(255,255,255,0.7)', maxWidth: 680, margin: '0 auto' }}>
-            {t('founder_badges.desc')}
-          </p>
+          <p className="lp-founder-badges__desc">{t('founder_badges.desc')}</p>
         </div>
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: 16,
-          marginBottom: 36,
-        }}>
+        <div className="lp-founder-badges__grid">
           {tiers.map((tier, i) => (
-            <div key={i} style={{
-              padding: '24px 20px',
-              background: 'rgba(20, 20, 28, 0.6)',
-              border: `1px solid ${tier.color}40`,
-              borderRadius: 8,
-              position: 'relative',
-              overflow: 'hidden',
-            }}>
-              <div style={{
-                position: 'absolute',
-                top: 0, right: 0,
-                padding: '4px 10px',
-                background: `${tier.color}20`,
-                borderLeft: `1px solid ${tier.color}40`,
-                borderBottom: `1px solid ${tier.color}40`,
-                color: tier.color,
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: 9,
-                letterSpacing: 1.5,
-                textTransform: 'uppercase',
-                fontWeight: 700,
-              }}>
-                {tier.status}
+            <div
+              key={i}
+              className="lp-fb-card"
+              style={{ '--fb-color': tier.color } as React.CSSProperties}
+            >
+              <span className="lp-fb-card__status">{tier.status}</span>
+              <Crown size={22} className="lp-fb-card__crown" />
+              <h3 className="lp-fb-card__title">{tier.title}</h3>
+              <p className="lp-fb-card__slots">{tier.slots}</p>
+              <div className="lp-fb-card__bar" aria-hidden="true">
+                <div className="lp-fb-card__bar-fill" />
               </div>
-              <Crown size={22} style={{ color: tier.color, marginBottom: 10 }} />
-              <h3 style={{ fontSize: 14, fontWeight: 800, color: tier.color, letterSpacing: 2, marginBottom: 6 }}>
-                {tier.title}
-              </h3>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
-                {tier.slots}
-              </p>
             </div>
           ))}
         </div>
 
-        <div style={{ textAlign: 'center' }}>
+        <div className="lp-founder-badges__cta">
           <button className="lp-btn lp-btn--primary" onClick={onSignIn}>
             <Crown size={16} /> {t('nav.get_started')}
           </button>

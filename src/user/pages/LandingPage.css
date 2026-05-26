@@ -2365,6 +2365,146 @@ a:focus-visible,
 }
 
 /* ===============================================
+   FOUNDER BADGES — scarcity grid
+   =============================================== */
+.lp-founder-badges__inner {
+  padding: 0 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.lp-founder-badges__head {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.lp-founder-badges__label { justify-content: center; }
+
+.lp-founder-badges__title {
+  margin: 16px auto 16px;
+}
+
+.lp-founder-badges__desc {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, .7);
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.lp-founder-badges__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.lp-founder-badges__cta {
+  text-align: center;
+}
+
+.lp-fb-card {
+  --fb-color: hsl(45 100% 60%);
+  position: relative;
+  padding: 24px 20px 28px;
+  background: linear-gradient(180deg, hsl(220 25% 9% / .8) 0%, hsl(220 25% 6% / .6) 100%);
+  border: 1px solid color-mix(in srgb, var(--fb-color) 28%, transparent);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
+}
+
+.lp-fb-card::before {
+  /* Faint corner glow keyed to the tier color */
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -40%;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--fb-color) 18%, transparent), transparent 70%);
+  pointer-events: none;
+  transition: opacity .4s ease;
+  opacity: .5;
+}
+
+.lp-fb-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--fb-color) 55%, transparent);
+  box-shadow:
+    0 16px 40px -16px color-mix(in srgb, var(--fb-color) 40%, transparent),
+    inset 0 1px 0 hsl(0 0% 100% / .04);
+}
+
+.lp-fb-card:hover::before { opacity: 1; }
+
+.lp-fb-card__status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 10px;
+  background: color-mix(in srgb, var(--fb-color) 14%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--fb-color) 30%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--fb-color) 30%, transparent);
+  color: var(--fb-color);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .56rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  border-radius: 0 10px 0 6px;
+}
+
+.lp-fb-card__crown {
+  color: var(--fb-color);
+  margin-bottom: 12px;
+  filter: drop-shadow(0 2px 8px color-mix(in srgb, var(--fb-color) 40%, transparent));
+}
+
+.lp-fb-card__title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .95rem;
+  font-weight: 800;
+  color: var(--fb-color);
+  letter-spacing: .14em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.lp-fb-card__slots {
+  font-size: .82rem;
+  color: rgba(255, 255, 255, .65);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+/* Scarcity bar — visualization of how full the tier is.
+   --fill defaults to 60% so all tiers look "filling up". Per-tier
+   override below for proper feel. */
+.lp-fb-card__bar {
+  position: relative;
+  height: 4px;
+  border-radius: 2px;
+  background: hsl(220 20% 14%);
+  overflow: hidden;
+}
+
+.lp-fb-card__bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--fb-fill, 70%);
+  background: linear-gradient(90deg, var(--fb-color), color-mix(in srgb, var(--fb-color) 60%, white));
+  box-shadow: 0 0 12px -2px color-mix(in srgb, var(--fb-color) 50%, transparent);
+}
+
+/* Per-tier scarcity feel: tier 1 (10 slots) almost gone, tier 4 (1000) early */
+.lp-fb-card:nth-child(1) { --fb-fill: 95%; }
+.lp-fb-card:nth-child(2) { --fb-fill: 78%; }
+.lp-fb-card:nth-child(3) { --fb-fill: 52%; }
+.lp-fb-card:nth-child(4) { --fb-fill: 28%; }
+
+/* ===============================================
    AI TOKEN PACKS — refactored from inline styles
    =============================================== */
 .lp-tokens {
@@ -3048,13 +3188,20 @@ a:focus-visible,
   font-weight: 700;
   color: hsl(210 20% 45%);
   cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.lp-conf-unit:hover:not(.lp-conf-unit--active) {
+  background: hsl(220 25% 11%);
+  border-color: hsl(354 70% 40% / .4);
+  color: hsl(210 30% 70%);
 }
 
 .lp-conf-unit--active {
-  background: hsl(354 90% 48%);
-  border-color: #8B0000;
+  background: linear-gradient(180deg, hsl(354 90% 52%), hsl(354 90% 40%));
+  border-color: hsl(354 90% 60%);
   color: hsl(0 0% 100%);
-  box-shadow: 0 0 12px -3px rgba(139, 0, 0, .4);
+  box-shadow: 0 4px 16px -4px hsl(354 90% 40% / .5);
 }
 
 .lp-picks-mockup__lock {
@@ -3074,7 +3221,13 @@ a:focus-visible,
   letter-spacing: .1em;
   color: hsl(0 0% 100%);
   cursor: pointer;
-  box-shadow: 0 4px 20px -6px rgba(139, 0, 0, .5);
+  box-shadow: 0 4px 20px -6px rgba(139, 0, 0, .5), inset 0 1px 0 hsl(354 90% 65% / .25);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.lp-picks-mockup__lock:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px -8px rgba(139, 0, 0, .65), inset 0 1px 0 hsl(354 90% 65% / .35);
 }
 
 /* ===============================================
