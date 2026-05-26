@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { RankingRow, RankingUser } from './RankingRow';
 import { Loader2, Trophy, Diamond } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { EmptyState } from '@/shared/components/ui/empty-state';
 import { useAuth } from '@/shared/hooks/use-auth';
 import { RankTier } from './RankBadge';
 import { cn } from '@/shared/lib/utils';
@@ -256,10 +257,12 @@ export const MMAMetricsRankings: React.FC = () => {
                     </AnimatePresence>
 
                     {rankings.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-16 text-center border rounded-xl border-white/10 bg-white/5">
-                            <Trophy className="h-12 w-12 text-white/20 mb-4" />
-                            <p className="text-white/60">No rankings available for this period yet.</p>
-                        </div>
+                        <EmptyState
+                            icon={Trophy}
+                            variant="card"
+                            title="No rankings yet"
+                            description="Be the first to lock picks this period — the leaderboard fills as fights resolve."
+                        />
                     )}
                     </div>
                     </div>
