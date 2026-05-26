@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useFighters } from '@/shared/hooks/useFighters';
 import { Loader2, ChevronLeft, ChevronRight, Calendar, MapPin, Flame, Users } from 'lucide-react';
+import { Skeleton } from '@/shared/components/ui/skeleton';
 import { cn } from '@/shared/lib/utils';
 import SEO from '@/shared/components/SEO';
 
@@ -285,9 +286,26 @@ export const EventListPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-yellow-500 mr-3" />
-        <span className="text-white/40 text-sm">Loading events…</span>
+      <div className="max-w-6xl mx-auto w-full space-y-6 py-6">
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-10 w-2/3 max-w-lg" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="bg-[#111] border border-white/10 rounded-2xl p-5 space-y-3">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-6 w-5/6" />
+              <div className="flex gap-2 pt-2">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+              <div className="pt-3 border-t border-white/5">
+                <Skeleton className="h-9 w-full rounded-lg" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

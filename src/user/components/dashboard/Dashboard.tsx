@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BettingTrackerWidget } from './BettingTrackerWidget';
 import { EventCountdown } from './EventCountdown';
 import { FriendsActivityFeed } from './FriendsActivityFeed';
+import { DashboardSkeleton } from './DashboardSkeleton';
 
 // Simple animated counter component
 const AnimatedCounter = ({ value, label, suffix = '' }: { value: number, label: string, suffix?: string }) => {
@@ -54,14 +55,7 @@ export const Dashboard: React.FC = () => {
     });
 
     if (isLoading) {
-        return (
-            <div className="flex flex-col items-center justify-center py-32 gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-[#E8A020]" />
-                <span className="text-xs font-black uppercase tracking-widest text-white/40">
-                    Loading Fighter Data...
-                </span>
-            </div>
-        );
+        return <DashboardSkeleton />;
     }
 
     if (!dashboard) return null;
