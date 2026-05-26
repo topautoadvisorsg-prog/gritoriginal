@@ -51,10 +51,15 @@ export const TopTabNavigation: React.FC = () => {
                             )}
                         >
                             <span className="text-[11px] font-black uppercase tracking-[0.15em]">{t(item.labelKey)}</span>
-                            
+
                             {/* Active Indicator Line */}
                             {isActive && (
                                 <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#E8A020] animate-in slide-in-from-bottom-1 fade-in duration-300 shadow-[0_0_10px_rgba(232,160,32,0.5)]" />
+                            )}
+
+                            {/* Inactive hover preview line — fades in on hover so users see click affordance */}
+                            {!isActive && (
+                                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-0 bg-white/30 transition-all duration-300 group-hover:w-full" />
                             )}
                         </Link>
                     );

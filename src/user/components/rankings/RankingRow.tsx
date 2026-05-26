@@ -107,14 +107,14 @@ export const RankingRow: React.FC<RankingRowProps> = ({
   return (
     <div
       className={cn(
-        "flex items-center gap-6 px-6 py-4 rounded-xl transition-all duration-200 group cursor-pointer",
+        "flex items-center gap-6 px-6 py-4 rounded-xl transition-all duration-200 group cursor-pointer hover:-translate-y-0.5",
         !disableAnimation && "animate-slide-up opacity-0",
         // Styling based on row
         isNumberOne
           ? "bg-gradient-to-r from-yellow-500/10 via-amber-500/5 to-transparent border border-yellow-500 shadow-[0_0_20px_rgba(245,158,11,0.15)] hover:shadow-[0_0_30px_rgba(245,158,11,0.25)] gold-shimmer-border"
           : isSelf
-            ? "bg-[#E8A020]/10 border-[#E8A020] shadow-[0_0_15px_rgba(232,160,32,0.2)]"
-            : "bg-[#111111]/80 border border-white/5 hover:border-white/20 hover:bg-[#1a1a1a]",
+            ? "bg-[#E8A020]/10 border-[#E8A020] shadow-[0_0_15px_rgba(232,160,32,0.2)] hover:shadow-[0_0_25px_rgba(232,160,32,0.3)]"
+            : "bg-[#111111]/80 border border-white/5 hover:border-white/20 hover:bg-[#1a1a1a] hover:shadow-[0_8px_24px_-12px_rgba(0,0,0,0.6)]",
         className
       )}
       style={{ animationDelay, animationFillMode: 'forwards' }}

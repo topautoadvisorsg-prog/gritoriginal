@@ -256,7 +256,7 @@ export const Dashboard: React.FC = () => {
                 </div>
 
                 {/* RECENT PERFORMANCE */}
-                <div className="flex flex-col bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover-grow relative group">
+                <div className="flex flex-col bg-[#111] border border-white/10 rounded-3xl overflow-hidden hover-glow relative group">
                     {recent?.isNearPerfect ? (
                         <div className="bg-green-500/20 w-full py-2.5 px-4 text-center border-b border-green-500/30">
                             <span className="text-[10px] md:text-xs uppercase font-black tracking-widest text-green-400">
