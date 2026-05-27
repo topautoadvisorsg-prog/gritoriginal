@@ -79,6 +79,7 @@ const envSchema = z.object({
 
   // Optional override for OIDC return URL (reverse-proxy setups)
   CUSTOM_DOMAIN: z.string().optional(),
+  RAILWAY_PUBLIC_DOMAIN: z.string().optional(),
 
   // Legacy Replit OIDC (removed when Clerk ships)
   REPL_ID: z.string().optional(),

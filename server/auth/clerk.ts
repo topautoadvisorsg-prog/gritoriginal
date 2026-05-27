@@ -35,7 +35,7 @@ import { logger } from '../utils/logger';
 // ────────────────────────────────────────────────────────────────────────────
 
 if (!env.ADMIN_EMAIL) {
-  throw new Error('ADMIN_EMAIL environment variable is required for admin bootstrap.');
+  logger.warn('[clerk] ADMIN_EMAIL is not set. Email-based admin bootstrap is disabled.');
 }
 const ADMIN_EMAIL = env.ADMIN_EMAIL;
 
@@ -112,7 +112,7 @@ export const requireAdmin: RequestHandler = async (req, res, next) => {
     const role = clerkUser.publicMetadata?.role;
     const primaryEmail = clerkUser.emailAddresses.find(e => e.id === clerkUser.primaryEmailAddressId)?.emailAddress;
 
-    if (role === 'admin' || primaryEmail === ADMIN_EMAIL) {
+    if (role === 'admin' || (ADMIN_EMAIL && primaryEmail === ADMIN_EMAIL)) {
       return next();
     }
 
@@ -210,7 +210,7 @@ export async function isAdmin(req: Request): Promise<boolean> {
     const clerkUser = await clerkClient.users.getUser(auth.userId);
     const role = clerkUser.publicMetadata?.role;
     const primaryEmail = clerkUser.emailAddresses.find(e => e.id === clerkUser.primaryEmailAddressId)?.emailAddress;
-    return role === 'admin' || primaryEmail === ADMIN_EMAIL;
+    return role === 'admin' || Boolean(ADMIN_EMAIL && primaryEmail === ADMIN_EMAIL);
   } catch {
     return false;
   }

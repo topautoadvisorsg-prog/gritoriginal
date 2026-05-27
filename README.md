@@ -2,7 +2,7 @@
 
 **MMA intelligence + fantasy prediction platform.** Not a sportsbook. Fans compete on real fight cards using real data, real odds, and AI.
 
-> 🕒 **Last Updated:** 2026-05-23 by Claudio (late night — landing page rewrite)
+> 🕒 **Last Updated:** 2026-05-27 by Cody (Railway deploy hardening)
 > 📍 **Current Status:** Phase 1 · Week 1 (Auth + Stack Provisioning) — scaffolding done, waiting on founder's provisioning sprint
 > 🧪 **Build State:** 90/90 Vitest tests passing · Pipeline smoke 7/7 passing · Production build passes · audit 39→10 moderate · DB 52 tables on Supabase us-west-2
 
@@ -24,6 +24,9 @@ Skip the rest of this README and start with `STATUS.md`.
 ## Recent Changes Log
 
 Anyone reviewing should add a dated entry to the top whenever they ship something meaningful. Keep it tight — one line per session.
+
+### 2026-05-27 - Cody
+- Hardened Railway deployment startup: build installs dev dependencies for Vite, Express binds to `0.0.0.0`, missing `ADMIN_EMAIL` no longer crashes boot, and Socket.IO accepts Railway/custom domains instead of requiring Replit domain env.
 
 ### 2026-05-26 - Cody
 - Clerk CLI setup completed for app `app_3EGsEMT8R3SfiR84VAShHSOxW1c`; local Clerk env pulled without reading/printing `.env`, frontend and backend auth cut over to Clerk, sign-in/sign-up/user controls added, and verification passed (`clerk doctor`, typecheck, build, 90/90 tests, pipeline smoke 7/7).

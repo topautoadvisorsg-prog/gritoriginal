@@ -10,9 +10,7 @@ import { logger } from '../utils/logger';
 const ADMIN_EMAIL = env.ADMIN_EMAIL;
 
 if (!ADMIN_EMAIL) {
-  throw new Error(
-    'ADMIN_EMAIL environment variable is required. Set it in your environment before starting the server.',
-  );
+  logger.warn('[auth] ADMIN_EMAIL is not set. Email-based admin bootstrap is disabled.');
 }
 
 const TIER_LEVELS: Record<string, number> = {
@@ -50,7 +48,7 @@ async function resolveClerkUser(req: Request): Promise<Express.User | null> {
   const [existing] = await db.select().from(users).where(eq(users.id, auth.userId)).limit(1);
 
   if (existing) {
-    const bootstrapAdmin = existing.email === ADMIN_EMAIL;
+    const bootstrapAdmin = Boolean(ADMIN_EMAIL && existing.email === ADMIN_EMAIL);
     return {
       id: existing.id,
       email: existing.email,
@@ -69,7 +67,7 @@ async function resolveClerkUser(req: Request): Promise<Express.User | null> {
   const primaryEmail =
     clerkUser.emailAddresses.find(e => e.id === clerkUser.primaryEmailAddressId)?.emailAddress ?? null;
   const roleFromClerk = clerkUser.publicMetadata?.role === 'admin' ? 'admin' : undefined;
-  const bootstrapAdmin = primaryEmail === ADMIN_EMAIL;
+  const bootstrapAdmin = Boolean(ADMIN_EMAIL && primaryEmail === ADMIN_EMAIL);
 
   const [created] = await db
     .insert(users)
@@ -121,7 +119,7 @@ export const requireAdmin: RequestHandler = (req, res, next) => {
     return res.status(401).json({ message: 'Unauthorized: Not authenticated' });
   }
 
-  if (req.user.role === 'admin' || req.user.email === ADMIN_EMAIL) {
+  if (req.user.role === 'admin' || (ADMIN_EMAIL && req.user.email === ADMIN_EMAIL)) {
     return next();
   }
 

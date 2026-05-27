@@ -1,13 +1,13 @@
 # GRIT — Live Status
 
-> **Latest update 2026-05-26 by Cody:** Clerk CLI setup is complete for development app `app_3EGsEMT8R3SfiR84VAShHSOxW1c`; frontend and backend cutover are wired, local Clerk env has been pulled without reading/printing `.env`, and verification is green (`clerk doctor`, `npx tsc --noEmit`, `npm run build`, `npm run test` = 90/90, `npm run smoke:pipeline` = 7/7). Clerk Doctor still notes production instance is not configured.
+> **Latest update 2026-05-27 by Cody:** Railway build now passes and runtime startup was hardened for Railway: build installs dev deps for Vite, Express binds to `0.0.0.0`, missing `ADMIN_EMAIL` disables email bootstrap instead of crashing, and Socket.IO accepts Railway/custom domains instead of requiring Replit env. Verification: `npx tsc --noEmit`, `npm run test` = 90/90, `npm run build`, local `npm start` + `/api/health` = 200.
 > **The handoff doc.** Whoever opens the repo next picks up from here. Only one dev works at a time. No collision concerns — just a clean "what's done, what's next" baton pass.
 >
 > Different from `HANDOFF.md` (cold-pickup onboarding) and `SPEC.md` (the build plan).
 
 ---
 
-## Snapshot — Updated 2026-05-23 by Cody
+## Snapshot — Updated 2026-05-27 by Cody
 
 | Field | Value |
 |---|---|

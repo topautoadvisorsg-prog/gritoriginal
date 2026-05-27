@@ -13,14 +13,26 @@ interface SocketRequest {
 let io: SocketIOServer | null = null;
 
 // Production CORS validation
-function getAllowedOrigins(): string[] {
+function getAllowedOrigins(): string[] | boolean {
     if (env.NODE_ENV !== 'production') {
         return ['*'];
     }
-    if (!env.REPLIT_DEV_DOMAIN) {
-        throw new Error('REPLIT_DEV_DOMAIN must be set in production');
+
+    const domains = [
+        env.CUSTOM_DOMAIN,
+        env.RAILWAY_PUBLIC_DOMAIN,
+        env.REPLIT_DEV_DOMAIN,
+        ...(env.REPLIT_DOMAINS?.split(',') ?? []),
+    ]
+        .map(domain => domain?.trim())
+        .filter((domain): domain is string => Boolean(domain));
+
+    if (domains.length === 0) {
+        logger.warn('[socket] No production domain configured. Allowing Socket.IO origins until CUSTOM_DOMAIN or RAILWAY_PUBLIC_DOMAIN is set.');
+        return true;
     }
-    return [`https://${env.REPLIT_DEV_DOMAIN}`];
+
+    return domains.map(domain => (domain.startsWith('http') ? domain : `https://${domain}`));
 }
 
 export const socketService = {
