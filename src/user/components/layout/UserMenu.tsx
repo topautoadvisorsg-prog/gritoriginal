@@ -11,7 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { Link } from "react-router-dom";
-import { LogIn, LogOut, Settings, Shield, Loader2, Trophy } from "lucide-react";
+import { LogIn, LogOut, Settings, Shield, Loader2, Trophy, UserPlus } from "lucide-react";
+import { SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
 
 export function UserMenu() {
   const { user, isLoading, isAuthenticated, logout } = useAuth();
@@ -25,25 +26,21 @@ export function UserMenu() {
   }
 
   if (!isAuthenticated) {
-    const handleLogin = () => {
-      // window.location.href = "/api/login";
-      // Use Supabase login
-      // We need to cast useAuth return type if it doesn't strictly match yet, 
-      // but we just added login to it.
-      (useAuth() as any).login();
-    };
-
     return (
-      <Button
-        variant="outline"
-        size="sm"
-        className="gap-2"
-        onClick={handleLogin}
-        data-testid="button-login"
-      >
-        <LogIn className="w-4 h-4" />
-        Login
-      </Button>
+      <div className="flex items-center gap-2">
+        <SignInButton mode="modal">
+          <Button variant="outline" size="sm" className="gap-2" data-testid="button-login">
+            <LogIn className="w-4 h-4" />
+            Sign in
+          </Button>
+        </SignInButton>
+        <SignUpButton mode="modal">
+          <Button size="sm" className="gap-2" data-testid="button-sign-up">
+            <UserPlus className="w-4 h-4" />
+            Sign up
+          </Button>
+        </SignUpButton>
+      </div>
     );
   }
 
@@ -71,15 +68,20 @@ export function UserMenu() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <div className="flex items-center gap-2">
-              <p className="text-sm font-black leading-none display-font italic uppercase tracking-tight">{displayName}</p>
-              <span className="text-sm">
-                {getCountryFlag((user as any)?.country || "")}
-              </span>
+            <div className="flex items-center gap-3">
+              <UserButton afterSignOutUrl="/" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-black leading-none display-font italic uppercase tracking-tight truncate">{displayName}</p>
+                  <span className="text-sm">
+                    {getCountryFlag((user as any)?.country || "")}
+                  </span>
+                </div>
+                <p className="text-[10px] leading-none text-muted-foreground uppercase font-medium truncate mt-1">
+                  {(user as any)?.email}
+                </p>
+              </div>
             </div>
-            <p className="text-[10px] leading-none text-muted-foreground uppercase font-medium">
-              {(user as any)?.email}
-            </p>
             <div className="flex items-center gap-1 mt-1" title="Intelligence Level">
               <Trophy className="w-3 h-3 text-yellow-500" />
               <span className="text-xs text-muted-foreground">{totalPoints} pts</span>

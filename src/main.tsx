@@ -4,6 +4,14 @@ import App from "./App.tsx";
 import "./index.css";
 import './i18n';
 import * as Sentry from "@sentry/react";
+import { ClerkProvider } from "@clerk/clerk-react";
+import { shadcn } from "@clerk/ui/themes";
+
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!clerkPublishableKey) {
+  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY. Add it to your local environment before starting GRIT.");
+}
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -21,7 +29,13 @@ if (import.meta.env.VITE_SENTRY_DSN) {
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Sentry.ErrorBoundary fallback={<p>An error occurred</p>}>
-      <App />
+      <ClerkProvider
+        publishableKey={clerkPublishableKey}
+        afterSignOutUrl="/"
+        appearance={{ theme: shadcn }}
+      >
+        <App />
+      </ClerkProvider>
     </Sentry.ErrorBoundary>
   </React.StrictMode>
 );

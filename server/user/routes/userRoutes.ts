@@ -176,16 +176,18 @@ export function registerUserRoutes(app: Express): void {
       // Delete user identity
       await db.delete(users).where(eq(users.id, userId));
 
-      // Destroy session
-      req.logout(() => {
-        req.session?.destroy((err) => {
-          if (err) {
-            logger.error("Error destroying session during account deletion:", err);
-          }
-          res.clearCookie("connect.sid");
-          res.json({ message: "Account deleted successfully." });
-        });
-      });
+      // Also delete from Clerk — otherwise the same JWT will hydrate a fresh
+      // users row on the next request and "resurrect" the deleted account.
+      try {
+        const { clerkClient } = await import("@clerk/express");
+        await clerkClient.users.deleteUser(userId);
+      } catch (clerkError) {
+        // Log but don't fail — local data is already wiped. The orphaned
+        // Clerk account can be cleaned up manually if this errors.
+        logger.error("Error deleting Clerk user during account deletion:", clerkError);
+      }
+
+      res.json({ message: "Account deleted successfully." });
     } catch (error) {
       logger.error("Error deleting account:", error);
       res.status(500).json({ message: "Failed to delete account" });

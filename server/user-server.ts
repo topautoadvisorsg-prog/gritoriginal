@@ -12,8 +12,8 @@ if (process.env.SENTRY_DSN) {
   });
 }
 
-import { setupAuth, registerAuthRoutes, registerReplitOIDCRoutes } from "./replit_integrations/auth";
 import { isAuthenticated, requireAdmin } from "./auth/guards";
+import { clerkMiddleware } from "./auth/clerk";
 
 // Admin routes — mounted directly for single-port production compatibility
 import { registerAdminRoutes } from "./admin/routes/adminRoutes";
@@ -93,10 +93,8 @@ async function startUserServer() {
       res.status(200).json({ status: 'ok', uptime: process.uptime() });
     });
 
-    // Shared Auth (Passport & Session)
-    await setupAuth(app);
-    registerAuthRoutes(app);
-    registerReplitOIDCRoutes(app);
+    // Shared Auth (Clerk)
+    app.use(clerkMiddleware);
 
     app.use(requestLogger);
 

@@ -17,6 +17,8 @@ import PrivacyPolicy from "./legal/PrivacyPolicy";
 import CookiePolicy from "./legal/CookiePolicy";
 import CreatorAgreement from "./legal/CreatorAgreement";
 import AcceptableUsePolicy from "./legal/AcceptableUsePolicy";
+import SignInPage from "./auth/SignInPage";
+import SignUpPage from "./auth/SignUpPage";
 import FightDetail from "./user/pages/FightDetail";
 import Settings from "./user/pages/Settings";
 import AdminFightCards from "@/admin/pages/AdminFightCards";
@@ -129,6 +131,8 @@ function AppRoutes() {
         <Route path="/cookie" element={<CookiePolicy />} />
         <Route path="/creator-agreement" element={<CreatorAgreement />} />
         <Route path="/aup" element={<AcceptableUsePolicy />} />
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <MobileBottomNav />

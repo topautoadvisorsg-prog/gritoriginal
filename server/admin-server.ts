@@ -2,8 +2,8 @@ import 'dotenv/config';
 import './config/env';
 import './types/express';
 import express from "express";
-import { setupAuth, registerAuthRoutes, registerReplitOIDCRoutes } from "./replit_integrations/auth";
-import { requireAdmin } from "./auth/guards";
+import { isAuthenticated, requireAdmin } from "./auth/guards";
+import { clerkMiddleware } from "./auth/clerk";
 
 import { registerAdminRoutes } from "./admin/routes/adminRoutes";
 import { registerAdminManagementRoutes } from "./admin/routes/adminManagementRoutes";
@@ -36,15 +36,12 @@ async function startAdminServer() {
 
     app.use(express.json({ limit: '50mb' }));
 
-    // Shared Auth for Session recognition
-    await setupAuth(app);
-    // Optional: OIDC / normal login could be mounted here if admin logs in directly to this URL via a portal
-    registerAuthRoutes(app);
-    registerReplitOIDCRoutes(app);
+    // Shared Auth (Clerk)
+    app.use(clerkMiddleware);
 
     // GLOBAL ADMIN ENFORCEMENT
     // Protect all /api/admin routes implicitly (Zero trust logic)
-    app.use('/api/admin', authApiLimiter, requireAdmin);
+    app.use('/api/admin', authApiLimiter, isAuthenticated, requireAdmin);
 
     // Mount Admin Only Routes
     registerAdminRoutes(app);

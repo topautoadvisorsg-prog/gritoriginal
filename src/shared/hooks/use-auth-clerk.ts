@@ -42,9 +42,49 @@ export function useAuth() {
   });
 
   const isLoading = !clerkLoaded || (isSignedIn && localLoading);
+  const fallbackUser: AuthUser | null = clerkUser
+    ? {
+        id: clerkUser.id,
+        email: clerkUser.primaryEmailAddress?.emailAddress ?? null,
+        firstName: clerkUser.firstName ?? null,
+        lastName: clerkUser.lastName ?? null,
+        profileImageUrl: clerkUser.imageUrl ?? null,
+        username: null,
+        avatarUrl: clerkUser.imageUrl ?? null,
+        socialLinks: {},
+        privacySettings: { showAvatar: true, showSocialLinks: true, showUsername: true },
+        role: 'user',
+        tier: 'free',
+        totalPoints: 0,
+        isVerified: false,
+        country: null,
+        language: 'en',
+        featuredInfluencer: false,
+        starLevel: 0,
+        progressBadge: 'none',
+        currentStreak: 0,
+        maxStreak: 0,
+        lastProgressionCalc: null,
+        monthlyLoginCount: 0,
+        lastLoginMonth: null,
+        lastLoginDate: null,
+        isAiChatBlocked: false,
+        subscriptionId: null,
+        subscriptionStatus: null,
+        currentPeriodEnd: null,
+        subscriptionStartDate: null,
+        yellowRedFlagsUsed: 0,
+        flagBudget: 0,
+        currentEventId: null,
+        lastFlagResetAt: null,
+        createdAt: null,
+        updatedAt: null,
+        permissions: [],
+      }
+    : null;
 
   return {
-    user: localUser ?? null,
+    user: localUser ?? fallbackUser,
     clerkUser: clerkUser ?? null,
     isLoading,
     isAuthenticated: !!isSignedIn,

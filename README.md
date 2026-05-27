@@ -25,6 +25,9 @@ Skip the rest of this README and start with `STATUS.md`.
 
 Anyone reviewing should add a dated entry to the top whenever they ship something meaningful. Keep it tight — one line per session.
 
+### 2026-05-26 - Cody
+- Clerk CLI setup completed for app `app_3EGsEMT8R3SfiR84VAShHSOxW1c`; local Clerk env pulled without reading/printing `.env`, frontend and backend auth cut over to Clerk, sign-in/sign-up/user controls added, and verification passed (`clerk doctor`, typecheck, build, 90/90 tests, pipeline smoke 7/7).
+
 ### 2026-05-23 · Claudio (late night — landing page rewrite)
 - ✅ Full rewrite of `public/locales/en/translation.json` — sharper copy, blueprint-correct positioning ("MMA intelligence, not a sportsbook"), Founder badge urgency baked in, mission-driven CTAs.
 - ✅ Killed the wrong "Pro $9.99" tier from PricingSection (not in blueprint). Now shows Contender (free) + Challenger ($4.99) + separate **AI Token Packs** add-on row ($5/$10/$20) matching blueprint §18.
