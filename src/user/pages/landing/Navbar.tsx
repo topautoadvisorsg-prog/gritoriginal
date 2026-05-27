@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Swords, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react';
+import { isClerkEnabled } from '@/auth/clerkConfig';
 
 const LANGUAGES = [
     { code: 'en', label: 'English', flag: '🇺🇸' },
@@ -78,17 +79,26 @@ export function Navbar({ onSignIn: _onSignIn }: { onSignIn: () => void }) {
                     <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('how-it-works')}>{t('nav.how_it_works')}</button>
                     <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('pricing')}>{t('nav.pricing')}</button>
                     <LanguageSelector />
-                    <SignedOut>
-                        <SignInButton mode="modal">
-                            <button type="button" className="lp-nav__link lp-nav__login">{t('common.login')}</button>
-                        </SignInButton>
-                        <SignUpButton mode="modal">
-                            <button type="button" className="lp-btn lp-btn--primary lp-nav__cta">{t('nav.get_started')}</button>
-                        </SignUpButton>
-                    </SignedOut>
-                    <SignedIn>
-                        <UserButton afterSignOutUrl="/" />
-                    </SignedIn>
+                    {isClerkEnabled ? (
+                        <>
+                            <SignedOut>
+                                <SignInButton mode="modal">
+                                    <button type="button" className="lp-nav__link lp-nav__login">{t('common.login')}</button>
+                                </SignInButton>
+                                <SignUpButton mode="modal">
+                                    <button type="button" className="lp-btn lp-btn--primary lp-nav__cta">{t('nav.get_started')}</button>
+                                </SignUpButton>
+                            </SignedOut>
+                            <SignedIn>
+                                <UserButton afterSignOutUrl="/" />
+                            </SignedIn>
+                        </>
+                    ) : (
+                        <>
+                            <button type="button" className="lp-nav__link lp-nav__login" disabled>{t('common.login')}</button>
+                            <button type="button" className="lp-btn lp-btn--primary lp-nav__cta" disabled>{t('nav.get_started')}</button>
+                        </>
+                    )}
                 </div>
             </div>
         </nav>

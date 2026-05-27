@@ -13,6 +13,7 @@ import {
 import { Link } from "react-router-dom";
 import { LogIn, LogOut, Settings, Shield, Loader2, Trophy, UserPlus } from "lucide-react";
 import { SignInButton, SignUpButton, UserButton } from "@clerk/clerk-react";
+import { isClerkEnabled } from "@/auth/clerkConfig";
 
 export function UserMenu() {
   const { user, isLoading, isAuthenticated, logout } = useAuth();
@@ -26,6 +27,21 @@ export function UserMenu() {
   }
 
   if (!isAuthenticated) {
+    if (!isClerkEnabled) {
+      return (
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="gap-2" data-testid="button-login" disabled>
+            <LogIn className="w-4 h-4" />
+            Sign in
+          </Button>
+          <Button size="sm" className="gap-2" data-testid="button-sign-up" disabled>
+            <UserPlus className="w-4 h-4" />
+            Sign up
+          </Button>
+        </div>
+      );
+    }
+
     return (
       <div className="flex items-center gap-2">
         <SignInButton mode="modal">
@@ -69,7 +85,7 @@ export function UserMenu() {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <div className="flex items-center gap-3">
-              <UserButton afterSignOutUrl="/" />
+              {isClerkEnabled ? <UserButton afterSignOutUrl="/" /> : null}
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-black leading-none display-font italic uppercase tracking-tight truncate">{displayName}</p>

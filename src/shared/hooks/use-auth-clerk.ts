@@ -19,6 +19,7 @@
 import { useAuth as useClerkAuth, useUser, useClerk } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import type { AuthUser } from '../../../shared/models/auth';
+import { isClerkEnabled } from '@/auth/clerkConfig';
 
 async function fetchLocalUser(): Promise<AuthUser | null> {
   const res = await fetch('/api/me', { credentials: 'include' });
@@ -28,6 +29,18 @@ async function fetchLocalUser(): Promise<AuthUser | null> {
 }
 
 export function useAuth() {
+  if (!isClerkEnabled) {
+    return {
+      user: null,
+      clerkUser: null,
+      isLoading: false,
+      isAuthenticated: false,
+      login: () => undefined,
+      logout: () => undefined,
+      isLoggingOut: false,
+    };
+  }
+
   const { isLoaded: clerkLoaded, isSignedIn } = useClerkAuth();
   const { user: clerkUser } = useUser();
   const clerk = useClerk();

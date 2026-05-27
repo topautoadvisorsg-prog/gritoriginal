@@ -26,6 +26,7 @@ Skip the rest of this README and start with `STATUS.md`.
 Anyone reviewing should add a dated entry to the top whenever they ship something meaningful. Keep it tight — one line per session.
 
 ### 2026-05-27 - Cody
+- Fixed production blank page when `VITE_CLERK_PUBLISHABLE_KEY` is missing; frontend now boots public landing without Clerk and disables auth controls until Clerk is configured.
 - Fixed Railway runtime 502 caused by Clerk middleware requiring missing production Clerk keys; middleware now disables itself until `CLERK_SECRET_KEY` + `CLERK_PUBLISHABLE_KEY` are configured, preserving public/health/static routes.
 - Hardened Railway deployment startup: build installs dev dependencies for Vite, Express binds to `0.0.0.0`, missing `ADMIN_EMAIL` no longer crashes boot, and Socket.IO accepts Railway/custom domains instead of requiring Replit domain env.
 

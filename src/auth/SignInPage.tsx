@@ -1,6 +1,26 @@
 import { SignIn } from '@clerk/clerk-react';
+import { isClerkEnabled } from './clerkConfig';
 
 export function SignInPage() {
+  if (!isClerkEnabled) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'hsl(220 25% 6%)',
+          color: 'hsl(0 0% 95%)',
+          padding: 24,
+          textAlign: 'center',
+        }}
+      >
+        Clerk authentication is not configured yet.
+      </div>
+    );
+  }
+
   return (
     <div
       style={{

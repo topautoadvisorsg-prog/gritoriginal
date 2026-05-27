@@ -6,12 +6,7 @@ import './i18n';
 import * as Sentry from "@sentry/react";
 import { ClerkProvider } from "@clerk/clerk-react";
 import { shadcn } from "@clerk/ui/themes";
-
-const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-if (!clerkPublishableKey) {
-  throw new Error("Missing VITE_CLERK_PUBLISHABLE_KEY. Add it to your local environment before starting GRIT.");
-}
+import { clerkPublishableKey, isClerkEnabled } from "./auth/clerkConfig";
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -26,16 +21,22 @@ if (import.meta.env.VITE_SENTRY_DSN) {
   });
 }
 
+const app = isClerkEnabled ? (
+  <ClerkProvider
+    publishableKey={clerkPublishableKey}
+    afterSignOutUrl="/"
+    appearance={{ theme: shadcn }}
+  >
+    <App />
+  </ClerkProvider>
+) : (
+  <App />
+);
+
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <Sentry.ErrorBoundary fallback={<p>An error occurred</p>}>
-      <ClerkProvider
-        publishableKey={clerkPublishableKey}
-        afterSignOutUrl="/"
-        appearance={{ theme: shadcn }}
-      >
-        <App />
-      </ClerkProvider>
+      {app}
     </Sentry.ErrorBoundary>
   </React.StrictMode>
 );
