@@ -1,6 +1,6 @@
 # GRIT — Live Status
 
-> **Latest update 2026-05-27 by Cody:** Railway build now passes and runtime startup was hardened for Railway: build installs dev deps for Vite, Express binds to `0.0.0.0`, missing `ADMIN_EMAIL` disables email bootstrap instead of crashing, and Socket.IO accepts Railway/custom domains instead of requiring Replit env. Verification: `npx tsc --noEmit`, `npm run test` = 90/90, `npm run build`, local `npm start` + `/api/health` = 200.
+> **Latest update 2026-05-27 by Cody:** Railway build now passes and runtime startup was hardened for Railway: build installs dev deps for Vite, Express binds to `0.0.0.0`, missing `ADMIN_EMAIL` disables email bootstrap instead of crashing, Socket.IO accepts Railway/custom domains, and Clerk middleware disables itself until production Clerk keys are configured. Verification: `npx tsc --noEmit`, `npm run test` = 90/90, `npm run build`, local `npm start` with Clerk keys blank + `/api/health` = 200 and `/` = 200.
 > **The handoff doc.** Whoever opens the repo next picks up from here. Only one dev works at a time. No collision concerns — just a clean "what's done, what's next" baton pass.
 >
 > Different from `HANDOFF.md` (cold-pickup onboarding) and `SPEC.md` (the build plan).

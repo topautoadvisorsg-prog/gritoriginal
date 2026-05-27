@@ -45,6 +45,12 @@ if (!env.CLERK_SECRET_KEY) {
   logger.warn('[clerk] CLERK_SECRET_KEY not set. Clerk auth will reject all requests until configured.');
 }
 
+if (!env.CLERK_PUBLISHABLE_KEY) {
+  logger.warn('[clerk] CLERK_PUBLISHABLE_KEY not set. Clerk middleware is disabled until configured.');
+}
+
+const hasClerkConfig = Boolean(env.CLERK_SECRET_KEY && env.CLERK_PUBLISHABLE_KEY);
+
 // ────────────────────────────────────────────────────────────────────────────
 // Middleware — mount globally
 // ────────────────────────────────────────────────────────────────────────────
@@ -53,7 +59,9 @@ if (!env.CLERK_SECRET_KEY) {
  * Global Clerk middleware. Attaches `req.auth()` to every request without
  * blocking unauthenticated requests (use `requireAuth` per-route for that).
  */
-export const clerkMiddleware = clerkExpressMiddleware();
+export const clerkMiddleware: RequestHandler = hasClerkConfig
+  ? clerkExpressMiddleware()
+  : (_req, _res, next) => next();
 
 // ────────────────────────────────────────────────────────────────────────────
 // User resolution
