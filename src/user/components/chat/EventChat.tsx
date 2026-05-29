@@ -201,6 +201,7 @@ export const EventChat: React.FC<EventChatProps> = ({ eventId }) => {
                         onClick={handleSend}
                         disabled={!newMessage.trim() || sendMutation.isPending}
                         size="icon"
+                        aria-label="Send message"
                         data-testid="chat-send"
                     >
                         {sendMutation.isPending ? (

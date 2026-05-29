@@ -353,7 +353,7 @@ function FightRow({
           className="text-muted-foreground hover:text-foreground text-xs px-0.5 rounded"
           title="+5 min"
         >+5</button>
-        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onRemove(fight.id)}>
+        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => onRemove(fight.id)} aria-label="Remove fight">
           <Trash2 className="h-3 w-3 text-red-400" />
         </Button>
       </div>
@@ -441,7 +441,7 @@ function CardSectionPanel({
             <Button size="sm" variant="outline" onClick={onOpenAdd} disabled={addingHere} className="h-7 text-xs">
               <Plus className="h-3 w-3 mr-1" />Add Fight
             </Button>
-            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setCollapsed(!collapsed)}>
+            <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setCollapsed(!collapsed)} aria-label={collapsed ? 'Expand' : 'Collapse'}>
               {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
             </Button>
           </div>

@@ -495,6 +495,7 @@ function MessageFeed() {
                                                     size="icon"
                                                     className="h-7 w-7 text-destructive hover:text-destructive"
                                                     onClick={() => setConfirmDelete(msg)}
+                                                    aria-label="Delete message"
                                                 >
                                                     <Trash2 className="h-3.5 w-3.5" />
                                                 </Button>

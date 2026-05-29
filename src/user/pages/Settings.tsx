@@ -250,7 +250,7 @@ export default function Settings() {
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/">
-            <Button variant="ghost" size="icon" data-testid="button-back">
+            <Button variant="ghost" size="icon" aria-label="Back" data-testid="button-back">
               <ArrowLeft className="w-5 h-5" />
             </Button>
           </Link>

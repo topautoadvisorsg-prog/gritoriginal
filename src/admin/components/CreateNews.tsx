@@ -415,6 +415,7 @@ export const CreateNews = () => {
                         variant="outline"
                         size="icon"
                         onClick={() => handleEdit(article)}
+                        aria-label="Edit article"
                         data-testid={`button-edit-${article.id}`}
                       >
                         <Edit className="h-4 w-4" />
@@ -424,6 +425,7 @@ export const CreateNews = () => {
                         size="icon"
                         onClick={() => deleteMutation.mutate(article.id)}
                         disabled={deleteMutation.isPending}
+                        aria-label="Delete article"
                         data-testid={`button-delete-${article.id}`}
                       >
                         <Trash2 className="h-4 w-4 text-destructive" />
