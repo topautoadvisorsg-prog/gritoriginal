@@ -15,9 +15,9 @@ function StepVisual01() {
         <rect x="44" y="18" width="36" height="7" rx="3" fill="hsl(210 20% 40%)" />
         <rect x="44" y="30" width="40" height="5" rx="2.5" fill="hsl(210 20% 20%)" />
         <rect x="44" y="40" width="28" height="5" rx="2.5" fill="hsl(210 20% 20%)" />
-        <rect x="6" y="56" width="22" height="10" rx="5" fill="hsl(142 71% 45% / .15)" stroke="hsl(142 71% 50% / .4)" strokeWidth="0.5" />
+        <rect x="6" y="56" width="22" height="10" rx="5" fill="hsl(150 60% 45% / .15)" stroke="hsl(150 60% 50% / .4)" strokeWidth="0.5" />
         <rect x="32" y="56" width="22" height="10" rx="5" fill="hsl(354 90% 52% / .1)" stroke="hsl(354 90% 52% / .3)" strokeWidth="0.5" />
-        <text x="17" y="64" textAnchor="middle" fill="hsl(142 71% 55%)" fontSize="5" fontFamily="'JetBrains Mono', monospace">🥷 NINJA</text>
+        <text x="17" y="64" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="5" fontFamily="'JetBrains Mono', monospace">🥷 NINJA</text>
         <text x="43" y="64" textAnchor="middle" fill="hsl(354 90% 62%)" fontSize="5" fontFamily="'JetBrains Mono', monospace">USA 🇺🇸</text>
       </svg>
     </div>
@@ -59,7 +59,7 @@ function StepVisual03() {
         ))}
         <polyline
           points="16,54 28,50 40,45 52,42 64,35 76,28 88,20 100,14"
-          stroke="hsl(142 71% 50%)"
+          stroke="hsl(150 60% 50%)"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
@@ -67,14 +67,14 @@ function StepVisual03() {
         />
         <path
           d="M16,54 28,50 40,45 52,42 64,35 76,28 88,20 100,14 100,60 16,60 Z"
-          fill="hsl(142 71% 50% / .08)"
+          fill="hsl(150 60% 50% / .08)"
         />
         {[16, 28, 40, 52, 64, 76, 88, 100].map((x, i) => {
           const ys = [54, 50, 45, 42, 35, 28, 20, 14];
-          return <circle key={i} cx={x} cy={ys[i]} r="2.5" fill="hsl(142 71% 50%)" />;
+          return <circle key={i} cx={x} cy={ys[i]} r="2.5" fill="hsl(150 60% 50%)" />;
         })}
-        <rect x="60" y="6" width="44" height="16" rx="4" fill="hsl(142 71% 45% / .15)" stroke="hsl(142 71% 50% / .3)" strokeWidth="0.5" />
-        <text x="82" y="17" textAnchor="middle" fill="hsl(142 71% 55%)" fontSize="7" fontFamily="'JetBrains Mono', monospace">+18.4u</text>
+        <rect x="60" y="6" width="44" height="16" rx="4" fill="hsl(150 60% 45% / .15)" stroke="hsl(150 60% 50% / .3)" strokeWidth="0.5" />
+        <text x="82" y="17" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="7" fontFamily="'JetBrains Mono', monospace">+18.4u</text>
       </svg>
     </div>
   );

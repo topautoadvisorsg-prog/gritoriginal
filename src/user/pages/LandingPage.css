@@ -255,7 +255,7 @@ a:focus-visible,
   --cyan-glow: hsl(354 90% 60%);
   --red: hsl(355 85% 55%);
   --gold: hsl(45 90% 55%);
-  --green: hsl(142 71% 50%);
+  --green: hsl(150 62% 42%);
   --purple: hsl(280 80% 60%);
   --bg-dark: hsl(220 25% 5%);
   --bg-card: hsl(220 25% 8%);
@@ -976,7 +976,7 @@ a:focus-visible,
 }
 
 .lp-model-card__confidence--high {
-  background: hsl(142 71% 45% / .1);
+  background: hsl(150 60% 45% / .1);
   color: var(--green);
 }
 
@@ -1216,7 +1216,7 @@ a:focus-visible,
 }
 
 .lp-app-mock__dot--green {
-  background: hsl(142 71% 50%);
+  background: hsl(150 60% 50%);
 }
 
 .lp-app-mock__content {
@@ -1425,7 +1425,7 @@ a:focus-visible,
 }
 
 .lp-showcase__feat-icon--green {
-  background: hsl(142 71% 50% / .12);
+  background: hsl(150 60% 50% / .12);
   color: var(--green);
 }
 
@@ -1762,7 +1762,7 @@ a:focus-visible,
   height: 6px;
   border-radius: 50%;
   background: var(--green);
-  box-shadow: 0 0 8px hsl(142 71% 50% / .6);
+  box-shadow: 0 0 8px hsl(150 60% 50% / .6);
 }
 
 .lp-lb__row {
@@ -2028,7 +2028,7 @@ a:focus-visible,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: hsl(142 71% 45% / .12);
+  background: hsl(150 60% 45% / .12);
   color: var(--green);
   flex-shrink: 0;
   font-size: .68rem;
@@ -2669,8 +2669,8 @@ a:focus-visible,
 .lp-tokens {
   margin-top: 56px;
   padding: 32px 24px;
-  background: rgba(0, 201, 255, .04);
-  border: 1px solid rgba(0, 201, 255, .18);
+  background: rgba(232, 160, 32, .04);
+  border: 1px solid rgba(232, 160, 32, .18);
   border-radius: 14px;
 }
 
@@ -2680,7 +2680,7 @@ a:focus-visible,
 }
 
 .lp-tokens__label {
-  color: rgb(0, 201, 255) !important;
+  color: rgb(232, 160, 32) !important;
   justify-content: center;
 }
 
@@ -2718,17 +2718,17 @@ a:focus-visible,
 
 .lp-tokens__card:hover {
   transform: translateY(-4px);
-  border-color: rgba(0, 201, 255, .35);
-  box-shadow: 0 12px 32px -16px rgba(0, 201, 255, .35);
+  border-color: rgba(232, 160, 32, .35);
+  box-shadow: 0 12px 32px -16px rgba(232, 160, 32, .35);
 }
 
 .lp-tokens__card--best {
-  border-color: rgba(0, 201, 255, .6);
+  border-color: rgba(232, 160, 32, .6);
 }
 
 .lp-tokens__card--best:hover {
-  border-color: rgba(0, 201, 255, .85);
-  box-shadow: 0 16px 40px -16px rgba(0, 201, 255, .5);
+  border-color: rgba(232, 160, 32, .85);
+  box-shadow: 0 16px 40px -16px rgba(232, 160, 32, .5);
 }
 
 .lp-tokens__card-badge {
@@ -2737,7 +2737,7 @@ a:focus-visible,
   left: 50%;
   transform: translateX(-50%);
   padding: 3px 10px;
-  background: rgb(0, 201, 255);
+  background: rgb(232, 160, 32);
   color: hsl(220 25% 8%);
   font-family: 'JetBrains Mono', monospace;
   font-size: .62rem;
@@ -2760,7 +2760,7 @@ a:focus-visible,
 .lp-tokens__card-price {
   font-size: 2rem;
   font-weight: 800;
-  color: rgb(0, 201, 255);
+  color: rgb(232, 160, 32);
   margin-bottom: 4px;
   line-height: 1;
 }
@@ -2884,19 +2884,19 @@ a:focus-visible,
   font-weight: 600;
   letter-spacing: .12em;
   text-transform: uppercase;
-  color: hsl(142 71% 50%);
+  color: hsl(150 60% 50%);
   padding: 10px 16px;
   border-radius: 10px;
-  background: hsl(142 71% 45% / .07);
-  border: 1px solid hsl(142 71% 45% / .15);
+  background: hsl(150 60% 45% / .07);
+  border: 1px solid hsl(150 60% 45% / .15);
 }
 
 .lp-showcase-fighters__intel-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: hsl(142 71% 50%);
-  box-shadow: 0 0 8px hsl(142 71% 50% / .7);
+  background: hsl(150 60% 50%);
+  box-shadow: 0 0 8px hsl(150 60% 50% / .7);
   animation: glow-pulse 1.5s ease-in-out infinite;
   flex-shrink: 0;
 }
@@ -3412,15 +3412,15 @@ a:focus-visible,
   gap: 2px;
   padding: 1px 6px;
   border-radius: 999px;
-  background: hsl(142 71% 45% / .18);
-  color: hsl(142 71% 60%);
+  background: hsl(150 60% 45% / .18);
+  color: hsl(150 60% 60%);
   font-family: 'JetBrains Mono', monospace;
   font-size: .52rem;
   font-weight: 700;
 }
 
 .lp-pick-card__streak--win {
-  background: hsl(142 71% 45% / .14);
+  background: hsl(150 60% 45% / .14);
 }
 
 /* Moneyline pill — red corner accent, blue corner primary */
@@ -3574,7 +3574,7 @@ a:focus-visible,
   font-size: .58rem;
   font-weight: 700;
   letter-spacing: .08em;
-  color: hsl(142 71% 50%);
+  color: hsl(150 60% 50%);
   text-transform: uppercase;
 }
 
@@ -4612,7 +4612,7 @@ a:focus-visible,
 }
 
 .lp-compare-check {
-  color: hsl(142 71% 45%);
+  color: hsl(150 60% 45%);
 }
 
 .lp-compare-cross {
