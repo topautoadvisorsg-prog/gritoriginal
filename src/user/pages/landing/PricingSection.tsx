@@ -71,6 +71,7 @@ export function PricingSection({ onSignIn }: { onSignIn: () => void }) {
                 </div>
                 <div className="lp-pricing__grid">
                     <div className="lp-price-card lp-animate lp-animate-delay-1">
+                        <span className="lp-price-card__kicker">{t('pricing.free_kicker')}</span>
                         <h3 className="lp-price-card__name">{t('pricing.free_name')}</h3>
                         <div className="lp-price-card__price">{t('pricing.free_price')} <span>{t('pricing.free_period')}</span></div>
                         <ul className="lp-price-card__features">
@@ -85,6 +86,7 @@ export function PricingSection({ onSignIn }: { onSignIn: () => void }) {
 
                     <div className="lp-price-card lp-price-card--featured lp-animate lp-animate-delay-2">
                         <span className="lp-price-card__popular">{t('pricing.plus_popular')}</span>
+                        <span className="lp-price-card__kicker lp-price-card__kicker--pro">{t('pricing.plus_kicker')}</span>
                         <h3 className="lp-price-card__name">{t('pricing.plus_name')}</h3>
                         <div className="lp-price-card__price">{t('pricing.plus_price')} <span>{t('pricing.plus_period')}</span></div>
                         <ul className="lp-price-card__features">
@@ -123,12 +125,13 @@ export function PricingSection({ onSignIn }: { onSignIn: () => void }) {
                     ))}
                 </div>
 
-                {/* AI Token Add-On — separate purchase, Challenger-gated */}
-                <div className="lp-tokens lp-animate lp-animate-delay-4">
+                {/* AI Token Add-On — secondary, collapsed by default to reduce
+                    pricing overload on first glance (gamified-app standard) */}
+                <details className="lp-tokens lp-tokens--collapsible lp-animate lp-animate-delay-4">
+                    <summary className="lp-tokens__summary">
+                        <Coins size={14} /> {t('pricing.tokens_toggle')}
+                    </summary>
                     <div className="lp-tokens__head">
-                        <span className="lp-section-label lp-tokens__label">
-                            <Coins size={14} /> {t('pricing.tokens_label')}
-                        </span>
                         <h3 className="lp-tokens__title">{t('pricing.tokens_title')}</h3>
                         <p className="lp-tokens__subtitle">{t('pricing.tokens_subtitle')}</p>
                     </div>
@@ -146,7 +149,7 @@ export function PricingSection({ onSignIn }: { onSignIn: () => void }) {
                             </div>
                         ))}
                     </div>
-                </div>
+                </details>
             </div>
         </section>
     );

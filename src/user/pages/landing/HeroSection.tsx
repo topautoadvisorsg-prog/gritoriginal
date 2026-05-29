@@ -1,9 +1,11 @@
 import React from 'react';
-import { Zap } from 'lucide-react';
+import { Zap, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
     const { t } = useTranslation();
+    const scrollToHow = () =>
+        document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
     return (
         <section className="lp-hero">
             {/* cinematic vignette + grain — replaces the old pulsing radial glows */}
@@ -27,8 +29,9 @@ export function HeroSection({ onSignIn }: { onSignIn: () => void }) {
                 <p className="lp-hero__desc">{t('hero.desc')}</p>
                 <div className="lp-hero__ctas">
                     <button className="lp-btn lp-btn--primary" onClick={onSignIn}><Zap size={18} /> {t('hero.cta')}</button>
-                    <div className="lp-hero__subtitle-wrap">Put your skills to the test</div>
+                    <button className="lp-btn lp-btn--ghost" onClick={scrollToHow}>{t('hero.cta_secondary')}</button>
                 </div>
+                <div className="lp-hero__trust"><ShieldCheck size={13} /> {t('hero.trust')}</div>
             </div>
         </section>
     );

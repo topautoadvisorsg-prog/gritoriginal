@@ -65,31 +65,6 @@
         "prediction": "Prediction",
         "confidence": "Conf"
     },
-    "social_proof": {
-        "multi_ai": "Multi-AI Analysis",
-        "deep_data": "Deep Fighter Data",
-        "global_rankings": "Global Rankings",
-        "country_leagues": "Country Leagues"
-    },
-    "intro": {
-        "label": "What Is This?",
-        "title": "EVERY FIGHTER. FULLY DECODED.",
-        "desc": "— Complete fight history. Every bout. Every method. — Strike accuracy, grappling averages, finish rates. — AI scout brief generated per fighter. — Live intel — camp reports, weight cut flags, odds moves.",
-        "pill_ai": "AI Arena",
-        "pill_rankings": "Global Rankings",
-        "pill_data": "Deep Fighter Data",
-        "pill_progression": "Progression",
-        "pill_country": "Country Rivalries"
-    },
-    "showcase_ai": {
-        "label": "Fight IQ Assistant",
-        "title": "Analyze with AI",
-        "desc": "Same data the AI models use. Ask anything about a fighter, a matchup, or a style clash. Get a data-backed answer, not a guess.",
-        "feat1": "Ask about any fighter or matchup",
-        "feat2": "Pulls from real stats and fight history",
-        "feat3": "Breaks down style clashes and tendencies",
-        "feat4": "Powered by the same intel as the AI prediction engine"
-    },
     "showcase_fighters": {
         "label": "Fighter Intelligence",
         "title": "EVERY FIGHTER. FULLY DECODED.",
@@ -98,23 +73,6 @@
         "feat2": "Style tags & scouting labels",
         "feat3": "Performance metric breakdowns",
         "feat4": "Fight history & career trends"
-    },
-    "showcase_rankings": {
-        "label": "Rankings & Progression",
-        "title": "THE SHARPEST MINDS RISE.",
-        "desc": "Every pick affects your position. Consistency builds your legacy. Stars reward winners. Badges define who you are.",
-        "feat1": "Monthly star system (0-5★)",
-        "feat2": "Badge tiers: Ninja → Samurai → Master → ❓",
-        "feat3": "Net units ranking — no formulas, just results.",
-        "feat4": "Global + Country leaderboards"
-    },
-    "tier2": {
-        "label": "More Features",
-        "title": "MORE FEATURES",
-        "picks_title": "Fantasy Picks System",
-        "picks_desc": "Picks use real moneyline odds. Choose your winner, flag your confidence level, and track your net units. Compete with your fight IQ — not your wallet.",
-        "community_title": "Community & Influencers",
-        "community_desc": "Global and country chat rooms. Share picks, debate matchups, and compete against the sharpest minds in MMA."
     },
     "how_it_works": {
         "label": "How It Works",

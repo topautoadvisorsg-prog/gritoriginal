@@ -57,13 +57,9 @@
         "title_accent_red2": "REAL RANK.",
         "subtitle": "No betting. No luck. Just your knowledge against the world.",
         "desc": "GRIT is a competitive analytics arena for MMA fans. Pick fights with real odds. Build a track record that means something. Climb a global leaderboard that doesn't care who you are — only how sharp you are.",
-        "cta": "Claim Your Spot"
-    },
-    "social_proof": {
-        "multi_ai": "Real Odds Math",
-        "deep_data": "Deep Fighter Data",
-        "global_rankings": "Global Rankings",
-        "country_leagues": "Creator Economy"
+        "cta": "Claim Your Spot",
+        "cta_secondary": "See How It Works",
+        "trust": "Skill-based — no real-money wagering."
     },
     "ai_arena": {
         "label": "Phase 3 — Coming Soon",
@@ -71,25 +67,6 @@
         "subtitle": "Same data. Same odds. Independent picks. Watch which AI is actually sharpest over time — and learn from the one that's right more often than the others.",
         "prediction": "Prediction",
         "confidence": "Confidence"
-    },
-    "intro": {
-        "label": "What Is GRIT?",
-        "title": "MMA INTELLIGENCE. NOT A SPORTSBOOK.",
-        "desc": "Every fight card lets you pick winners with real moneyline odds. Wins compound into net units. Net units climb a global leaderboard. Stars and badges stack on top. Founder badges go to the first 1,000 paid members — permanent, never reissued. AI tokens unlock deeper analysis when you want it. Your private fight notes compound year over year into the kind of knowledge that makes pros pros.",
-        "pill_ai": "AI Analysis",
-        "pill_rankings": "Global Rankings",
-        "pill_data": "Deep Fighter Data",
-        "pill_progression": "Stars & Badges",
-        "pill_country": "Creator Marketplace"
-    },
-    "showcase_ai": {
-        "label": "AI Fight Analyst",
-        "title": "ASK THE MODEL ANYTHING.",
-        "desc": "Pulls from the same fighter data, fight history, and odds that power the rankings. Style breakdowns, matchup analysis, sharp-money detection, custom scout reports. Pay per query with AI tokens — no monthly cap, no wasted credits if you skip a card.",
-        "feat1": "Quick fighter breakdown — 1 token ($0.05)",
-        "feat2": "Matchup style analysis — 2 tokens ($0.10)",
-        "feat3": "Sharp money detection report — 5 tokens ($0.25)",
-        "feat4": "Pay-as-you-go. Tokens never expire while subscribed."
     },
     "showcase_fighters": {
         "label": "Fighter Intelligence",
@@ -99,23 +76,6 @@
         "feat2": "Style tags + community scouting labels",
         "feat3": "Performance metrics + finish-rate breakdowns",
         "feat4": "Your private notes — nobody else ever sees them"
-    },
-    "showcase_rankings": {
-        "label": "Rankings & Progression",
-        "title": "THE SHARPEST MINDS RISE.",
-        "desc": "Net units rank you — sum of all your wins and losses across moneyline picks. No accuracy weighting. No participation gimmicks. Just net units. Climb the badge ladder, earn keys for perfect cards, and stack stars for consistent ROI.",
-        "feat1": "Per-event, monthly, and yearly leaderboards",
-        "feat2": "Badges: Ninja → Samurai → Master → Grandmaster → GOAT",
-        "feat3": "Earn Keys for clean-sweep events — cash prize per key",
-        "feat4": "Collect 5 Keys to forge a Gold Key — bigger cash prize"
-    },
-    "tier2": {
-        "label": "Built On Real Data",
-        "title": "EVERYTHING THE PROS TRACK.",
-        "picks_title": "Fantasy Picks System",
-        "picks_desc": "Picks use real American moneyline odds locked at submission. 1 unit per pick. Wins payout per the locked odds. Confidence flags (none / green / yellow / red) let you mark your reads — yellow flags count, red flags stay off your record. Method and round picks are tracked for personal accuracy but don't affect ranking — that's just the moneyline.",
-        "community_title": "Live Community Layer",
-        "community_desc": "Every event has its own chat that opens when fights start and closes 24 hours after. Slip sharing for Challengers. Community fighter ratings during fights — five criteria, anti-spam protected, your input compounds into the platform's intangible-data layer over time."
     },
     "how_it_works": {
         "label": "How It Works",
@@ -135,7 +95,7 @@
         "title": "YOUR FIGHT IQ.",
         "title2": "ON THE GLOBAL STAGE.",
         "subtitle": "",
-        "desc": "Real-time scoring. Net units only — no participation weight, no accuracy gimmicks. Get the picks right and you climb. Miss them and you don't. That's the whole formula.",
+        "desc": "Real-time scoring on net units. No participation weight, no accuracy gimmicks. Get the picks right and you climb. Miss them and you slide. Where you rank is exactly what you earned.",
         "highlight1": "Per-event, monthly, and yearly snapshots",
         "highlight2": "Stars + badges advance with consistent ROI",
         "highlight3": "Net units = same math sportsbooks use",
@@ -175,6 +135,8 @@
         "label": "Plans",
         "title": "TWO TIERS. AI TOKENS SEPARATE.",
         "subtitle": "Contender is free forever. Challenger unlocks the perks that matter. AI tokens are a separate purchase — pay only for what you use.",
+        "free_kicker": "FREE",
+        "plus_kicker": "PRO",
         "free_name": "CONTENDER",
         "free_price": "$0",
         "free_period": "/ forever",
@@ -199,6 +161,7 @@
         "plus_feat7": "Right to purchase AI tokens for analysis features",
         "plus_cta": "Become a Challenger",
         "tokens_label": "AI Token Add-On",
+        "tokens_toggle": "View AI token pricing",
         "tokens_title": "Pay-Per-Use AI Analysis",
         "tokens_subtitle": "Tokens unlock AI features. Challenger subscribers only. Tokens never expire while subscribed.",
         "tokens_pack1_label": "STARTER",
@@ -227,7 +190,8 @@
         "title1": "THE LEAGUE IS LIVE.",
         "title2": "YOUR FOUNDER SLOT IS WAITING.",
         "subtitle": "First 1,000 Challengers earn a Founder Badge that never resets. Get in before the slots fill.",
-        "cta": "Claim Your Spot"
+        "cta": "Claim Your Spot",
+        "trust": "Skill-based competition — no real-money wagering."
     },
     "core_features": {
         "label": "Platform Features",
@@ -236,7 +200,7 @@
         "feat1_label": "Dashboard",
         "feat1_desc": "Live event countdown, your active picks, current rank, stars to next badge, keys collected — all at a glance.",
         "feat2_label": "Event Picks",
-        "feat2_desc": "Moneyline picks with locked odds. Optional method and round picks (just for fun). Confidence flags shape your strategy.",
+        "feat2_desc": "Moneyline picks with locked odds. Optional method and round calls tracked privately. Confidence flags shape your strategy.",
         "feat3_label": "Fighter Profiles",
         "feat3_desc": "Full career stats, fight history, strike + grappling breakdowns, AI scout briefs, and your private per-fight notes.",
         "feat4_label": "Community + Slips",
@@ -269,7 +233,7 @@
         "title": "ONE UNIT. REAL ODDS. NO BETTING.",
         "desc": "1 unit per pick. Locked at the American moneyline at submission. Win on a +200 underdog = win 2 units. Win on a −200 favorite = win 0.5 units. Lose = lose 1 unit. Method and round picks tracked for personal accuracy but don't affect ranking. The leaderboard is pure net units — same math the sportsbooks use, no cash on the line.",
         "feat1": "Moneyline pick (the one that counts)",
-        "feat2": "Method + round (just for fun — your private accuracy tracker)",
+        "feat2": "Method + round — your private accuracy tracker (doesn't affect rank)",
         "feat3": "Confidence flags: None / Green / Yellow / Red",
         "feat4": "Multi-layer pick lock — time + event status + manual flag"
     },

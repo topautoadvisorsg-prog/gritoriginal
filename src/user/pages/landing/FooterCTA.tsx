@@ -1,5 +1,5 @@
 import React from 'react';
-import { Swords, ChevronRight } from 'lucide-react';
+import { Swords, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useScrollAnimation } from './hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -36,6 +36,7 @@ export function FooterCTA({ onSignIn }: { onSignIn: () => void }) {
                     </h2>
                     <p className="lp-footer-cta__subtitle">{t('footer_cta.subtitle')}</p>
                     <button className="lp-btn lp-btn--primary" onClick={onSignIn}><Swords size={18} /> {t('footer_cta.cta')} <ChevronRight size={18} /></button>
+                    <div className="lp-footer-cta__trust"><ShieldCheck size={13} /> {t('footer_cta.trust')}</div>
                 </div>
             </section>
             <footer className="lp-footer">

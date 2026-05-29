@@ -61,31 +61,6 @@
         "prediction": "Prédiction",
         "confidence": "Conf"
     },
-    "social_proof": {
-        "multi_ai": "Analyse Multi-IA",
-        "deep_data": "Données Approfondies des Combattants",
-        "global_rankings": "Classements Mondiaux",
-        "country_leagues": "Ligues par Pays"
-    },
-    "intro": {
-        "label": "Qu'est-ce Que C'est ?",
-        "title": "GRIT est une Ligue d'Intelligence Compétitive",
-        "desc": "Pas un bookmaker. Pas une simple appli de pronostics. C'est une plateforme compétitive où plusieurs systèmes d'IA analysent les mêmes combats — et vous décidez qui a raison. Étudiez les données, faites vos picks et affrontez le monde entier.",
-        "pill_ai": "Arène IA",
-        "pill_rankings": "Classements Mondiaux",
-        "pill_data": "Données Approfondies des Combattants",
-        "pill_progression": "Progression",
-        "pill_country": "Rivalités entre Pays"
-    },
-    "showcase_ai": {
-        "label": "Assistant QI de Combat",
-        "title": "Analysez avec Grok",
-        "desc": "Besoin d'analyses plus poussées ? Demandez à Grok. Notre agent de chat IA spécialisé analyse les palmarès, les styles et les données historiques des combattants pour vous donner l'avantage. Il ne prédit pas seulement — il explique.",
-        "feat1": "Posez des questions directes sur les combats",
-        "feat2": "Obtenez des analyses basées sur les données",
-        "feat3": "Comprenez les dynamiques de styles",
-        "feat4": "Contexte complet, sans hallucinations"
-    },
     "showcase_fighters": {
         "label": "Intelligence Combattant",
         "title": "Base de Données Approfondie. Données Réelles.",
@@ -94,23 +69,6 @@
         "feat2": "Tags de style et étiquettes de scouting",
         "feat3": "Détail des métriques de performance",
         "feat4": "Historique des combats et tendances de carrière"
-    },
-    "showcase_rankings": {
-        "label": "Classements et Progression",
-        "title": "Rivalisez. Grimpez. Forgez Votre Légende.",
-        "desc": "Un système de progression complet qui récompense la régularité et la précision. Gagnez des étoiles chaque mois, débloquez des niveaux de badges de Ninja à… quelque chose de légendaire, et grimpez dans les classements mondiaux. Votre performance définit votre statut.",
-        "feat1": "Système d'étoiles mensuel (0-5★)",
-        "feat2": "Niveaux de badges : Ninja → Samurai → Master → ❓",
-        "feat3": "Système de classement basé sur le ROI",
-        "feat4": "Classements mondiaux + par pays"
-    },
-    "tier2": {
-        "label": "Plus de Fonctionnalités",
-        "title": "L'Arsenal Complet",
-        "picks_title": "Système de Picks Fantasy",
-        "picks_desc": "Les picks reflètent les cotes réelles. Choisissez votre gagnant, sélectionnez la méthode, allouez 1 à 5 unités de confiance. Suivez votre ROI comme un pro — sans risquer d'argent réel.",
-        "community_title": "Communauté et Influenceurs",
-        "community_desc": "Rejoignez des salons de discussion mondiaux et par pays. Suivez des influenceurs MMA vérifiés. Partagez vos picks et votre stratégie avec la communauté compétitive."
     },
     "how_it_works": {
         "label": "Comment Ça Marche",

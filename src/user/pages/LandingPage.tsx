@@ -16,6 +16,7 @@ import { FounderBadgesSection } from './landing/FounderBadgesSection';
 import { CreatorEconomySection } from './landing/CreatorEconomySection';
 import { PricingSection } from './landing/PricingSection';
 import { FooterCTA } from './landing/FooterCTA';
+import { StickyMobileCTA } from './landing/StickyMobileCTA';
 
 export default function LandingPage() {
     const { login } = useAuth();
@@ -60,6 +61,7 @@ export default function LandingPage() {
             <FounderBadgesSection onSignIn={handleSignIn} />
             <PricingSection onSignIn={handleSignIn} />
             <FooterCTA onSignIn={handleSignIn} />
+            <StickyMobileCTA onSignIn={handleSignIn} />
         </div>
     );
 }

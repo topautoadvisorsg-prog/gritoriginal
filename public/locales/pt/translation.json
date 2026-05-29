@@ -61,31 +61,6 @@
         "prediction": "Previsão",
         "confidence": "Conf"
     },
-    "social_proof": {
-        "multi_ai": "Análise Multi-IA",
-        "deep_data": "Dados Profundos de Lutadores",
-        "global_rankings": "Rankings Globais",
-        "country_leagues": "Ligas por País"
-    },
-    "intro": {
-        "label": "O Que É Isso?",
-        "title": "GRIT é uma Liga de Inteligência Competitiva",
-        "desc": "Não é uma casa de apostas. Não é um app básico de palpites. É uma plataforma competitiva onde múltiplos sistemas de IA analisam as mesmas lutas — e você decide quem está certo. Estude os dados, faça seus picks e compita contra o mundo.",
-        "pill_ai": "Arena IA",
-        "pill_rankings": "Rankings Globais",
-        "pill_data": "Dados Profundos de Lutadores",
-        "pill_progression": "Progressão",
-        "pill_country": "Rivalidades entre Países"
-    },
-    "showcase_ai": {
-        "label": "Assistente de QI de Luta",
-        "title": "Analise com Grok",
-        "desc": "Precisa de análises mais profundas? Pergunte ao Grok. Nosso agente de chat com IA especializado analisa recordes, estilos e dados históricos dos lutadores para te dar vantagem. Ele não apenas prevê — ele explica.",
-        "feat1": "Faça perguntas diretas sobre lutas",
-        "feat2": "Obtenha análises baseadas em dados",
-        "feat3": "Entenda os cruzamentos de estilos",
-        "feat4": "Contexto completo, sem alucinações"
-    },
     "showcase_fighters": {
         "label": "Inteligência de Lutadores",
         "title": "Base de Dados Profunda de Lutadores. Dados Reais.",
@@ -94,23 +69,6 @@
         "feat2": "Tags de estilo e scouting",
         "feat3": "Detalhamento de métricas de desempenho",
         "feat4": "Histórico de lutas e tendências de carreira"
-    },
-    "showcase_rankings": {
-        "label": "Rankings e Progressão",
-        "title": "Compita. Suba. Construa Seu Legado.",
-        "desc": "Um sistema de progressão completo que premia consistência e precisão. Ganhe estrelas todo mês, desbloqueie níveis de emblemas de Ninja até… algo lendário, e suba nos rankings globais. Seu desempenho define seu status.",
-        "feat1": "Sistema de estrelas mensal (0-5★)",
-        "feat2": "Níveis de emblemas: Ninja → Samurai → Master → ❓",
-        "feat3": "Sistema de ranking baseado em ROI",
-        "feat4": "Rankings globais + por país"
-    },
-    "tier2": {
-        "label": "Mais Funcionalidades",
-        "title": "O Arsenal Completo",
-        "picks_title": "Sistema de Picks Fantasy",
-        "picks_desc": "Os picks refletem odds reais de apostas. Escolha seu vencedor, selecione o método, aloque de 1 a 5 unidades de confiança. Acompanhe seu ROI como um profissional — sem arriscar dinheiro real.",
-        "community_title": "Comunidade e Influenciadores",
-        "community_desc": "Participe de salas de chat globais e por país. Siga influenciadores de MMA verificados. Compartilhe seus picks e estratégia com a comunidade competitiva."
     },
     "how_it_works": {
         "label": "Como Funciona",
