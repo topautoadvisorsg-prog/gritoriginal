@@ -53,6 +53,11 @@ export const Dashboard: React.FC = () => {
     const { data: dashboard, isLoading } = useQuery<any>({
         queryKey: ['/api/me/dashboard'],
     });
+    // Real career stats (win %, total picks) — sourced from the same endpoint
+    // that powers Settings > My Stats. Surfaced here as the headline metric.
+    const { data: stats } = useQuery<any>({
+        queryKey: ['/api/me/stats'],
+    });
 
     if (isLoading) {
         return <DashboardSkeleton />;
@@ -152,10 +157,15 @@ export const Dashboard: React.FC = () => {
                     </span>
                 </div>
                 <div className="flex flex-col items-center justify-center p-4 bg-[#111] border border-white/5 rounded-2xl hover-glow">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Last Update</span>
-                    <span className="text-[10px] font-bold text-white/60 text-center">
-                        {dashboard.lastUpdated ? new Date(dashboard.lastUpdated).toLocaleDateString() : 'N/A'}
-                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Win %</span>
+                    {stats && stats.totalPicks > 0 ? (
+                        <div className="flex items-baseline gap-0.5">
+                            <span className="text-3xl font-black text-white">{stats.accuracy}</span>
+                            <span className="text-lg font-bold text-[#E8A020]">%</span>
+                        </div>
+                    ) : (
+                        <span className="text-[10px] font-bold text-white/40 text-center mt-2">No picks yet</span>
+                    )}
                 </div>
             </motion.div>
 

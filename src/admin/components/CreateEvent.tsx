@@ -642,10 +642,6 @@ export const CreateEvent = () => {
     createEventMutation.mutate();
   };
 
-  // ── Time display helpers ──────────────────────────────────────────────────
-  const prelimStartStr    = minsToTimeStr(schedule.prelimStart);
-  const mainCardStartStr  = minsToTimeStr(schedule.mainCardStart);
-
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-4" data-testid="create-event-page">

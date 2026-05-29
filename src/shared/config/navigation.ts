@@ -23,7 +23,9 @@ import {
     Info,
     BookOpenCheck,
     Settings,
-    Zap
+    Zap,
+    Swords,
+    Activity
 } from 'lucide-react';
 
 export interface NavItem {
@@ -49,6 +51,7 @@ export const userNavItems: NavItem[] = [
 export const adminNavItems: NavItem[] = [
     { id: 'create-event', labelKey: 'sidebar.create_event', icon: PlusSquare, path: '/admin/create-event' },
     { id: 'event-editor', labelKey: 'sidebar.event_editor', icon: Pencil, path: '/admin/event-editor' },
+    { id: 'fight-cards', labelKey: 'sidebar.fight_cards', icon: Swords, path: '/admin/fight-cards' },
     { id: 'import', labelKey: 'sidebar.import', icon: Upload, path: '/admin/import' },
     { id: 'fighter-manager', labelKey: 'sidebar.fighter_manager', icon: User, path: '/admin/fighter-manager' },
     { id: 'create-news', labelKey: 'sidebar.create_news', icon: FileEdit, path: '/admin/create-news' },
@@ -64,6 +67,7 @@ export const adminNavItems: NavItem[] = [
     { id: 'admin-suggested-questions', labelKey: 'sidebar.suggested_questions', icon: MessageSquare, path: '/admin/admin-suggested-questions' },
     { id: 'admin-intel-feed', labelKey: 'sidebar.intel_feed', icon: Zap, path: '/admin/admin-intel-feed' },
     { id: 'admin-chat', labelKey: 'sidebar.chat_management', icon: MessageSquare, path: '/admin/admin-chat' },
+    { id: 'admin-jobs', labelKey: 'sidebar.jobs_queue', icon: Activity, path: '/admin/admin-jobs' },
 ];
 
 // Tab Titles Helper
@@ -81,6 +85,7 @@ export const tabTitles: Record<string, { title: string; subtitle: string }> = {
     // Admin tabs
     'create-event': { title: 'Create Event', subtitle: 'Admin - Create new events' },
     'event-editor': { title: 'Event Editor', subtitle: 'Admin - Edit events, status, and fights' },
+    'fight-cards': { title: 'Fight Card Management', subtitle: 'Admin - Finalize fights and enter results' },
     'import': { title: 'Import', subtitle: 'Admin - Import fighters or create manually' },
     'fighter-manager': { title: 'Fighter Manager', subtitle: 'Admin - Edit fighter profiles and images' },
     'create-news': { title: 'Create News', subtitle: 'Admin - Post announcements' },
@@ -96,4 +101,5 @@ export const tabTitles: Record<string, { title: string; subtitle: string }> = {
     'admin-suggested-questions': { title: 'Suggested Questions', subtitle: 'Admin - Manage AI chat suggested questions' },
     'admin-intel-feed': { title: 'Intel Feed', subtitle: 'Admin - Manage the live intel ticker on the landing page' },
     'admin-chat': { title: 'Chat & Slip Management', subtitle: 'Admin - Moderate chat, slips, mutes, bans and the featured wall' },
+    'admin-jobs': { title: 'Jobs Queue', subtitle: 'Admin - Monitor & retry failed background jobs' },
 };

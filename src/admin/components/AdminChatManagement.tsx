@@ -133,11 +133,23 @@ type TabKey = typeof TABS[number]['key'];
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 async function apiFetch(url: string, options?: RequestInit) {
-    return fetch(url, {
+    const res = await fetch(url, {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         ...options,
     });
+    if (!res.ok) {
+        // Surface real HTTP errors so mutations route to onError (no false success toasts)
+        let message = `Request failed (${res.status})`;
+        try {
+            const body = await res.clone().json();
+            if (body?.error || body?.message) message = body.error || body.message;
+        } catch {
+            // non-JSON error body — keep the status-based message
+        }
+        throw new Error(message);
+    }
+    return res;
 }
 
 function formatExpiry(expiresAt?: string | null): string {
