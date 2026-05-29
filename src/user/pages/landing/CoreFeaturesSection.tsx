@@ -33,15 +33,16 @@ export function CoreFeaturesSection() {
 
     return (
         <section className="lp-section lp-core-features" id="features" ref={ref}>
-            <FighterFlank side="left" src="/fighters/fighter-2.png" />
-            <FighterFlank side="right" src="/fighters/fighter-3.png" />
+            {/* Swapped left/right so fighters face inward toward the content */}
+            <FighterFlank side="left" src="/fighters/fighter-3.png" />
+            <FighterFlank side="right" src="/fighters/fighter-2.png" />
             <div className="lp-section__inner lp-core-features__inner">
-                <div className="lp-animate" style={{ textAlign: 'center', marginBottom: 48 }}>
+                <div className="lp-animate lp-core-features__head">
                     <span className="lp-section-label">
                         <LayoutDashboard size={14} /> {t('core_features.label')}
                     </span>
-                    <h2 className="lp-section-title" style={{ margin: '0 auto 12px' }}>{t('core_features.title')}</h2>
-                    <p className="lp-section-subtitle" style={{ margin: '0 auto', maxWidth: 540 }}>
+                    <h2 className="lp-section-title lp-core-features__title">{t('core_features.title')}</h2>
+                    <p className="lp-section-subtitle lp-core-features__subtitle">
                         {t('core_features.subtitle')}
                     </p>
                 </div>

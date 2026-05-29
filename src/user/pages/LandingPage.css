@@ -753,11 +753,17 @@ a:focus-visible,
 }
 
 .lp-hero__desc {
-  font-size: clamp(1rem, 2.5vw, 1.15rem);
-  color: var(--text-secondary);
-  max-width: 540px;
+  font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+  /* Brand red, brighter — visible against the video background */
+  color: hsl(354 90% 68%);
+  font-weight: 600;
+  max-width: 620px;
   margin: 0 auto 48px;
-  line-height: 1.75;
+  line-height: 1.7;
+  /* Soft dark halo improves legibility over moving footage */
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.85),
+    0 0 18px rgba(0, 0, 0, 0.55);
   animation: hero-reveal .8s ease-out .65s both;
 }
 
@@ -774,8 +780,13 @@ a:focus-visible,
 .lp-hero__ctas .lp-hero__subtitle-wrap {
   margin-bottom: 0;
   animation: none;
-  font-size: clamp(0.9rem, 2vw, 1.1rem);
-  opacity: 0.7;
+  font-size: clamp(1.1rem, 2.3vw, 1.4rem);
+  font-weight: 700;
+  color: hsl(0 0% 96%);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.85),
+    0 0 18px rgba(0, 0, 0, 0.55);
+  opacity: 1;
 }
 
 /* --- CTA BUTTONS -------------------------------------------------------------- */
@@ -1817,17 +1828,19 @@ a:focus-visible,
 }
 
 .lp-lb__rank {
-  font-family: 'Barlow Condensed', sans-serif;
+  font-family: 'Outfit', 'Inter', sans-serif;
   font-weight: 900;
-  font-size: 1.3rem;
-  width: 36px;
+  font-style: italic;
+  font-size: 1.8rem;
+  width: 48px;
   text-align: center;
-  color: var(--cyan);
+  color: hsl(0 0% 25%);
+  letter-spacing: -.02em;
 }
 
 .lp-lb__rank--gold {
-  color: var(--gold);
-  text-shadow: 0 0 12px hsl(45 90% 50% / .4);
+  color: hsl(38 92% 55%);
+  text-shadow: 0 0 14px hsl(45 90% 50% / .45);
 }
 
 .lp-lb__rank--silver {
@@ -1835,7 +1848,7 @@ a:focus-visible,
 }
 
 .lp-lb__rank--bronze {
-  color: hsl(25 70% 55%);
+  color: hsl(25 80% 58%);
 }
 
 .lp-lb__avatar {
@@ -1857,8 +1870,13 @@ a:focus-visible,
 
 .lp-lb__name {
   flex: 1;
-  font-weight: 600;
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 900;
+  font-style: italic;
   font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: -.01em;
+  color: hsl(0 0% 96%);
 }
 
 .lp-lb__badge {
@@ -2388,10 +2406,10 @@ a:focus-visible,
   display: flex;
   align-items: stretch;
   overflow: hidden;
-  background: hsl(220 20% 4% / .94);
-  border-top: 1px solid rgba(139, 0, 0, .25);
-  border-bottom: 1px solid rgba(139, 0, 0, .25);
-  height: 72px;
+  background: hsl(220 20% 4% / .96);
+  border-top: 2px solid rgba(139, 0, 0, .35);
+  border-bottom: 2px solid rgba(139, 0, 0, .35);
+  height: 130px;
   position: relative;
   z-index: 5;
 }
@@ -2399,17 +2417,17 @@ a:focus-visible,
 .lp-ticker__label {
   flex-shrink: 0;
   font-family: 'JetBrains Mono', monospace;
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: .18em;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: .22em;
   text-transform: uppercase;
-  color: hsl(354 90% 62%);
-  padding: 0 22px 0 24px;
+  color: hsl(354 90% 64%);
+  padding: 0 40px 0 42px;
   display: flex;
   align-items: center;
-  gap: 9px;
-  border-right: 1px solid rgba(139, 0, 0, .2);
-  background: rgba(139, 0, 0, .05);
+  gap: 16px;
+  border-right: 1px solid rgba(139, 0, 0, .25);
+  background: rgba(139, 0, 0, .07);
   white-space: nowrap;
 }
 
@@ -2779,16 +2797,18 @@ a:focus-visible,
 
 .lp-ticker__item {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 1rem;
-  color: hsl(210 20% 72%);
-  padding: 0 56px 0 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: hsl(210 25% 82%);
+  padding: 0 80px 0 0;
   letter-spacing: .03em;
 }
 
 .lp-ticker__item:not(:last-child)::after {
   content: '//';
-  margin-left: 48px;
-  color: rgba(139, 0, 0, .3);
+  margin-left: 72px;
+  color: rgba(139, 0, 0, .4);
+  font-size: 1.4rem;
 }
 
 /* ===============================================
@@ -2928,28 +2948,26 @@ a:focus-visible,
 .lp-competition__flanker {
   position: absolute;
   bottom: 0;
-  width: 240px;
-  height: 520px;
+  width: 340px;
+  height: 640px;
   pointer-events: none;
   z-index: 0;
   /* Soft fade at the content-facing edge so the cutout dissolves
      toward the section copy instead of cropping hard. */
-  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 100%);
-          mask-image: linear-gradient(180deg, transparent 0%, #000 12%, #000 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 100%);
+          mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 100%);
 }
 
 .lp-competition__flanker--left {
-  left: -40px;
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 50%, transparent 100%),
-                       linear-gradient(180deg, transparent 0%, #000 12%, #000 100%);
-  -webkit-mask-composite: source-in;
-          mask-image: linear-gradient(90deg, #000 0%, #000 50%, transparent 100%);
+  left: -20px;
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 60%, transparent 100%);
+          mask-image: linear-gradient(90deg, #000 0%, #000 60%, transparent 100%);
 }
 
 .lp-competition__flanker--right {
-  right: -40px;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 50%, #000 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, #000 50%, #000 100%);
+  right: -20px;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 40%, #000 100%);
+          mask-image: linear-gradient(90deg, transparent 0%, #000 40%, #000 100%);
 }
 
 .lp-fighter-photo-placeholder--flanker {
@@ -2960,10 +2978,8 @@ a:focus-visible,
   background: rgba(139, 0, 0, .03);
 }
 
-/* Hide flankers on narrower viewports where they collide with content.
-   1200 was too aggressive — content sits within ~1200px max-width container,
-   flankers were bleeding into copy until 1440+. */
-@media (max-width: 1440px) {
+/* Hide flankers on narrower viewports where they collide with content. */
+@media (max-width: 1280px) {
   .lp-competition__flanker {
     display: none;
   }
@@ -3237,6 +3253,198 @@ a:focus-visible,
   background: hsl(220 25% 6%);
   border: 1px solid hsl(210 20% 16%);
   overflow: hidden;
+}
+
+/* Tighter vertical spacing after Event Picks — founder feedback (~50% off) */
+.lp-event-picks {
+  padding-bottom: 60px;
+}
+
+.lp-event-picks + .lp-showcase {
+  padding-top: 60px;
+}
+
+/* ===============================================
+   EVENT PICKS — V2 redesign with fighter photos
+   =============================================== */
+.lp-picks-mockup--v2 {
+  width: 100%;
+  max-width: 460px;
+}
+
+.lp-picks-mockup__header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lp-picks-mockup__event-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .56rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: hsl(354 85% 55% / .18);
+  color: hsl(354 90% 72%);
+  border: 1px solid hsl(354 85% 55% / .35);
+  flex-shrink: 0;
+}
+
+.lp-picks-mockup__matchup-v2 {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: 10px;
+  padding: 12px;
+}
+
+.lp-pick-card {
+  position: relative;
+  border: 1px solid hsl(210 20% 16%);
+  border-radius: 12px;
+  background: linear-gradient(180deg, hsl(220 25% 10%), hsl(220 25% 6%));
+  padding: 10px 10px 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+  text-align: center;
+  font: inherit;
+}
+
+.lp-pick-card:hover {
+  transform: translateY(-2px);
+}
+
+.lp-pick-card--red {
+  border-color: hsl(354 85% 55% / .35);
+}
+
+.lp-pick-card--blue {
+  border-color: hsl(190 90% 55% / .3);
+}
+
+.lp-pick-card--red.lp-pick-card--selected {
+  border-color: hsl(354 90% 60%);
+  box-shadow:
+    0 0 0 1px hsl(354 90% 50% / .35),
+    0 14px 30px -10px hsl(354 90% 35% / .55);
+  background: linear-gradient(180deg, hsl(354 60% 14% / .55), hsl(220 25% 6%));
+}
+
+.lp-pick-card__photo {
+  height: 110px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  margin: -2px -2px 6px;
+}
+
+.lp-pick-card__photo img {
+  height: 138%;
+  width: auto;
+  max-width: 160%;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .55));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.lp-pick-card__photo--mirror img {
+  transform: scaleX(-1);
+}
+
+.lp-pick-card__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.lp-pick-card__flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lp-pick-card__name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .95rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  color: hsl(0 0% 96%);
+  line-height: 1;
+}
+
+.lp-pick-card__odds {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  font-weight: 700;
+  color: hsl(354 90% 68%);
+  margin-top: 2px;
+}
+
+.lp-pick-card__odds--blue {
+  color: hsl(190 90% 65%);
+}
+
+.lp-pick-card__corner {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .15em;
+  color: hsl(354 90% 60%);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.lp-pick-card__corner--blue {
+  color: hsl(190 90% 60%);
+}
+
+.lp-pick-card__check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: hsl(354 90% 50%);
+  color: white;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .5rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.lp-picks-mockup__vs-v2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.lp-picks-mockup__vs-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 900;
+  font-size: 1.15rem;
+  color: hsl(210 20% 35%);
+  letter-spacing: .06em;
+}
+
+.lp-picks-mockup__rounds {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .55rem;
+  font-weight: 700;
+  color: hsl(210 20% 50%);
+  letter-spacing: .12em;
+  white-space: nowrap;
 }
 
 .lp-picks-mockup__header {
@@ -3770,7 +3978,7 @@ a:focus-visible,
    CORE FEATURES SECTION
    =============================================== */
 .lp-core-features {
-  padding: 120px 24px;
+  padding: 96px 24px 112px;
   background: hsl(220 20% 4% / .95);
   position: relative;
   z-index: 2;
@@ -3789,6 +3997,27 @@ a:focus-visible,
 .lp-core-features__inner {
   position: relative;
   z-index: 2;
+}
+
+.lp-core-features__head {
+  text-align: center;
+  margin-bottom: 36px;
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lp-core-features__title {
+  margin: 0 auto 18px;
+  font-size: clamp(2.8rem, 6vw, 4.6rem);
+}
+
+.lp-core-features__subtitle {
+  margin: 0 auto;
+  max-width: 720px;
+  font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+  line-height: 1.6;
+  color: hsl(210 25% 78%);
 }
 
 .lp-core-features__grid {
@@ -3863,39 +4092,54 @@ a:focus-visible,
 .lp-intel-section {
   background: hsl(220 20% 4% / .92);
   border-bottom: 1px solid hsl(210 25% 10%);
-  padding-top: 40px;
+  padding-top: 88px;
+  padding-bottom: 24px;
 }
 
 .lp-intel-section__heading {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-bottom: 36px;
 }
 
 .lp-intel-section__dot {
-  width: 7px;
-  height: 7px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: #8B0000;
+  background: #ef4444;
   flex-shrink: 0;
-  animation: pulse-ring 1.6s ease-out infinite;
+  position: relative;
+  box-shadow: 0 0 16px -2px rgba(239, 68, 68, .65);
+}
+
+.lp-intel-section__dot::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid rgba(239, 68, 68, .45);
+  animation: pulse-ring 1.8s ease-out infinite;
 }
 
 .lp-intel-section__title {
   font-family: 'JetBrains Mono', monospace;
-  font-size: .8rem;
-  font-weight: 700;
-  letter-spacing: .15em;
-  color: #b30000;
+  font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: .14em;
+  color: hsl(354 90% 64%);
   text-transform: uppercase;
+  line-height: 1.05;
 }
 
 .lp-intel-section__sub {
   font-family: 'JetBrains Mono', monospace;
-  font-size: .72rem;
-  color: var(--text-muted);
+  font-size: clamp(.95rem, 1.4vw, 1.15rem);
+  color: hsl(210 30% 78%);
   letter-spacing: .04em;
+  flex: 1 1 100%;
+  line-height: 1.55;
 }
 
 /* ===============================================
@@ -4090,61 +4334,81 @@ a:focus-visible,
    LEADERBOARD BADGE GRID
    =============================================== */
 .lp-lb-badge-grid {
-  margin-top: 56px;
+  margin-top: 72px;
   background: hsl(215 25% 7%);
   border: 1px solid hsl(210 25% 13%);
   border-radius: 20px;
-  padding: 32px 36px;
+  padding: 48px 48px 40px;
 }
 
 .lp-lb-badge-grid__label {
   font-family: 'JetBrains Mono', monospace;
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .15em;
-  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: .18em;
+  color: hsl(0 0% 80%);
   text-transform: uppercase;
-  margin-bottom: 24px;
+  margin-bottom: 36px;
+  text-align: center;
 }
 
 .lp-lb-badge-grid__tiers {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 24px;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
   .lp-lb-badge-grid__tiers {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .lp-lb-badge-grid__tier {
-  border-radius: 14px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 36px 20px 28px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  transition: transform .2s;
+  gap: 18px;
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .lp-lb-badge-grid__tier:hover {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px -16px rgba(0, 0, 0, .55);
+}
+
+/* The badge SVGs (Ninja/Samurai/Master/GOAT) shipped at 44px from
+   the component default. In the trust section we want them prominent. */
+.lp-lb-badge-grid__tier > div > svg {
+  width: 96px !important;
+  height: 96px !important;
+}
+
+/* The badge tier name label (NINJA / SAMURAI / etc.) is rendered as
+   an inline-styled <span> in Badges.tsx with a tiny .58rem font.
+   Override here so they read at a glance in the trust section. */
+.lp-lb-badge-grid__tier > div > span {
+  font-size: 1.05rem !important;
+  font-weight: 800 !important;
+  letter-spacing: .22em !important;
+  margin-top: 4px !important;
 }
 
 .lp-lb-badge-grid__stars {
-  font-size: .9rem;
-  letter-spacing: 2px;
-  color: hsl(45 90% 55%);
+  font-size: 1.6rem;
+  letter-spacing: 5px;
+  color: hsl(45 90% 60%);
+  text-shadow: 0 0 12px hsl(45 90% 55% / .4);
 }
 
 .lp-lb-badge-grid__monthly {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 24px;
-  padding-top: 20px;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 28px;
   border-top: 1px solid hsl(210 25% 12%);
 }
 
