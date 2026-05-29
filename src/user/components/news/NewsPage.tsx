@@ -7,6 +7,7 @@ import { NewsArticleDetail } from './NewsArticleDetail';
 import { toast } from 'sonner';
 import { Loader2, Newspaper } from 'lucide-react';
 import { EmptyState } from '@/shared/components/ui/empty-state';
+import { ErrorState } from '@/shared/components/ui/error-state';
 import { Spinner } from '@/shared/components/ui/spinner';
 import { NewsArticle } from '@/shared/types/fighter';
 
@@ -17,7 +18,7 @@ export const NewsPage: React.FC = () => {
 
   const queryUrl = selectedTag && selectedTag !== 'all' ? `/api/news?tag=${selectedTag}` : '/api/news';
 
-  const { data: articles = [], isLoading, error } = useQuery<NewsArticle[]>({
+  const { data: articles = [], isLoading, error, refetch, isFetching } = useQuery<NewsArticle[]>({
     queryKey: [queryUrl],
   });
 
@@ -57,8 +58,13 @@ export const NewsPage: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
-        <p className="text-destructive">Failed to load news articles</p>
+      <div className="flex items-center justify-center min-h-[400px] px-6">
+        <ErrorState
+          title="Couldn't load news"
+          description="We couldn't reach the newsroom. Check your connection and try again."
+          onRetry={() => refetch()}
+          isRetrying={isFetching}
+        />
       </div>
     );
   }

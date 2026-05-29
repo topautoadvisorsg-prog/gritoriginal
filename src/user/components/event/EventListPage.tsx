@@ -5,6 +5,7 @@ import { useFighters } from '@/shared/hooks/useFighters';
 import { Loader2, ChevronLeft, ChevronRight, Calendar, MapPin, Flame } from 'lucide-react';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { EmptyState } from '@/shared/components/ui/empty-state';
+import { ErrorState } from '@/shared/components/ui/error-state';
 import { cn } from '@/shared/lib/utils';
 import SEO from '@/shared/components/SEO';
 
@@ -208,7 +209,7 @@ export const EventListPage = () => {
   const navigate = useNavigate();
   const { fighterMap } = useFighters();
 
-  const { data: events = [], isLoading } = useQuery<DbEvent[]>({
+  const { data: events = [], isLoading, isError, refetch, isFetching } = useQuery<DbEvent[]>({
     queryKey: ['/api/events'],
     queryFn: async () => {
       const res = await fetch('/api/events');
@@ -296,6 +297,19 @@ export const EventListPage = () => {
             </div>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="py-20 px-6">
+        <ErrorState
+          title="Couldn't load events"
+          description="We couldn't reach the event schedule. Check your connection and try again."
+          onRetry={() => refetch()}
+          isRetrying={isFetching}
+        />
       </div>
     );
   }

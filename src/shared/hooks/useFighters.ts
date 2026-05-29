@@ -7,14 +7,17 @@ import { Fighter, Organization, WeightClass } from '@/shared/types/fighter';
  * All fighter data access should go through this hook.
  */
 export const useFighters = () => {
-  const { 
-    fighters, 
-    isLoaded, 
-    addFighters, 
-    updateFighter, 
-    removeFighter, 
+  const {
+    fighters,
+    isLoaded,
+    isLoading,
+    error,
+    addFighters,
+    updateFighter,
+    removeFighter,
     clearFighters,
-    getFighterById 
+    getFighterById,
+    refreshFighters
   } = useFighterData();
 
   // Memoized filter helpers
@@ -68,6 +71,9 @@ export const useFighters = () => {
     // Data
     fighters,
     isLoaded,
+    isLoading,
+    error,
+    refreshFighters,
     fighterMap,
     
     // Stats

@@ -7,6 +7,7 @@ import { Input } from '@/shared/components/ui/input';
 import { Search, Filter, Users, Trophy, Upload, Database } from 'lucide-react';
 import { Badge } from '@/shared/components/ui/badge';
 import { EmptyState } from '@/shared/components/ui/empty-state';
+import { ErrorState } from '@/shared/components/ui/error-state';
 import { Button } from '@/shared/components/ui/button';
 import {
   Select,
@@ -22,7 +23,7 @@ interface FighterIndexProps {
 }
 
 export const FighterIndex: React.FC<FighterIndexProps> = ({ onFighterSelect, onNavigateToImport }) => {
-  const { fighters, isLoaded } = useFighters();
+  const { fighters, isLoaded, error, isLoading, refreshFighters } = useFighters();
   const [organization, setOrganization] = useState<Organization>('UFC');
   const [searchQuery, setSearchQuery] = useState('');
   const [weightClassFilter, setWeightClassFilter] = useState<string>('all');
@@ -80,6 +81,19 @@ export const FighterIndex: React.FC<FighterIndexProps> = ({ onFighterSelect, onN
   const totalDivisions = Object.keys(fightersByWeightClass).length;
 
   // Empty state - no fighters imported yet
+  if (error && fighters.length === 0) {
+    return (
+      <div className="py-20 px-6">
+        <ErrorState
+          title="Couldn't load fighters"
+          description="We couldn't reach the fighter database. Check your connection and try again."
+          onRetry={() => refreshFighters()}
+          isRetrying={isLoading}
+        />
+      </div>
+    );
+  }
+
   if (isLoaded && fighters.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">

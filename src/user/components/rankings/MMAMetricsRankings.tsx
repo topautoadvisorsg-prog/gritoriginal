@@ -4,6 +4,7 @@ import { RankingRow, RankingUser } from './RankingRow';
 import { Loader2, Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EmptyState } from '@/shared/components/ui/empty-state';
+import { ErrorState } from '@/shared/components/ui/error-state';
 import { useAuth } from '@/shared/hooks/use-auth';
 import { RankTier } from './RankBadge';
 import { cn } from '@/shared/lib/utils';
@@ -85,7 +86,7 @@ export const MMAMetricsRankings: React.FC = () => {
     const [leaderboardType, setLeaderboardType] = React.useState<LeaderboardType>('global');
 
     // Fetch Leaderboard
-    const { data: rawData, isLoading, error } = useQuery({
+    const { data: rawData, isLoading, error, refetch, isFetching } = useQuery({
         queryKey: ['/api/leaderboard', leaderboardType],
         queryFn: async () => {
             const endpoint = leaderboardType === 'global' 
@@ -116,6 +117,19 @@ export const MMAMetricsRankings: React.FC = () => {
         return (
             <div className="flex items-center justify-center py-32">
                 <Loader2 className="h-10 w-10 animate-spin text-[#E8A020]" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex items-center justify-center py-32 px-8">
+                <ErrorState
+                    title="Couldn't load rankings"
+                    description="We couldn't reach the leaderboard. Check your connection and try again."
+                    onRetry={() => refetch()}
+                    isRetrying={isFetching}
+                />
             </div>
         );
     }
