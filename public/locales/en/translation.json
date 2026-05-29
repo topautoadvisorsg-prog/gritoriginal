@@ -102,6 +102,7 @@
         "highlight4": "Monthly bonus tiebreaker = earliest full-card lock wins",
         "header": "Global Leaderboard",
         "live": "LIVE",
+        "net_units": "Net Units",
         "badge_progression": "BADGES — NINJA → SAMURAI → MASTER → GRANDMASTER → GOAT",
         "stars_this_month": "Stars This Event"
     },

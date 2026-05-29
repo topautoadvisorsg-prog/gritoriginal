@@ -4,12 +4,14 @@ import { useScrollAnimation } from './hooks';
 import { useTranslation } from 'react-i18next';
 import { NinjaBadge, SamuraiBadge, MasterBadge, GoatBadge } from './Badges';
 
+// Ranked by NET UNITS only — the single metric the real leaderboard uses
+// ("Just pure net units. Highest net units = Rank 1.")
 const LB = [
-    { rank: 1, name: 'NightHawk', pts: '12,450', BadgeComponent: GoatBadge, rc: 'lp-lb__rank--gold', roi: '+31.2u' },
-    { rank: 2, name: 'OctagonKing', pts: '11,200', BadgeComponent: MasterBadge, rc: 'lp-lb__rank--silver', roi: '+24.8u' },
-    { rank: 3, name: 'MatWarrior', pts: '10,890', BadgeComponent: SamuraiBadge, rc: 'lp-lb__rank--bronze', roi: '+19.3u' },
-    { rank: 4, name: 'StrikeForce', pts: '9,740', BadgeComponent: NinjaBadge, rc: '', roi: '+15.7u' },
-    { rank: 5, name: 'GroundGame', pts: '9,350', BadgeComponent: null, rc: '', roi: '+12.1u' },
+    { rank: 1, name: 'NightHawk', units: '+248.6u', BadgeComponent: GoatBadge, rc: 'lp-lb__rank--gold' },
+    { rank: 2, name: 'OctagonKing', units: '+211.0u', BadgeComponent: MasterBadge, rc: 'lp-lb__rank--silver' },
+    { rank: 3, name: 'MatWarrior', units: '+193.4u', BadgeComponent: SamuraiBadge, rc: 'lp-lb__rank--bronze' },
+    { rank: 4, name: 'StrikeForce', units: '+167.2u', BadgeComponent: NinjaBadge, rc: '' },
+    { rank: 5, name: 'GroundGame', units: '+151.9u', BadgeComponent: null, rc: '' },
 ];
 
 const BADGE_TIERS = [
@@ -68,8 +70,7 @@ export function LeaderboardPreview() {
                                     <div className="lp-lb__avatar lp-lb__avatar--empty" />
                                 )}
                                 <span className="lp-lb__name">{e.name}</span>
-                                <span className="lp-lb__roi">{e.roi}</span>
-                                <span className="lp-lb__pts">{e.pts}</span>
+                                <span className="lp-lb__units">{e.units}<small>{t('leaderboard.net_units')}</small></span>
                             </div>
                         ))}
                     </div>
