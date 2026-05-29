@@ -3297,15 +3297,16 @@ a:focus-visible,
   grid-template-columns: 1fr auto 1fr;
   align-items: stretch;
   gap: 10px;
-  padding: 12px;
+  padding: 14px;
 }
 
+/* Vertical fighter card — faithful to FighterComparisonCard */
 .lp-pick-card {
   position: relative;
-  border: 1px solid hsl(210 20% 16%);
-  border-radius: 12px;
-  background: linear-gradient(180deg, hsl(220 25% 10%), hsl(220 25% 6%));
-  padding: 10px 10px 12px;
+  border: 2px solid hsl(210 20% 16%);
+  border-radius: 16px;
+  background: hsl(220 25% 7%);
+  padding: 12px 10px 12px;
   cursor: pointer;
   overflow: hidden;
   transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
@@ -3318,34 +3319,69 @@ a:focus-visible,
 }
 
 .lp-pick-card--red {
-  border-color: hsl(354 85% 55% / .35);
+  border-color: hsl(354 85% 55% / .3);
 }
 
 .lp-pick-card--blue {
-  border-color: hsl(190 90% 55% / .3);
+  border-color: hsl(190 90% 55% / .25);
 }
 
+/* Selected red corner uses the app's accent ring + glow */
 .lp-pick-card--red.lp-pick-card--selected {
   border-color: hsl(354 90% 60%);
   box-shadow:
-    0 0 0 1px hsl(354 90% 50% / .35),
-    0 14px 30px -10px hsl(354 90% 35% / .55);
-  background: linear-gradient(180deg, hsl(354 60% 14% / .55), hsl(220 25% 6%));
+    0 0 0 2px hsl(354 90% 55% / .3),
+    0 14px 30px -10px hsl(354 90% 35% / .5);
+}
+
+/* Left corner accent strip (matches the 1.5px full-height bar in-app) */
+.lp-pick-card__strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: hsl(354 90% 55%);
+}
+
+.lp-pick-card__strip--blue {
+  background: hsl(190 90% 55%);
+}
+
+/* "YOUR PICK" badge — top-right, accent fill */
+.lp-pick-card__badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: hsl(354 90% 55%);
+  color: hsl(0 0% 100%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .48rem;
+  font-weight: 800;
+  letter-spacing: .1em;
 }
 
 .lp-pick-card__photo {
-  height: 110px;
+  height: 132px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
-  margin: -2px -2px 6px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, hsl(220 25% 12% / .5), hsl(220 25% 9% / .2));
+  margin: 4px 0 10px;
 }
 
 .lp-pick-card__photo img {
-  height: 138%;
+  height: 150%;
   width: auto;
-  max-width: 160%;
+  max-width: 170%;
   object-fit: contain;
   object-position: bottom center;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, .55));
@@ -3357,68 +3393,75 @@ a:focus-visible,
   transform: scaleX(-1);
 }
 
-.lp-pick-card__body {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
-
-.lp-pick-card__flag {
-  font-size: 1rem;
-  line-height: 1;
-}
-
 .lp-pick-card__name {
   font-family: 'Barlow Condensed', sans-serif;
-  font-size: .95rem;
+  font-size: 1.02rem;
   font-weight: 900;
-  letter-spacing: .08em;
-  color: hsl(0 0% 96%);
-  line-height: 1;
+  letter-spacing: .01em;
+  color: hsl(0 0% 97%);
+  line-height: 1.05;
 }
 
-.lp-pick-card__odds {
+.lp-pick-card__nick {
+  font-size: .62rem;
+  font-style: italic;
+  color: hsl(210 20% 52%);
+  margin-top: 1px;
+}
+
+.lp-pick-card__record-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.lp-pick-card__record {
   font-family: 'JetBrains Mono', monospace;
-  font-size: .82rem;
+  font-size: .8rem;
   font-weight: 700;
-  color: hsl(354 90% 68%);
-  margin-top: 2px;
+  color: hsl(0 0% 92%);
 }
 
-.lp-pick-card__odds--blue {
-  color: hsl(190 90% 65%);
-}
-
-.lp-pick-card__corner {
+.lp-pick-card__streak {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: hsl(142 71% 45% / .18);
+  color: hsl(142 71% 60%);
   font-family: 'JetBrains Mono', monospace;
   font-size: .52rem;
   font-weight: 700;
-  letter-spacing: .15em;
-  color: hsl(354 90% 60%);
-  text-transform: uppercase;
-  margin-top: 4px;
 }
 
-.lp-pick-card__corner--blue {
-  color: hsl(190 90% 60%);
+.lp-pick-card__streak--win {
+  background: hsl(142 71% 45% / .14);
 }
 
-.lp-pick-card__check {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 6px;
-  border-radius: 4px;
-  background: hsl(354 90% 50%);
-  color: white;
+/* Moneyline pill — red corner accent, blue corner primary */
+.lp-pick-card__ml {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 8px;
   font-family: 'JetBrains Mono', monospace;
-  font-size: .5rem;
+  font-size: .82rem;
   font-weight: 800;
-  letter-spacing: .12em;
+}
+
+.lp-pick-card__ml--red {
+  background: hsl(354 90% 55% / .1);
+  color: hsl(354 90% 68%);
+  border: 1px solid hsl(354 90% 55% / .3);
+}
+
+.lp-pick-card__ml--blue {
+  background: hsl(190 90% 55% / .1);
+  color: hsl(190 90% 65%);
+  border: 1px solid hsl(190 90% 55% / .3);
 }
 
 .lp-picks-mockup__vs-v2 {
@@ -3427,7 +3470,7 @@ a:focus-visible,
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 0 4px;
+  padding: 0 2px;
 }
 
 .lp-picks-mockup__vs-label {
@@ -3445,6 +3488,85 @@ a:focus-visible,
   color: hsl(210 20% 50%);
   letter-spacing: .12em;
   white-space: nowrap;
+}
+
+/* ── Make Your Prediction block (FantasyPickSection) ── */
+.lp-picks-mockup__predict {
+  padding: 0 14px 12px;
+  border-top: 1px solid hsl(210 20% 10%);
+  margin-top: 2px;
+  padding-top: 14px;
+}
+
+.lp-picks-mockup__predict-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.lp-picks-mockup__predict-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: hsl(190 90% 55% / .15);
+  color: hsl(190 90% 60%);
+  flex-shrink: 0;
+}
+
+.lp-picks-mockup__predict-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: .01em;
+  color: hsl(0 0% 95%);
+  line-height: 1.1;
+}
+
+.lp-picks-mockup__predict-sub {
+  font-size: .64rem;
+  color: hsl(210 20% 50%);
+}
+
+.lp-picks-mockup__method-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.lp-method-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 4px;
+  border-radius: 12px;
+  border: 2px solid hsl(210 20% 16%);
+  background: hsl(220 25% 9% / .6);
+  color: hsl(210 20% 55%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, color .18s ease, background-color .18s ease;
+}
+
+.lp-method-card:hover:not(.lp-method-card--active) {
+  transform: translateY(-1px);
+  border-color: hsl(190 90% 55% / .4);
+  color: hsl(210 30% 75%);
+}
+
+.lp-method-card--active {
+  border-color: hsl(190 90% 55%);
+  background: hsl(190 90% 55% / .1);
+  color: hsl(190 90% 65%);
+  box-shadow: 0 8px 20px -8px hsl(190 90% 50% / .35);
 }
 
 .lp-picks-mockup__header {
@@ -3573,15 +3695,15 @@ a:focus-visible,
 
 .lp-conf-unit:hover:not(.lp-conf-unit--active) {
   background: hsl(220 25% 11%);
-  border-color: hsl(354 70% 40% / .4);
+  border-color: hsl(190 80% 45% / .4);
   color: hsl(210 30% 70%);
 }
 
 .lp-conf-unit--active {
-  background: linear-gradient(180deg, hsl(354 90% 52%), hsl(354 90% 40%));
-  border-color: hsl(354 90% 60%);
-  color: hsl(0 0% 100%);
-  box-shadow: 0 4px 16px -4px hsl(354 90% 40% / .5);
+  background: hsl(190 90% 55% / .12);
+  border-color: hsl(190 90% 55%);
+  color: hsl(190 90% 65%);
+  box-shadow: 0 4px 16px -4px hsl(190 90% 45% / .4);
 }
 
 .lp-picks-mockup__lock {
@@ -3592,22 +3714,22 @@ a:focus-visible,
   width: calc(100% - 28px);
   margin: 0 14px 14px;
   padding: 10px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, hsl(354 90% 48%), hsl(354 90% 36%));
+  border-radius: 10px;
+  background: linear-gradient(135deg, hsl(190 90% 52%), hsl(190 90% 42%));
   border: none;
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 900;
-  font-size: .85rem;
+  font-size: .9rem;
   letter-spacing: .1em;
-  color: hsl(0 0% 100%);
+  color: hsl(220 40% 8%);
   cursor: pointer;
-  box-shadow: 0 4px 20px -6px rgba(139, 0, 0, .5), inset 0 1px 0 hsl(354 90% 65% / .25);
+  box-shadow: 0 4px 20px -6px hsl(190 90% 45% / .55), inset 0 1px 0 hsl(190 90% 70% / .3);
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .lp-picks-mockup__lock:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 28px -8px rgba(139, 0, 0, .65), inset 0 1px 0 hsl(354 90% 65% / .35);
+  box-shadow: 0 8px 28px -8px hsl(190 90% 45% / .7), inset 0 1px 0 hsl(190 90% 70% / .4);
 }
 
 /* ===============================================
@@ -3822,6 +3944,16 @@ a:focus-visible,
 
 .lp-fighter-photo--right {
   transform: scaleX(-1);
+}
+
+/* Flanker source images naturally face LEFT. To face INWARD toward the
+   center content, the LEFT flanker must be mirrored and the RIGHT flanker
+   left natural. Two-class specificity overrides the generic --right rule. */
+.lp-fighter-photo--flanker.lp-fighter-photo--left {
+  transform: scaleX(-1);
+}
+.lp-fighter-photo--flanker.lp-fighter-photo--right {
+  transform: none;
 }
 
 .lp-fighter-photo--footer {
