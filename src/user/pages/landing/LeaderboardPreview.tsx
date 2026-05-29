@@ -94,7 +94,7 @@ export function LeaderboardPreview() {
                     </div>
                     <div className="lp-lb-badge-grid__monthly">
                         <span style={{ color: 'hsl(45 90% 60%)', fontSize: '1.1rem', letterSpacing: 2 }}>★★★☆☆</span>
-                        <span style={{ marginLeft: 'auto', fontFamily: "'JetBrains Mono', monospace", fontSize: '.75rem', color: 'hsl(45 90% 60%)' }}>3 / 5 {t('leaderboard.stars_this_month')}</span>
+                        <span style={{ marginLeft: 'auto', fontFamily: "'Inter', sans-serif", fontSize: '.75rem', color: 'hsl(45 90% 60%)' }}>3 / 5 {t('leaderboard.stars_this_month')}</span>
                     </div>
                 </div>
             </div>

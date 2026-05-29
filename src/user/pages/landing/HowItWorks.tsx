@@ -17,8 +17,8 @@ function StepVisual01() {
         <rect x="44" y="40" width="28" height="5" rx="2.5" fill="hsl(210 20% 20%)" />
         <rect x="6" y="56" width="22" height="10" rx="5" fill="hsl(150 60% 45% / .15)" stroke="hsl(150 60% 50% / .4)" strokeWidth="0.5" />
         <rect x="32" y="56" width="22" height="10" rx="5" fill="hsl(354 90% 52% / .1)" stroke="hsl(354 90% 52% / .3)" strokeWidth="0.5" />
-        <text x="17" y="64" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="5" fontFamily="'JetBrains Mono', monospace">🥷 NINJA</text>
-        <text x="43" y="64" textAnchor="middle" fill="hsl(354 90% 62%)" fontSize="5" fontFamily="'JetBrains Mono', monospace">USA 🇺🇸</text>
+        <text x="17" y="64" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="5" fontFamily="'Inter', sans-serif">🥷 NINJA</text>
+        <text x="43" y="64" textAnchor="middle" fill="hsl(354 90% 62%)" fontSize="5" fontFamily="'Inter', sans-serif">USA 🇺🇸</text>
       </svg>
     </div>
   );
@@ -38,10 +38,10 @@ function StepVisual02() {
         <circle cx="97" cy="10" r="5" fill="hsl(354 90% 52%)" />
         <path d="M94 10 L96 12 L100 8" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         <rect x="6" y="40" width="98" height="24" rx="6" fill="hsl(220 25% 12%)" />
-        <text x="18" y="52" fill="hsl(210 20% 50%)" fontSize="6" fontFamily="'JetBrains Mono', monospace">CONFIDENCE</text>
+        <text x="18" y="52" fill="hsl(210 20% 50%)" fontSize="6" fontFamily="'Inter', sans-serif">CONFIDENCE</text>
         <rect x="6" y="56" width="88" height="4" rx="2" fill="hsl(210 20% 18%)" />
         <rect x="6" y="56" width="64" height="4" rx="2" fill="hsl(354 90% 52%)" />
-        <text x="100" y="60" fill="hsl(354 90% 62%)" fontSize="5.5" fontFamily="'JetBrains Mono', monospace">4u</text>
+        <text x="100" y="60" fill="hsl(354 90% 62%)" fontSize="5.5" fontFamily="'Inter', sans-serif">4u</text>
       </svg>
     </div>
   );
@@ -74,7 +74,7 @@ function StepVisual03() {
           return <circle key={i} cx={x} cy={ys[i]} r="2.5" fill="hsl(150 60% 50%)" />;
         })}
         <rect x="60" y="6" width="44" height="16" rx="4" fill="hsl(150 60% 45% / .15)" stroke="hsl(150 60% 50% / .3)" strokeWidth="0.5" />
-        <text x="82" y="17" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="7" fontFamily="'JetBrains Mono', monospace">+18.4u</text>
+        <text x="82" y="17" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="7" fontFamily="'Inter', sans-serif">+18.4u</text>
       </svg>
     </div>
   );
@@ -88,17 +88,17 @@ function StepVisual04() {
         <rect x="6" y="8" width="98" height="16" rx="4" fill="hsl(45 90% 55% / .08)" stroke="hsl(45 90% 55% / .3)" strokeWidth="1" />
         <text x="16" y="20" fill="hsl(45 90% 60%)" fontSize="8" fontFamily="'Bebas Neue', sans-serif" letterSpacing="1">#1</text>
         <text x="34" y="20" fill="hsl(210 40% 85%)" fontSize="7" fontFamily="sans-serif">NightHawk</text>
-        <text x="90" y="20" textAnchor="middle" fill="hsl(45 90% 60%)" fontSize="7" fontFamily="'JetBrains Mono', monospace">12,450</text>
+        <text x="90" y="20" textAnchor="middle" fill="hsl(45 90% 60%)" fontSize="7" fontFamily="'Inter', sans-serif">12,450</text>
         <rect x="6" y="28" width="98" height="12" rx="3" fill="hsl(220 25% 12%)" />
         <text x="16" y="38" fill="hsl(210 20% 50%)" fontSize="7" fontFamily="'Bebas Neue', sans-serif" letterSpacing="1">#2</text>
         <text x="34" y="38" fill="hsl(210 40% 70%)" fontSize="6.5" fontFamily="sans-serif">OctagonKing</text>
-        <text x="90" y="38" textAnchor="middle" fill="hsl(210 20% 55%)" fontSize="7" fontFamily="'JetBrains Mono', monospace">11,200</text>
+        <text x="90" y="38" textAnchor="middle" fill="hsl(210 20% 55%)" fontSize="7" fontFamily="'Inter', sans-serif">11,200</text>
         <rect x="6" y="44" width="98" height="12" rx="3" fill="hsl(220 25% 12%)" />
         <text x="16" y="54" fill="hsl(25 85% 55%)" fontSize="7" fontFamily="'Bebas Neue', sans-serif" letterSpacing="1">#3</text>
         <text x="34" y="54" fill="hsl(210 40% 60%)" fontSize="6.5" fontFamily="sans-serif">MatWarrior</text>
-        <text x="90" y="54" textAnchor="middle" fill="hsl(210 20% 50%)" fontSize="7" fontFamily="'JetBrains Mono', monospace">10,890</text>
+        <text x="90" y="54" textAnchor="middle" fill="hsl(210 20% 50%)" fontSize="7" fontFamily="'Inter', sans-serif">10,890</text>
         <rect x="6" y="58" width="98" height="10" rx="3" fill="hsl(45 90% 55% / .06)" stroke="hsl(45 90% 55% / .2)" strokeWidth="0.5" />
-        <text x="55" y="66" textAnchor="middle" fill="hsl(45 90% 55%)" fontSize="5.5" fontFamily="'JetBrains Mono', monospace" letterSpacing="1">★★★★★ GOAT UNLOCK</text>
+        <text x="55" y="66" textAnchor="middle" fill="hsl(45 90% 55%)" fontSize="5.5" fontFamily="'Inter', sans-serif" letterSpacing="1">★★★★★ GOAT UNLOCK</text>
       </svg>
     </div>
   );

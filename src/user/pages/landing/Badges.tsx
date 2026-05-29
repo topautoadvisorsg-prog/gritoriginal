@@ -18,7 +18,7 @@ export function NinjaBadge({ size = 56, showLabel = true }: BadgeProps) {
         <circle cx="28" cy="28" r="5" fill="hsl(210 20% 35%)" stroke="hsl(210 20% 55%)" strokeWidth="1" />
       </svg>
       {showLabel && (
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(210 20% 50%)', textTransform: 'uppercase' }}>NINJA</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(210 20% 50%)', textTransform: 'uppercase' }}>NINJA</span>
       )}
     </div>
   );
@@ -39,7 +39,7 @@ export function SamuraiBadge({ size = 56, showLabel = true }: BadgeProps) {
         <circle cx="18" cy="38" r="2.5" fill="hsl(355 85% 52% / .3)" stroke="hsl(355 85% 65%)" strokeWidth="1" />
       </svg>
       {showLabel && (
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(355 85% 55%)', textTransform: 'uppercase' }}>SAMURAI</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(355 85% 55%)', textTransform: 'uppercase' }}>SAMURAI</span>
       )}
     </div>
   );
@@ -56,7 +56,7 @@ export function MasterBadge({ size = 56, showLabel = true }: BadgeProps) {
         <path d="M28 17 L30 22 H35 L31 25 L33 30 L28 27 L23 30 L25 25 L21 22 H26 Z" fill="hsl(280 80% 65%)" />
       </svg>
       {showLabel && (
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(280 80% 65%)', textTransform: 'uppercase' }}>MASTER</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(280 80% 65%)', textTransform: 'uppercase' }}>MASTER</span>
       )}
     </div>
   );
@@ -77,10 +77,10 @@ export function GoatBadge({ size = 56, showLabel = true }: BadgeProps) {
           return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="hsl(45 90% 55%)" strokeWidth="1.5" />;
         })}
         <path d="M28 12 L30.9 20.6 H40 L32.6 25.9 L35.4 34.5 L28 29.2 L20.6 34.5 L23.4 25.9 L16 20.6 H25.1 Z" fill="hsl(45 90% 60%)" />
-        <text x="28" y="46" textAnchor="middle" fontFamily="'JetBrains Mono', monospace" fontSize="5.5" fontWeight="700" letterSpacing="1" fill="hsl(45 90% 55%)">G.O.A.T</text>
+        <text x="28" y="46" textAnchor="middle" fontFamily="'Inter', sans-serif" fontSize="5.5" fontWeight="700" letterSpacing="1" fill="hsl(45 90% 55%)">G.O.A.T</text>
       </svg>
       {showLabel && (
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(45 90% 60%)', textTransform: 'uppercase' }}>GOAT</span>
+        <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(45 90% 60%)', textTransform: 'uppercase' }}>GOAT</span>
       )}
     </div>
   );

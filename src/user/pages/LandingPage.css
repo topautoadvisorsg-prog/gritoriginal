@@ -311,7 +311,7 @@ a:focus-visible,
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .88rem;
   font-weight: 700;
   letter-spacing: .16em;
@@ -661,7 +661,7 @@ a:focus-visible,
   display: inline-flex;
   align-items: center;
   gap: 11px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .72rem;
   font-weight: 600;
   letter-spacing: .28em;
@@ -934,7 +934,7 @@ a:focus-visible,
 }
 
 .lp-model-card__label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .72rem;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -970,7 +970,7 @@ a:focus-visible,
   gap: 6px;
   padding: 6px 14px;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .85rem;
   font-weight: 700;
 }
@@ -1019,7 +1019,7 @@ a:focus-visible,
   gap: 6px;
   padding: 6px 14px;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .85rem;
   font-weight: 700;
 }
@@ -1033,7 +1033,7 @@ a:focus-visible,
   top: 12px;
   right: 12px;
   padding: 3px 9px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .56rem;
   font-weight: 800;
   letter-spacing: .18em;
@@ -1170,7 +1170,7 @@ a:focus-visible,
 }
 
 .lp-intro__pill {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .85rem;
   font-weight: 600;
   letter-spacing: .1em;
@@ -1260,7 +1260,7 @@ a:focus-visible,
 }
 
 .lp-mock-fighter__record {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .82rem;
   color: var(--cyan);
   margin-bottom: 12px;
@@ -1739,7 +1739,7 @@ a:focus-visible,
   gap: 10px;
   padding: 20px 24px;
   border-bottom: 1px solid hsl(210 25% 12%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .72rem;
   font-weight: 600;
   letter-spacing: .12em;
@@ -1879,7 +1879,7 @@ a:focus-visible,
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: 1.15rem;
   font-weight: 700;
   line-height: 1;
@@ -1961,7 +1961,7 @@ a:focus-visible,
   top: -13px;
   left: 50%;
   transform: translateX(-50%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .62rem;
   font-weight: 700;
   letter-spacing: .15em;
@@ -2398,7 +2398,7 @@ a:focus-visible,
 
 .lp-ticker__label {
   flex-shrink: 0;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: 1.05rem;
   font-weight: 800;
   letter-spacing: .22em;
@@ -2607,7 +2607,7 @@ a:focus-visible,
   border-left: 1px solid color-mix(in srgb, var(--fb-color) 30%, transparent);
   border-bottom: 1px solid color-mix(in srgb, var(--fb-color) 30%, transparent);
   color: var(--fb-color);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .56rem;
   letter-spacing: .15em;
   text-transform: uppercase;
@@ -2739,7 +2739,7 @@ a:focus-visible,
   padding: 3px 10px;
   background: rgb(232, 160, 32);
   color: hsl(220 25% 8%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .62rem;
   font-weight: 800;
   letter-spacing: .15em;
@@ -2749,7 +2749,7 @@ a:focus-visible,
 }
 
 .lp-tokens__card-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .62rem;
   letter-spacing: .2em;
   color: rgba(255, 255, 255, .5);
@@ -2774,11 +2774,11 @@ a:focus-visible,
 .lp-tokens__card-rate {
   font-size: .7rem;
   color: rgba(255, 255, 255, .45);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
 }
 
 .lp-ticker__item {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: 1.5rem;
   font-weight: 500;
   color: hsl(210 25% 82%);
@@ -2862,7 +2862,7 @@ a:focus-visible,
 }
 
 .lp-showcase-fighters__record {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .78rem;
   color: var(--cyan);
   margin-bottom: 0;
@@ -2879,7 +2879,7 @@ a:focus-visible,
   display: flex;
   align-items: center;
   gap: 10px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .68rem;
   font-weight: 600;
   letter-spacing: .12em;
@@ -3048,7 +3048,7 @@ a:focus-visible,
 }
 
 .lp-fighter-photo-placeholder__label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .52rem;
   font-weight: 700;
   letter-spacing: .14em;
@@ -3059,7 +3059,7 @@ a:focus-visible,
 }
 
 .lp-fighter-photo-placeholder__sub {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .46rem;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -3088,7 +3088,7 @@ a:focus-visible,
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .65rem;
   font-weight: 700;
   letter-spacing: .14em;
@@ -3262,7 +3262,7 @@ a:focus-visible,
 }
 
 .lp-picks-mockup__event-badge {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .56rem;
   font-weight: 800;
   letter-spacing: .18em;
@@ -3343,7 +3343,7 @@ a:focus-visible,
   border-radius: 999px;
   background: hsl(354 90% 55%);
   color: hsl(0 0% 100%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .48rem;
   font-weight: 800;
   letter-spacing: .1em;
@@ -3400,7 +3400,7 @@ a:focus-visible,
 }
 
 .lp-pick-card__record {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .8rem;
   font-weight: 700;
   color: hsl(0 0% 92%);
@@ -3414,7 +3414,7 @@ a:focus-visible,
   border-radius: 999px;
   background: hsl(150 60% 45% / .18);
   color: hsl(150 60% 60%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .52rem;
   font-weight: 700;
 }
@@ -3429,7 +3429,7 @@ a:focus-visible,
   margin-top: 8px;
   padding: 4px 12px;
   border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .82rem;
   font-weight: 800;
 }
@@ -3464,7 +3464,7 @@ a:focus-visible,
 }
 
 .lp-picks-mockup__rounds {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .55rem;
   font-weight: 700;
   color: hsl(210 20% 50%);
@@ -3561,7 +3561,7 @@ a:focus-visible,
 }
 
 .lp-picks-mockup__event {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .6rem;
   font-weight: 700;
   letter-spacing: .1em;
@@ -3570,7 +3570,7 @@ a:focus-visible,
 }
 
 .lp-picks-mockup__live {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .58rem;
   font-weight: 700;
   letter-spacing: .08em;
@@ -3619,7 +3619,7 @@ a:focus-visible,
 }
 
 .lp-picks-mockup__odds {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .65rem;
   color: hsl(210 20% 50%);
 }
@@ -3648,7 +3648,7 @@ a:focus-visible,
 }
 
 .lp-picks-mockup__conf-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .55rem;
   font-weight: 700;
   letter-spacing: .12em;
@@ -3667,7 +3667,7 @@ a:focus-visible,
   border-radius: 5px;
   border: 1px solid hsl(210 20% 16%);
   background: hsl(220 25% 8%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .62rem;
   font-weight: 700;
   color: hsl(210 20% 45%);
@@ -3727,7 +3727,7 @@ a:focus-visible,
 }
 
 .lp-chat-mockup__title {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .6rem;
   font-weight: 700;
   letter-spacing: .1em;
@@ -3762,7 +3762,7 @@ a:focus-visible,
 }
 
 .lp-chat-msg__user {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .6rem;
   font-weight: 700;
   letter-spacing: .06em;
@@ -3771,7 +3771,7 @@ a:focus-visible,
 }
 
 .lp-chat-msg__time {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .52rem;
   color: hsl(210 20% 38%);
 }
@@ -3791,7 +3791,7 @@ a:focus-visible,
   border-radius: 6px;
   border: 1px solid hsl(210 20% 14%);
   background: hsl(220 25% 7%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .65rem;
   color: hsl(210 20% 30%);
   letter-spacing: .04em;
@@ -3810,7 +3810,7 @@ a:focus-visible,
 }
 
 .lp-picks-mockup__methods-label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .55rem;
   font-weight: 700;
   letter-spacing: .12em;
@@ -3829,7 +3829,7 @@ a:focus-visible,
   border-radius: 5px;
   border: 1px solid hsl(210 20% 16%);
   background: hsl(220 25% 8%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .6rem;
   font-weight: 700;
   letter-spacing: .06em;
@@ -3863,7 +3863,7 @@ a:focus-visible,
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .55rem;
   font-weight: 700;
   color: #b30000;
@@ -4043,7 +4043,7 @@ a:focus-visible,
   position: absolute;
   top: 10px;
   left: 10px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Inter", sans-serif;
   font-size: .65rem;
   font-weight: 700;
   letter-spacing: .12em;
@@ -4084,7 +4084,7 @@ a:focus-visible,
   font-size: .72rem;
   color: hsl(210 20% 38%);
   margin-top: 4px;
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Inter", sans-serif;
   letter-spacing: .05em;
 }
 
@@ -4238,7 +4238,7 @@ a:focus-visible,
 }
 
 .lp-intel-section__title {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: clamp(1.7rem, 3.4vw, 2.6rem);
   font-weight: 800;
   letter-spacing: .14em;
@@ -4248,7 +4248,7 @@ a:focus-visible,
 }
 
 .lp-intel-section__sub {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: clamp(.95rem, 1.4vw, 1.15rem);
   color: hsl(210 30% 78%);
   letter-spacing: .04em;
@@ -4389,7 +4389,7 @@ a:focus-visible,
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .67rem;
   font-weight: 700;
   letter-spacing: .12em;
@@ -4456,7 +4456,7 @@ a:focus-visible,
 }
 
 .lp-lb-badge-grid__label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 800;
   letter-spacing: .18em;
@@ -4571,7 +4571,7 @@ a:focus-visible,
   background: hsl(215 25% 8%);
   border-bottom: 1px solid hsl(210 25% 13%);
   padding: 14px 24px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .1em;
@@ -4672,7 +4672,7 @@ a:focus-visible,
   margin-bottom: 8px;
   padding: 3px 9px;
   border-radius: 999px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .56rem;
   font-weight: 800;
   letter-spacing: .18em;
@@ -4702,7 +4702,7 @@ a:focus-visible,
   border: 1px solid hsl(210 20% 22%);
   background: hsl(220 25% 8% / .7);
   color: hsl(210 20% 70%);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Inter', sans-serif;
   font-size: .68rem;
   font-weight: 700;
   letter-spacing: .08em;
