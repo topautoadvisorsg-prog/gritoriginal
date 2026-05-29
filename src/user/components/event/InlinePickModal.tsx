@@ -116,7 +116,7 @@ export const InlinePickModal: React.FC<InlinePickModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#E8A020]/20">
           <h2 className="text-lg font-black text-white uppercase tracking-widest">Quick Pick</h2>
-          <button onClick={onClose} className="text-white/60 hover:text-white transition-colors">
+          <button onClick={onClose} aria-label="Close" className="text-white/60 hover:text-white transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>

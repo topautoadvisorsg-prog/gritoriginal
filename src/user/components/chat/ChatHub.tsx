@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { getCountryFlag } from '@/shared/lib/countries';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/shared/hooks/use-auth';
-import { Send, Loader2, Globe, Flag, Lock, Pin, Instagram, Twitter, DollarSign, Flame, Smile, Zap, ImageIcon, Trophy, X, MessageCircle } from 'lucide-react';
+import { Send, Loader2, Globe, Flag, Lock, Pin, Instagram, Twitter, Smile, ImageIcon, Trophy, X, MessageCircle } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSocket } from '@/shared/hooks/use-socket';
 import { SlipPicker } from './SlipPicker';
@@ -244,7 +244,7 @@ const EmojiPicker: React.FC<{ isChallenger: boolean; onSelect: (emoji: string) =
                 <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
                     {isChallenger ? 'Expanded Emoji Library' : 'Standard Emojis'}
                 </span>
-                <button onClick={onClose} className="text-white/30 hover:text-white/60 transition-colors">
+                <button onClick={onClose} aria-label="Close" className="text-white/30 hover:text-white/60 transition-colors">
                     <X className="w-3 h-3" />
                 </button>
             </div>
@@ -678,15 +678,6 @@ export const ChatHub: React.FC = () => {
                                                         title="Emoji"
                                                     >
                                                         <Smile className="w-4 h-4" />
-                                                    </button>
-                                                    <button type="button" className="hover:text-orange-400 transition-colors">
-                                                        <Flame className="w-4 h-4" />
-                                                    </button>
-                                                    <button type="button" className="hover:text-white/60 transition-colors">
-                                                        <Zap className="w-4 h-4" />
-                                                    </button>
-                                                    <button type="button" className="hover:text-green-400 transition-colors">
-                                                        <DollarSign className="w-4 h-4" />
                                                     </button>
 
                                                     {/* Slip button — Challenger only; hidden for Contenders */}

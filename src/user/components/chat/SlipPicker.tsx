@@ -35,7 +35,7 @@ export const SlipPicker: React.FC<SlipPickerProps> = ({ onSelect, onClose, coold
         >
             <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
                 <span className="text-[11px] font-black uppercase tracking-widest text-yellow-400">Share a Slip</span>
-                <button onClick={onClose} className="text-white/40 hover:text-white/80 transition-colors">
+                <button onClick={onClose} aria-label="Close" className="text-white/40 hover:text-white/80 transition-colors">
                     <X className="w-4 h-4" />
                 </button>
             </div>
