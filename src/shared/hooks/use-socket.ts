@@ -17,11 +17,11 @@ export function useSocket() {
         socketRef.current = socket;
 
         socket.on('connect', () => {
-            console.log('Socket.IO connected:', socket.id);
+            if (import.meta.env.DEV) console.log('Socket.IO connected:', socket.id);
         });
 
         socket.on('disconnect', (reason) => {
-            console.log('Socket.IO disconnected:', reason);
+            if (import.meta.env.DEV) console.log('Socket.IO disconnected:', reason);
         });
 
         socket.on('connect_error', (error) => {

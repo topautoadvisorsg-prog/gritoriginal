@@ -11,7 +11,7 @@ export function useRequestNotificationPermission() {
     const requestPermission = async () => {
       // Check if browser supports notifications
       if (!('Notification' in window)) {
-        console.log('This browser does not support notifications');
+        if (import.meta.env.DEV) console.log('This browser does not support notifications');
         return;
       }
 
@@ -21,15 +21,15 @@ export function useRequestNotificationPermission() {
           const permission = await Notification.requestPermission();
           
           if (permission === 'granted') {
-            console.log('✅ Notifications enabled');
-            
+            if (import.meta.env.DEV) console.log('✅ Notifications enabled');
+
             // Register service worker
             if ('serviceWorker' in navigator) {
               try {
                 const registration = await navigator.serviceWorker.register('/sw.js', {
                   scope: '/'
                 });
-                console.log('✅ Service Worker registered:', registration.scope);
+                if (import.meta.env.DEV) console.log('✅ Service Worker registered:', registration.scope);
                 
                 // Here you would typically subscribe to push notifications
                 // and send the subscription to your backend
@@ -39,20 +39,20 @@ export function useRequestNotificationPermission() {
               }
             }
           } else if (permission === 'denied') {
-            console.log('❌ Notifications denied by user');
+            if (import.meta.env.DEV) console.log('❌ Notifications denied by user');
           }
         } catch (error) {
           console.error('❌ Error requesting notification permission:', error);
         }
       } else if (Notification.permission === 'granted') {
-        console.log('✅ Notifications already enabled');
-        
+        if (import.meta.env.DEV) console.log('✅ Notifications already enabled');
+
         // Register service worker if not already done
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistration().then((registration) => {
             if (!registration) {
               navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('✅ Service Worker registered:', reg.scope))
+                .then(reg => { if (import.meta.env.DEV) console.log('✅ Service Worker registered:', reg.scope); })
                 .catch(err => console.error('❌ Service Worker registration failed:', err));
             }
           });

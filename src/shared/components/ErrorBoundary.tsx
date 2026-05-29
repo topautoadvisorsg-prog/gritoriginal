@@ -42,7 +42,15 @@ export class ErrorBoundary extends React.Component<Props, State> {
           }}
         >
           <div style={{ fontSize: 48 }}>⚠️</div>
-          <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>
+          <h2
+            style={{
+              fontSize: 24,
+              fontWeight: 900,
+              margin: 0,
+              letterSpacing: "-0.02em",
+              textTransform: "uppercase",
+            }}
+          >
             Something went wrong
           </h2>
           <p style={{ color: "hsl(210 25% 55%)", maxWidth: 400, margin: 0 }}>
@@ -52,16 +60,17 @@ export class ErrorBoundary extends React.Component<Props, State> {
             onClick={() => window.location.reload()}
             style={{
               marginTop: 8,
-              padding: "10px 24px",
-              background: "hsl(190 90% 50%)",
+              padding: "12px 28px",
+              background: "#E8A020",
               color: "#000",
               border: "none",
-              borderRadius: 4,
-              fontWeight: 700,
-              fontSize: 14,
+              borderRadius: 10,
+              fontWeight: 900,
+              fontSize: 13,
               cursor: "pointer",
-              letterSpacing: "0.08em",
+              letterSpacing: "0.12em",
               textTransform: "uppercase",
+              boxShadow: "0 0 20px rgba(232, 160, 32, 0.35)",
             }}
           >
             Reload Page
