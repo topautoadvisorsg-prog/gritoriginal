@@ -1,23 +1,24 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { RankingRow, RankingUser } from './RankingRow';
-import { Loader2, Trophy, Diamond } from 'lucide-react';
+import { Loader2, Trophy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { useAuth } from '@/shared/hooks/use-auth';
 import { RankTier } from './RankBadge';
 import { cn } from '@/shared/lib/utils';
 
-// Helper to determine tier from total wins (example gamification logic)
-const determineTier = (rank: number, wins: number): RankTier => {
+// Rank-based tier badge. Rank is real data; the badge is a purely positional
+// gamification visual (no fabricated win/loss counts feed into it).
+const determineTier = (rank: number): RankTier => {
     if (rank === 1) return 'ULTIMATE GOLD';
     if (rank <= 5) return 'GRANDMASTER';
-    if (wins >= 50) return 'MASTER';
-    if (wins >= 20) return 'SAMURAI';
+    if (rank <= 15) return 'MASTER';
+    if (rank <= 50) return 'SAMURAI';
     return 'NINJA';
 };
 
-// Snapshot ranking entry shape (from leaderboardService)
+// Snapshot ranking entry shape (from leaderboardService) — monthly/yearly tabs
 interface SnapshotRankingEntry {
     rank: number;
     userId: string;
@@ -26,7 +27,7 @@ interface SnapshotRankingEntry {
     currentStreak?: number;
 }
 
-// Legacy global leaderboard entry shape
+// Global leaderboard entry shape (totalPoints-based) — Global All-Time tab
 interface GlobalLeaderboardEntry {
     id: string;
     username?: string;
@@ -34,79 +35,47 @@ interface GlobalLeaderboardEntry {
     avatarUrl?: string;
     rank: number;
     totalPoints: number;
+    country?: string;
     hasGoldBadge?: boolean;
 }
 
-const MOCK_RESULTS_WIN = [{ status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'loss' }, { status: 'loss' }, { status: 'pending' }, { status: 'pending' }] as const;
-const MOCK_RESULTS_MID = [{ status: 'win' }, { status: 'win' }, { status: 'loss' }, { status: 'win' }, { status: 'loss' }, { status: 'loss' }, { status: 'loss' }] as const;
-
-const mockupUsers: RankingUser[] = [
-    { id: 'mock-1', username: 'ShadowWarrior', rank: 1, totalWins: 100, totalPicks: 133, tier: 'ULTIMATE GOLD', monthlyRankDelta: 3, yearlyRankDelta: 5, eventsParticipated: 50, results: [...MOCK_RESULTS_WIN], intelligencePoints: 12450 },
-    { id: 'mock-2', username: 'FightKing', rank: 2, totalWins: 85, totalPicks: 113, tier: 'GRANDMASTER', monthlyRankDelta: 3, yearlyRankDelta: 5, eventsParticipated: 50, results: [{ status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'loss' }, { status: 'win' }, { status: 'win' }, { status: 'loss' }, { status: 'loss' }, { status: 'loss' }], intelligencePoints: 11200 },
-    { id: 'mock-3', username: 'OctagonMaster', rank: 3, totalWins: 65, totalPicks: 86, tier: 'MASTER', monthlyRankDelta: -3, yearlyRankDelta: 5, eventsParticipated: 30, results: [{ status: 'win' }, { status: 'win' }, { status: 'win' }, { status: 'loss' }, { status: 'win' }, { status: 'loss' }, { status: 'loss' }, { status: 'loss' }], intelligencePoints: 10890 },
-    { id: 'mock-4', username: 'StrikerElite', rank: 4, totalWins: 55, totalPicks: 73, tier: 'SAMURAI', monthlyRankDelta: 1, yearlyRankDelta: 5, eventsParticipated: 30, results: [...MOCK_RESULTS_MID], intelligencePoints: 9740 },
-    { id: 'mock-5', username: 'GroundGameGuru', rank: 5, totalWins: 40, totalPicks: 53, tier: 'NINJA', monthlyRankDelta: -3, yearlyRankDelta: 5, eventsParticipated: 20, results: [{ status: 'win' }, { status: 'loss' }, { status: 'loss' }, { status: 'win' }, { status: 'loss' }, { status: 'loss' }, { status: 'loss' }, { status: 'loss' }], intelligencePoints: 9350 },
-];
-
 /**
  * Maps snapshot ranking entries (netUnits-based) to RankingUser shape.
- * Used for monthly and yearly tabs.
+ * Used for monthly and yearly tabs. Only real fields — no derived stats.
  */
 const mapSnapshotRankings = (entries: SnapshotRankingEntry[]): RankingUser[] => {
-    if (!entries || entries.length === 0) return mockupUsers;
+    if (!entries || entries.length === 0) return [];
 
-    return entries.map((entry) => {
-        const absUnits = Math.abs(entry.netUnits);
-        // Derive win/loss count from net units for display purposes
-        const estimatedWins = Math.max(0, Math.round(absUnits * 1.5));
-        const estimatedPicks = estimatedWins + Math.round(absUnits * 0.5) + 2;
-        const tier = determineTier(entry.rank, estimatedWins);
-        // Build a deterministic result strip from netUnits
-        const winRate = entry.netUnits > 0 ? Math.min(0.85, 0.5 + entry.netUnits / 20) : Math.max(0.15, 0.5 + entry.netUnits / 20);
-        const results = Array.from({ length: 12 }, (_, i) => ({
-            status: (i / 12) < winRate ? 'win' : (i / 12 < winRate + 0.1 ? 'pending' : 'loss') as 'win' | 'loss' | 'pending',
-        }));
-
-        return {
-            id: entry.userId,
-            username: entry.username || 'Unknown',
-            rank: entry.rank,
-            totalWins: estimatedWins,
-            totalPicks: estimatedPicks,
-            tier,
-            monthlyRankDelta: 0,
-            yearlyRankDelta: 0,
-            eventsParticipated: Math.max(1, Math.round(absUnits / 3)),
-            results,
-            currentStreak: entry.currentStreak || 0,
-            intelligencePoints: Math.max(0, Math.round(entry.netUnits * 10)), // Convert netUnits to points
-        };
-    });
+    return entries.map((entry) => ({
+        id: entry.userId,
+        username: entry.username || 'Anonymous',
+        rank: entry.rank,
+        tier: determineTier(entry.rank),
+        score: entry.netUnits,
+        scoreLabel: 'Net Units',
+        scoreIsUnits: true,
+        currentStreak: entry.currentStreak || 0,
+    }));
 };
 
 /**
  * Maps global leaderboard entries (totalPoints-based) to RankingUser shape.
- * Used for the Global All-Time tab.
+ * Used for the Global All-Time tab. Only real fields — no derived stats.
  */
 const mapGlobalRankings = (entries: GlobalLeaderboardEntry[]): RankingUser[] => {
-    if (!entries || entries.length === 0) return mockupUsers;
+    if (!entries || entries.length === 0) return [];
 
     return entries.map((entry) => ({
         id: entry.id,
         username: entry.displayName || entry.username || 'Anonymous',
         avatarUrl: entry.avatarUrl || undefined,
-        rank: entry.hasGoldBadge ? 1 : entry.rank,
-        totalWins: entry.totalPoints,
-        totalPicks: entry.totalPoints > 0 ? Math.ceil(entry.totalPoints / 3) + 2 : 0,
-        tier: determineTier(entry.rank, entry.totalPoints),
-        monthlyRankDelta: 0,
-        yearlyRankDelta: 0,
-        eventsParticipated: Math.floor(entry.totalPoints / 5) || 1,
-        results: Array.from({ length: 12 }, () => ({
-            status: Math.random() > 0.3 ? 'win' : (Math.random() > 0.5 ? 'loss' : 'pending'),
-        })) as any,
-        intelligencePoints: entry.totalPoints * 10, // Convert totalPoints to intelligence points
-    })).sort((a, b) => a.rank - b.rank);
+        rank: entry.rank,
+        tier: determineTier(entry.rank),
+        score: entry.totalPoints,
+        scoreLabel: 'Points',
+        scoreIsUnits: false,
+        country: entry.country,
+    }));
 };
 
 export type LeaderboardType = 'global' | 'monthly' | 'yearly';
@@ -188,22 +157,16 @@ export const MMAMetricsRankings: React.FC = () => {
                 
                 {/* Responsive Wrapper for Horizontal Scroll on Mobile */}
                 <div className="overflow-x-auto">
-                    <div className="min-w-[900px]">
-                        
+                    <div className="min-w-[560px]">
+
                         {/* Table Header Row */}
                         <div className="flex items-center gap-6 px-10 py-5 border-b border-white/5 text-[9px] uppercase font-black tracking-[0.2em] text-white/30 mb-6">
                             <div className="w-12 text-center">RANK</div>
-                            <div className="w-[300px]">USER</div>
-                            <div className="w-[140px] text-center">TIER</div>
-                            <div className="flex-1 min-w-[200px]">PERFORMANCE</div>
-                            <div className="w-[90px] text-center">WIN %</div>
-                            <div className="w-[90px] text-center">EVENTS</div>
-                            <div className="w-[120px] text-center flex items-center gap-1">
-                                <Diamond className="w-3 h-3 text-[#E8A020]" />
-                                INTELLIGENCE PTS
+                            <div className="flex-1 min-w-[250px]">USER</div>
+                            <div className="w-[120px] text-center">TIER</div>
+                            <div className="w-[140px] text-center">
+                                {leaderboardType === 'global' ? 'POINTS' : 'NET UNITS'}
                             </div>
-                            <div className="w-[120px] text-center">MONTHLY RANK</div>
-                            <div className="w-[120px] text-center">YEARLY RANK</div>
                         </div>
 
                         {/* Rows */}

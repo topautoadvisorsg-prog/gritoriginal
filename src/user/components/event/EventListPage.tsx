@@ -2,7 +2,7 @@ import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useFighters } from '@/shared/hooks/useFighters';
-import { Loader2, ChevronLeft, ChevronRight, Calendar, MapPin, Flame, Users } from 'lucide-react';
+import { Loader2, ChevronLeft, ChevronRight, Calendar, MapPin, Flame } from 'lucide-react';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { cn } from '@/shared/lib/utils';
@@ -43,16 +43,6 @@ const CARD_H = 380;
 const GOLD = '#E8A020';
 const SILHOUETTE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 150'%3E%3Cellipse cx='50' cy='28' rx='22' ry='25' fill='%23333'/%3E%3Cpath d='M12 150 Q12 72 50 65 Q88 72 88 150Z' fill='%23333'/%3E%3C/svg%3E";
-
-// Seeded "players entered" for gamification feel (always deterministic per event id)
-const seedPlayerCount = (id: string) => {
-  let n = 0;
-  for (let i = 0; i < id.length; i++) n += id.charCodeAt(i);
-  return 15000 + (n % 20000);
-};
-
-const formatPlayerCount = (n: number) =>
-  n >= 1000 ? `${(n / 1000).toFixed(0)}K` : `${n}`;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -282,7 +272,6 @@ export const EventListPage = () => {
   const countdown = useCountdown(currEvent?.date ?? '2099-01-01');
   const currDetail = currEvent ? detailMap[currEvent.id] : undefined;
   const fightCount = currDetail?.fights?.length ?? 0;
-  const playerCount = currEvent ? formatPlayerCount(seedPlayerCount(currEvent.id)) : '—';
   const isLive = currEvent?.status === 'Live';
 
   if (isLoading) {
@@ -500,8 +489,8 @@ export const EventListPage = () => {
             </div>
             <div className="w-px h-6 bg-white/5" />
             <div className="text-center">
-              <span className="text-sm font-black text-white">{playerCount}</span>
-              <span className="text-[9px] text-white/30 uppercase tracking-widest block font-bold">Players</span>
+              <span className="text-sm font-black text-white uppercase">{currEvent?.status ?? '—'}</span>
+              <span className="text-[9px] text-white/30 uppercase tracking-widest block font-bold">Status</span>
             </div>
           </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { getCountryFlag } from '@/shared/lib/countries';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/shared/hooks/use-auth';
-import { Send, Loader2, Globe, Flag, Lock, Pin, Instagram, Twitter, DollarSign, Flame, Smile, Zap, ImageIcon, Trophy, X } from 'lucide-react';
+import { Send, Loader2, Globe, Flag, Lock, Pin, Instagram, Twitter, DollarSign, Flame, Smile, Zap, ImageIcon, Trophy, X, MessageCircle } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSocket } from '@/shared/hooks/use-socket';
 import { SlipPicker } from './SlipPicker';
@@ -89,83 +89,14 @@ const EXPANDED_EMOJIS = [
     '💰','💸','🍾','🥂','🫡','🤙','🤞','🫶','✊','🤟','🦾','🏅','💀','🤣','🫠','🤯',
 ];
 
-const TOP_DONORS_MOCK = [
-    { rank: 1, username: 'ShadowWarrior', amount: 1500, tier: 'ULTIMATE GOLD' as Rank, initials: 'SW' },
-    { rank: 2, username: 'FightKing', amount: 1000, tier: 'GRANDMASTER' as Rank, initials: 'FK' },
-    { rank: 3, username: 'OctagonMaster', amount: 800, tier: 'MASTER' as Rank, initials: 'OM' },
-];
+interface DonorEntry {
+    rank?: number;
+    username: string;
+    amount: number;
+    tier: Rank;
+    initials: string;
+}
 
-const RECENT_DONATIONS_MOCK = [
-    { username: 'ShadowWarrior', amount: 1500, tier: 'ULTIMATE GOLD' as Rank, initials: 'SW' },
-    { username: 'FightKing', amount: 1000, tier: 'GRANDMASTER' as Rank, initials: 'FK' },
-    { username: 'OctagonMaster', amount: 300, tier: 'MASTER' as Rank, initials: 'OM' },
-    { username: 'GroundGameGuru', amount: 300, tier: 'SAMURAI' as Rank, initials: 'GG' },
-    { username: 'StrikerElite', amount: 200, tier: 'SAMURAI' as Rank, initials: 'SE' },
-];
-
-const MOCK_MESSAGES: ChatMessage[] = [
-    {
-        id: 'pinned-1',
-        userId: 'admin',
-        eventId: null,
-        chatType: 'global',
-        countryCode: null,
-        isAdmin: true,
-        message: 'Welcome to GRIT Chat! Chat, donate, and flex your rank while watching the fights. Top donors get featured on the leaderboard!',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        user: { username: 'ADMIN', rank: 'ULTIMATE GOLD' },
-    },
-    {
-        id: 'msg-1',
-        userId: 'u1',
-        eventId: null,
-        chatType: 'global',
-        countryCode: null,
-        message: 'Pereira is gonna knock him out in round 2, calling it now 🔥',
-        createdAt: new Date(Date.now() - 3600000).toISOString(),
-        user: { username: 'ShadowWarrior', rank: 'ULTIMATE GOLD' } as any,
-    },
-    {
-        id: 'msg-2',
-        userId: 'u2',
-        eventId: null,
-        chatType: 'global',
-        countryCode: null,
-        message: 'Hill has the reach advantage bro, this is going the distance',
-        createdAt: new Date(Date.now() - 3000000).toISOString(),
-        user: { username: 'FightKing', rank: 'GRANDMASTER' } as any,
-    },
-    {
-        id: 'msg-3',
-        userId: 'u3',
-        eventId: null,
-        chatType: 'global',
-        countryCode: null,
-        message: 'Just placed my picks! Feeling confident about this card 👊',
-        createdAt: new Date(Date.now() - 2400000).toISOString(),
-        user: { username: 'OctagonMaster', rank: 'MASTER' } as any,
-    },
-    {
-        id: 'msg-4',
-        userId: 'u4',
-        eventId: null,
-        chatType: 'global',
-        countryCode: null,
-        message: 'Who else riding with Pereira? 🏆',
-        createdAt: new Date(Date.now() - 1800000).toISOString(),
-        user: { username: 'StrikerElite', rank: 'SAMURAI' } as any,
-    },
-    {
-        id: 'msg-5',
-        userId: 'u3',
-        eventId: null,
-        chatType: 'global',
-        countryCode: null,
-        message: 'The main event is going to be insane, these two have unfinished business.',
-        createdAt: new Date(Date.now() - 1200000).toISOString(),
-        user: { username: 'OctagonMaster', rank: 'MASTER' } as any,
-    },
-];
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
 
@@ -341,7 +272,7 @@ const EmojiPicker: React.FC<{ isChallenger: boolean; onSelect: (emoji: string) =
 
 // ─── Right Panel ─────────────────────────────────────────────────────────────
 
-const TopDonorCard: React.FC<{ donor: typeof TOP_DONORS_MOCK[0]; isFirst?: boolean }> = ({ donor, isFirst }) => {
+const TopDonorCard: React.FC<{ donor: DonorEntry; isFirst?: boolean }> = ({ donor, isFirst }) => {
     const cfg = RANK_CONFIG[donor.tier];
     return (
         <div
@@ -377,7 +308,7 @@ const TopDonorCard: React.FC<{ donor: typeof TOP_DONORS_MOCK[0]; isFirst?: boole
     );
 };
 
-const RecentDonationRow: React.FC<{ donor: typeof RECENT_DONATIONS_MOCK[0]; index: number }> = ({ donor, index }) => (
+const RecentDonationRow: React.FC<{ donor: DonorEntry; index: number }> = ({ donor, index }) => (
     <div
         className="flex items-center gap-2.5 py-2.5 px-3 rounded-lg"
         style={{ background: index % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent' }}
@@ -437,7 +368,12 @@ export const ChatHub: React.FC = () => {
         enabled: chatView === 'chat',
     });
 
-    const messages = apiMessages.length > 0 ? apiMessages : MOCK_MESSAGES;
+    const messages = apiMessages;
+
+    // Donations are not yet wired to a backend feed — render empty until the
+    // donations API lands. No mock/seed data is shown to users.
+    const topDonors: DonorEntry[] = [];
+    const recentDonations: DonorEntry[] = [];
 
     const socket = useSocket();
 
@@ -659,6 +595,12 @@ export const ChatHub: React.FC = () => {
                                         <Loader2 className="h-6 w-6 animate-spin text-yellow-500 mr-2" />
                                         <span className="text-white/30 text-sm">Loading chat…</span>
                                     </div>
+                                ) : messages.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-16 text-center">
+                                        <MessageCircle className="h-8 w-8 text-white/15 mb-3" />
+                                        <p className="text-white/40 text-sm font-semibold">No messages yet</p>
+                                        <p className="text-white/25 text-xs mt-1">Be the first to start the conversation.</p>
+                                    </div>
                                 ) : (
                                     <>
                                         {messages.filter(m => m.isAdmin || (m as any).isAdmin).map(msg => (
@@ -785,22 +727,31 @@ export const ChatHub: React.FC = () => {
                     <div className="flex-shrink-0 p-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
                         <h3 className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: GOLD }}>TOP SUPPORT</h3>
 
-                        <TopDonorCard donor={TOP_DONORS_MOCK[0]} isFirst />
-
-                        <div className="flex gap-2">
-                            {TOP_DONORS_MOCK.slice(1).map(d => (
-                                <TopDonorCard key={d.rank} donor={d} />
-                            ))}
-                        </div>
+                        {topDonors.length > 0 ? (
+                            <>
+                                <TopDonorCard donor={topDonors[0]} isFirst />
+                                <div className="flex gap-2">
+                                    {topDonors.slice(1).map(d => (
+                                        <TopDonorCard key={d.rank ?? d.username} donor={d} />
+                                    ))}
+                                </div>
+                            </>
+                        ) : (
+                            <p className="text-center text-[11px] text-white/30 py-4">No supporters yet — be the first.</p>
+                        )}
                     </div>
 
                     {/* Recent Donations */}
                     <div className="flex flex-col flex-1 overflow-hidden p-3">
                         <h3 className="text-[10px] font-black uppercase tracking-widest mb-2 flex-shrink-0" style={{ color: GOLD }}>RECENT DONATIONS</h3>
                         <div className="flex-1 overflow-y-auto space-y-0.5" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.05) transparent' }}>
-                            {RECENT_DONATIONS_MOCK.map((d, i) => (
-                                <RecentDonationRow key={i} donor={d} index={i} />
-                            ))}
+                            {recentDonations.length > 0 ? (
+                                recentDonations.map((d, i) => (
+                                    <RecentDonationRow key={i} donor={d} index={i} />
+                                ))
+                            ) : (
+                                <p className="text-center text-[11px] text-white/30 py-4">No donations yet.</p>
+                            )}
                         </div>
                     </div>
                 </div>

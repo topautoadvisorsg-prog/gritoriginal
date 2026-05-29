@@ -71,7 +71,7 @@ export const AIPredictionsTab: React.FC = () => {
                         <h1 className="text-4xl font-display tracking-wide text-foreground uppercase mb-2">
                             <span className="text-gradient-brand">AI Fight Analyst</span>
                         </h1>
-                        <p className="text-lg text-yellow-200/80 mb-2">Powered by GPT-4o</p>
+                        <p className="text-lg text-yellow-200/80 mb-2">Powered by Claude</p>
                         <p className="text-muted-foreground max-w-md mx-auto">
                             Select any fight and talk directly with an AI analyst focused entirely on that matchup — styles, stats, analysis, keys to victory.
                         </p>
@@ -123,7 +123,7 @@ export const AIPredictionsTab: React.FC = () => {
                         <Sparkles className="w-5 h-5 ml-2" />
                     </Button>
                     <p className="text-sm text-muted-foreground mt-3">
-                        Join 500+ premium members with 73% pick accuracy
+                        Unlimited fight-by-fight analysis sessions, included with Premium.
                     </p>
                 </div>
             </div>
