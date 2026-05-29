@@ -213,10 +213,10 @@ export const AdminIntelFeed: React.FC = () => {
                                                 autoFocus
                                                 onKeyDown={(e) => { if (e.key === 'Enter') confirmEdit(item.id); if (e.key === 'Escape') setEditingId(null); }}
                                             />
-                                            <button type="button" onClick={() => confirmEdit(item.id)} className="p-1 text-green-500 hover:text-green-400">
+                                            <button type="button" onClick={() => confirmEdit(item.id)} aria-label="Save" className="p-1 text-green-500 hover:text-green-400">
                                                 <Check className="h-4 w-4" />
                                             </button>
-                                            <button type="button" onClick={() => setEditingId(null)} className="p-1 text-muted-foreground hover:text-foreground">
+                                            <button type="button" onClick={() => setEditingId(null)} aria-label="Cancel edit" className="p-1 text-muted-foreground hover:text-foreground">
                                                 <X className="h-4 w-4" />
                                             </button>
                                         </>

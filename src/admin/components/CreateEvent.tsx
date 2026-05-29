@@ -749,6 +749,7 @@ export const CreateEvent = () => {
                   <button
                     type="button"
                     onClick={() => { setImageUrl(null); setImagePreview(null); }}
+                    aria-label="Remove image"
                     className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/80 transition-colors"
                   >
                     <X className="h-3 w-3" />

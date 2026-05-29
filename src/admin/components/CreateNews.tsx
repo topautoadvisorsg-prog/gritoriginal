@@ -204,7 +204,7 @@ export const CreateNews = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between gap-2">
             <CardTitle>{editingArticle ? 'Edit Article' : 'Create New Article'}</CardTitle>
-            <Button variant="ghost" size="icon" onClick={resetForm} data-testid="button-cancel-form">
+            <Button variant="ghost" size="icon" onClick={resetForm} aria-label="Cancel" data-testid="button-cancel-form">
               <X className="h-4 w-4" />
             </Button>
           </CardHeader>

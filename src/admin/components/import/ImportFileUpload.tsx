@@ -48,7 +48,7 @@ const ImportFileUpload = ({ file, onFileSelect, onFileClear }: ImportFileUploadP
                 <p className="text-sm text-muted-foreground">{formatFileSize(file.size)}</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={onFileClear}>
+            <Button variant="ghost" size="icon" onClick={onFileClear} aria-label="Remove file">
               <X className="w-4 h-4" />
             </Button>
           </div>

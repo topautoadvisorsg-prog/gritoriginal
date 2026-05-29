@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bell, Search, Menu, X } from 'lucide-react';
+import { Search, Menu, X } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { UserMenu } from './UserMenu';
 import { CountrySelector } from './CountrySelector';
@@ -35,6 +35,7 @@ export const Header: React.FC<HeaderProps> = ({
           {isAdmin && onToggleSidebar && (
             <button
               onClick={onToggleSidebar}
+              aria-label={isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
               className="p-2 rounded-lg hover:bg-muted transition-colors"
             >
               {isSidebarCollapsed ? (
@@ -68,12 +69,6 @@ export const Header: React.FC<HeaderProps> = ({
             </kbd>
             <CountrySelector />
           </div>
-
-          {/* Notifications */}
-          <button className="relative p-2 rounded-lg hover:bg-muted transition-colors">
-            <Bell className="h-5 w-5 text-muted-foreground" />
-            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-accent" />
-          </button>
 
           {/* Live Status */}
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-win/10 border border-win/30">

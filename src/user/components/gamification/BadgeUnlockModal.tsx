@@ -59,6 +59,7 @@ export const BadgeUnlockModal: React.FC<BadgeUnlockModalProps> = ({
                 {/* Close button */}
                 <button
                     onClick={onClose}
+                    aria-label="Close"
                     className="absolute top-4 right-4 p-1 rounded-full hover:bg-muted transition-colors"
                 >
                     <X className="w-5 h-5 text-muted-foreground" />
