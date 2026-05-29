@@ -16,7 +16,7 @@ const LB = [
 
 const BADGE_TIERS = [
     { Badge: NinjaBadge, stars: 1, bg: 'hsl(210 25% 10%)', border: 'hsl(210 20% 25% / .5)' },
-    { Badge: SamuraiBadge, stars: 2, bg: 'hsl(190 90% 50% / .06)', border: 'hsl(190 90% 50% / .2)' },
+    { Badge: SamuraiBadge, stars: 2, bg: 'hsl(355 85% 50% / .06)', border: 'hsl(355 85% 50% / .2)' },
     { Badge: MasterBadge, stars: 4, bg: 'hsl(280 80% 55% / .06)', border: 'hsl(280 80% 55% / .2)' },
     { Badge: GoatBadge, stars: 5, bg: 'hsl(45 90% 55% / .08)', border: 'hsl(45 90% 55% / .25)' },
 ] as const;

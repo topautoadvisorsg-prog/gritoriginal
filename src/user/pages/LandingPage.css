@@ -952,7 +952,7 @@ a:focus-visible,
 }
 
 .lp-model-card__pick--blue {
-  color: hsl(190 90% 60%);
+  color: hsl(45 90% 60%);
 }
 
 .lp-model-card__footer {
@@ -987,33 +987,33 @@ a:focus-visible,
 
 /* Featured AI model card (Grok 3 in mock) — teal accent, leading position */
 .lp-model-card--featured {
-  border-color: hsl(190 90% 50% / .45);
+  border-color: hsl(45 90% 50% / .45);
   box-shadow:
-    0 0 0 1px hsl(190 90% 50% / .12),
-    0 18px 50px -18px hsl(190 90% 40% / .35);
+    0 0 0 1px hsl(45 90% 50% / .12),
+    0 18px 50px -18px hsl(45 90% 40% / .35);
   background: linear-gradient(180deg, hsl(190 60% 8% / .6), var(--bg-card));
 }
 
 .lp-model-card--featured:hover {
-  border-color: hsl(190 90% 55% / .7);
+  border-color: hsl(45 90% 55% / .7);
   box-shadow:
-    0 0 0 1px hsl(190 90% 50% / .18),
-    0 24px 60px -16px hsl(190 90% 40% / .5);
+    0 0 0 1px hsl(45 90% 50% / .18),
+    0 24px 60px -16px hsl(45 90% 40% / .5);
 }
 
 .lp-model-card--featured .lp-model-card__icon {
-  background: hsl(190 90% 50% / .15);
-  color: hsl(190 90% 75%);
-  border-color: hsl(190 90% 50% / .35);
+  background: hsl(45 90% 50% / .15);
+  color: hsl(45 90% 75%);
+  border-color: hsl(45 90% 50% / .35);
 }
 
 .lp-model-card--featured .lp-model-card__name {
-  color: hsl(190 90% 65%);
+  color: hsl(45 90% 65%);
 }
 
 .lp-model-card--featured .lp-model-card__confidence--featured {
-  background: hsl(190 90% 50% / .14);
-  color: hsl(190 90% 70%);
+  background: hsl(45 90% 50% / .14);
+  color: hsl(45 90% 70%);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1025,7 +1025,7 @@ a:focus-visible,
 }
 
 .lp-model-card--featured .lp-model-card__units {
-  color: hsl(190 90% 65%);
+  color: hsl(45 90% 65%);
 }
 
 .lp-model-card__badge {
@@ -1039,9 +1039,9 @@ a:focus-visible,
   letter-spacing: .18em;
   text-transform: uppercase;
   color: hsl(220 50% 6%);
-  background: hsl(190 90% 60%);
+  background: hsl(45 90% 60%);
   border-radius: 4px;
-  box-shadow: 0 4px 14px -4px hsl(190 90% 40% / .55);
+  box-shadow: 0 4px 14px -4px hsl(45 90% 40% / .55);
 }
 
 .lp-model-card__desc {
@@ -3305,7 +3305,7 @@ a:focus-visible,
 }
 
 .lp-pick-card--blue {
-  border-color: hsl(190 90% 55% / .25);
+  border-color: hsl(45 90% 55% / .25);
 }
 
 /* Selected red corner uses the app's accent ring + glow */
@@ -3327,7 +3327,7 @@ a:focus-visible,
 }
 
 .lp-pick-card__strip--blue {
-  background: hsl(190 90% 55%);
+  background: hsl(45 90% 55%);
 }
 
 /* "YOUR PICK" badge — top-right, accent fill */
@@ -3441,9 +3441,9 @@ a:focus-visible,
 }
 
 .lp-pick-card__ml--blue {
-  background: hsl(190 90% 55% / .1);
-  color: hsl(190 90% 65%);
-  border: 1px solid hsl(190 90% 55% / .3);
+  background: hsl(45 90% 55% / .1);
+  color: hsl(45 90% 65%);
+  border: 1px solid hsl(45 90% 55% / .3);
 }
 
 .lp-picks-mockup__vs-v2 {
@@ -3494,8 +3494,8 @@ a:focus-visible,
   display: flex;
   align-items: center;
   justify-content: center;
-  background: hsl(190 90% 55% / .15);
-  color: hsl(190 90% 60%);
+  background: hsl(45 90% 55% / .15);
+  color: hsl(45 90% 60%);
   flex-shrink: 0;
 }
 
@@ -3540,15 +3540,15 @@ a:focus-visible,
 
 .lp-method-card:hover:not(.lp-method-card--active) {
   transform: translateY(-1px);
-  border-color: hsl(190 90% 55% / .4);
+  border-color: hsl(45 90% 55% / .4);
   color: hsl(210 30% 75%);
 }
 
 .lp-method-card--active {
-  border-color: hsl(190 90% 55%);
-  background: hsl(190 90% 55% / .1);
-  color: hsl(190 90% 65%);
-  box-shadow: 0 8px 20px -8px hsl(190 90% 50% / .35);
+  border-color: hsl(45 90% 55%);
+  background: hsl(45 90% 55% / .1);
+  color: hsl(45 90% 65%);
+  box-shadow: 0 8px 20px -8px hsl(45 90% 50% / .35);
 }
 
 .lp-picks-mockup__header {
@@ -3682,10 +3682,10 @@ a:focus-visible,
 }
 
 .lp-conf-unit--active {
-  background: hsl(190 90% 55% / .12);
-  border-color: hsl(190 90% 55%);
-  color: hsl(190 90% 65%);
-  box-shadow: 0 4px 16px -4px hsl(190 90% 45% / .4);
+  background: hsl(45 90% 55% / .12);
+  border-color: hsl(45 90% 55%);
+  color: hsl(45 90% 65%);
+  box-shadow: 0 4px 16px -4px hsl(45 90% 45% / .4);
 }
 
 .lp-picks-mockup__lock {
@@ -3697,7 +3697,7 @@ a:focus-visible,
   margin: 0 14px 14px;
   padding: 10px;
   border-radius: 10px;
-  background: linear-gradient(135deg, hsl(190 90% 52%), hsl(190 90% 42%));
+  background: linear-gradient(135deg, hsl(45 90% 52%), hsl(45 90% 42%));
   border: none;
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 900;
@@ -3705,13 +3705,13 @@ a:focus-visible,
   letter-spacing: .1em;
   color: hsl(220 40% 8%);
   cursor: pointer;
-  box-shadow: 0 4px 20px -6px hsl(190 90% 45% / .55), inset 0 1px 0 hsl(190 90% 70% / .3);
+  box-shadow: 0 4px 20px -6px hsl(45 90% 45% / .55), inset 0 1px 0 hsl(45 90% 70% / .3);
   transition: transform .2s ease, box-shadow .2s ease;
 }
 
 .lp-picks-mockup__lock:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 28px -8px hsl(190 90% 45% / .7), inset 0 1px 0 hsl(190 90% 70% / .4);
+  box-shadow: 0 8px 28px -8px hsl(45 90% 45% / .7), inset 0 1px 0 hsl(45 90% 70% / .4);
 }
 
 /* ===============================================
@@ -4104,7 +4104,7 @@ a:focus-visible,
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 60% 50% at 50% 0%, hsl(190 90% 52% / .05), transparent);
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, hsl(45 90% 52% / .05), transparent);
   pointer-events: none;
 }
 
@@ -4262,7 +4262,7 @@ a:focus-visible,
 .lp-ai-banner {
   padding: 56px 24px;
   background: hsl(215 25% 5% / .97);
-  border-bottom: 1px solid hsl(190 90% 50% / .1);
+  border-bottom: 1px solid hsl(45 90% 50% / .1);
   position: relative;
   overflow: hidden;
 }
@@ -4271,7 +4271,7 @@ a:focus-visible,
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse 70% 60% at 100% 50%, hsl(190 90% 52% / .04), transparent);
+  background: radial-gradient(ellipse 70% 60% at 100% 50%, hsl(45 90% 52% / .04), transparent);
   pointer-events: none;
 }
 
@@ -4378,8 +4378,8 @@ a:focus-visible,
    AI SCOUT BRIEF (ShowcaseFighters)
    =============================================== */
 .lp-scout-brief {
-  background: hsl(190 90% 50% / .05);
-  border: 1px solid hsl(190 90% 50% / .18);
+  background: hsl(45 90% 50% / .05);
+  border: 1px solid hsl(45 90% 50% / .18);
   border-radius: 10px;
   padding: 12px 14px;
   margin-top: 6px;
@@ -4393,7 +4393,7 @@ a:focus-visible,
   font-size: .67rem;
   font-weight: 700;
   letter-spacing: .12em;
-  color: hsl(190 90% 52%);
+  color: hsl(45 90% 52%);
   text-transform: uppercase;
   margin-bottom: 8px;
 }
@@ -4419,7 +4419,7 @@ a:focus-visible,
   content: '›';
   position: absolute;
   left: 0;
-  color: hsl(190 90% 52%);
+  color: hsl(45 90% 52%);
   font-weight: 700;
 }
 
@@ -4645,7 +4645,7 @@ a:focus-visible,
 }
 
 .lp-hero__trust svg {
-  color: hsl(190 90% 60%);
+  color: hsl(45 90% 60%);
   flex-shrink: 0;
 }
 
@@ -4661,7 +4661,7 @@ a:focus-visible,
 }
 
 .lp-footer-cta__trust svg {
-  color: hsl(190 90% 60%);
+  color: hsl(45 90% 60%);
   flex-shrink: 0;
 }
 
@@ -4728,8 +4728,8 @@ a:focus-visible,
 }
 
 .lp-tokens__summary:hover {
-  border-color: hsl(190 90% 55% / .5);
-  color: hsl(190 90% 70%);
+  border-color: hsl(45 90% 55% / .5);
+  color: hsl(45 90% 70%);
 }
 
 .lp-tokens--collapsible .lp-tokens__head {

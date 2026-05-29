@@ -3,11 +3,11 @@ import { Brain, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useScrollAnimation } from './hooks';
 
-const TEAL = 'hsl(190 90% 52%)';
-const TEAL_BG = 'hsl(190 90% 50% / .15)';
-const TEAL_BORDER = 'hsl(190 90% 50% / .4)';
-const TEAL_ICON_BG = 'hsl(190 90% 50% / .2)';
-const TEAL_SHADOW = '0 0 20px -8px hsl(190 90% 50% / .15)';
+const TEAL = 'hsl(45 90% 52%)';
+const TEAL_BG = 'hsl(45 90% 50% / .15)';
+const TEAL_BORDER = 'hsl(45 90% 50% / .4)';
+const TEAL_ICON_BG = 'hsl(45 90% 50% / .2)';
+const TEAL_SHADOW = '0 0 20px -8px hsl(45 90% 50% / .15)';
 
 const MODELS = [
     {
@@ -27,7 +27,7 @@ const MODELS = [
     },
     {
         icon: '🧠', name: 'Claude 3.5',
-        pick: 'Oliveira', pickColor: 'hsl(190 90% 60%)',
+        pick: 'Oliveira', pickColor: 'hsl(45 90% 60%)',
         confidence: '65%', units: '1u',
         confClass: 'lp-model-card__confidence--med',
         confStyle: {}, cardStyle: {},

@@ -100,7 +100,7 @@ export function ShowcaseFighters() {
 
                         <div className="lp-scout-brief">
                             <div className="lp-scout-brief__header">
-                                <Brain size={12} style={{ color: 'hsl(190 90% 52%)' }} />
+                                <Brain size={12} style={{ color: 'hsl(45 90% 52%)' }} />
                                 <span>AI SCOUT BRIEF</span>
                             </div>
                             <ul className="lp-scout-brief__lines">

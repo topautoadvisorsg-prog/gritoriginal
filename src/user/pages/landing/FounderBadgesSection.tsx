@@ -17,7 +17,7 @@ export function FounderBadgesSection({ onSignIn }: { onSignIn: () => void }) {
   const tiers: FounderTier[] = [
     { title: t('founder_badges.tier1_title'), slots: t('founder_badges.tier1_slots'), status: t('founder_badges.tier1_status'), color: 'hsl(45 100% 60%)' },
     { title: t('founder_badges.tier2_title'), slots: t('founder_badges.tier2_slots'), status: t('founder_badges.tier2_status'), color: 'hsl(280 80% 65%)' },
-    { title: t('founder_badges.tier3_title'), slots: t('founder_badges.tier3_slots'), status: t('founder_badges.tier3_status'), color: 'hsl(190 90% 55%)' },
+    { title: t('founder_badges.tier3_title'), slots: t('founder_badges.tier3_slots'), status: t('founder_badges.tier3_status'), color: 'hsl(32 90% 55%)' },
     { title: t('founder_badges.tier4_title'), slots: t('founder_badges.tier4_slots'), status: t('founder_badges.tier4_status'), color: 'hsl(0 80% 60%)' },
   ];
 

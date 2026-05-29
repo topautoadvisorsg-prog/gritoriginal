@@ -28,18 +28,18 @@ export function SamuraiBadge({ size = 56, showLabel = true }: BadgeProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
       <svg width={size} height={size} viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="28,2 42,8 52,20 52,36 42,48 28,54 14,48 4,36 4,20 14,8" fill="hsl(190 90% 50% / .1)" stroke="hsl(190 90% 55%)" strokeWidth="1.5" />
-        <polygon points="28,8 39,13 47,22 47,34 39,43 28,48 17,43 9,34 9,22 17,13" fill="hsl(190 90% 50% / .05)" stroke="hsl(190 90% 55% / .4)" strokeWidth="0.5" />
-        <line x1="18" y1="18" x2="38" y2="38" stroke="hsl(190 90% 65%)" strokeWidth="2.5" strokeLinecap="round" />
-        <line x1="38" y1="18" x2="18" y2="38" stroke="hsl(190 90% 65%)" strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx="28" cy="28" r="4" fill="hsl(190 90% 52% / .2)" stroke="hsl(190 90% 65%)" strokeWidth="1.5" />
-        <circle cx="18" cy="18" r="2.5" fill="hsl(190 90% 52% / .3)" stroke="hsl(190 90% 65%)" strokeWidth="1" />
-        <circle cx="38" cy="38" r="2.5" fill="hsl(190 90% 52% / .3)" stroke="hsl(190 90% 65%)" strokeWidth="1" />
-        <circle cx="38" cy="18" r="2.5" fill="hsl(190 90% 52% / .3)" stroke="hsl(190 90% 65%)" strokeWidth="1" />
-        <circle cx="18" cy="38" r="2.5" fill="hsl(190 90% 52% / .3)" stroke="hsl(190 90% 65%)" strokeWidth="1" />
+        <polygon points="28,2 42,8 52,20 52,36 42,48 28,54 14,48 4,36 4,20 14,8" fill="hsl(355 85% 50% / .1)" stroke="hsl(355 85% 55%)" strokeWidth="1.5" />
+        <polygon points="28,8 39,13 47,22 47,34 39,43 28,48 17,43 9,34 9,22 17,13" fill="hsl(355 85% 50% / .05)" stroke="hsl(355 85% 55% / .4)" strokeWidth="0.5" />
+        <line x1="18" y1="18" x2="38" y2="38" stroke="hsl(355 85% 65%)" strokeWidth="2.5" strokeLinecap="round" />
+        <line x1="38" y1="18" x2="18" y2="38" stroke="hsl(355 85% 65%)" strokeWidth="2.5" strokeLinecap="round" />
+        <circle cx="28" cy="28" r="4" fill="hsl(355 85% 52% / .2)" stroke="hsl(355 85% 65%)" strokeWidth="1.5" />
+        <circle cx="18" cy="18" r="2.5" fill="hsl(355 85% 52% / .3)" stroke="hsl(355 85% 65%)" strokeWidth="1" />
+        <circle cx="38" cy="38" r="2.5" fill="hsl(355 85% 52% / .3)" stroke="hsl(355 85% 65%)" strokeWidth="1" />
+        <circle cx="38" cy="18" r="2.5" fill="hsl(355 85% 52% / .3)" stroke="hsl(355 85% 65%)" strokeWidth="1" />
+        <circle cx="18" cy="38" r="2.5" fill="hsl(355 85% 52% / .3)" stroke="hsl(355 85% 65%)" strokeWidth="1" />
       </svg>
       {showLabel && (
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(190 90% 55%)', textTransform: 'uppercase' }}>SAMURAI</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: '.58rem', fontWeight: 700, letterSpacing: '.12em', color: 'hsl(355 85% 55%)', textTransform: 'uppercase' }}>SAMURAI</span>
       )}
     </div>
   );
