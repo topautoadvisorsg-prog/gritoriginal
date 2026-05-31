@@ -5,7 +5,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* GRIT Design System - Cyan/Teal + Red Theme matching logo */
+/* GRIT Design System - Gold + Red Theme matching logo */
 
 @layer base {
   :root {
@@ -26,7 +26,7 @@
     --primary-foreground: 220 25% 6%;
     --primary-glow: 38 92% 65%;
 
-    /* Secondary - Slate with cyan tint */
+    /* Secondary - Slate */
     --secondary: 210 25% 15%;
     --secondary-foreground: 210 40% 98%;
 
@@ -39,8 +39,8 @@
     --accent-foreground: 210 40% 98%;
 
     /* Combat Colors */
-    --win: 142 71% 45%;
-    --win-foreground: 142 71% 95%;
+    --win: 150 62% 42%;
+    --win-foreground: 150 40% 95%;
     --loss: 355 85% 55%;
     --loss-foreground: 355 85% 95%;
     --draw: 45 10% 70%;
@@ -49,14 +49,14 @@
     /* Status Colors */
     --destructive: 355 85% 55%;
     --destructive-foreground: 210 40% 98%;
-    --success: 142 71% 45%;
+    --success: 150 62% 42%;
     --warning: 38 92% 50%;
-    --info: 190 90% 50%;
+    --info: 210 70% 55%;
 
     /* Borders & Inputs */
     --border: 210 25% 18%;
     --input: 210 25% 14%;
-    --ring: 190 90% 50%;
+    --ring: 38 92% 55%;
 
     --radius: 0.75rem;
 
@@ -65,32 +65,32 @@
     --glass-border: 210 25% 22%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(190 90% 50%), hsl(200 90% 40%));
+    --gradient-primary: linear-gradient(135deg, hsl(38 92% 55%), hsl(38 92% 45%));
     --gradient-surface: linear-gradient(180deg, hsl(220 25% 11%), hsl(220 25% 6%));
     --gradient-card: linear-gradient(180deg, hsl(220 25% 14%), hsl(220 25% 9%));
-    --gradient-win: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 35%));
+    --gradient-win: linear-gradient(135deg, hsl(150 62% 42%), hsl(150 62% 32%));
     --gradient-loss: linear-gradient(135deg, hsl(355 85% 55%), hsl(355 85% 45%));
     --gradient-accent: linear-gradient(135deg, hsl(355 85% 55%), hsl(340 85% 50%));
-    --gradient-hero: linear-gradient(135deg, hsl(190 90% 50% / 0.2), hsl(355 85% 55% / 0.2));
+    --gradient-hero: linear-gradient(135deg, hsl(38 92% 55% / 0.2), hsl(355 85% 55% / 0.2));
 
     /* Shadows */
     --shadow-sm: 0 2px 8px -2px hsl(220 25% 4% / 0.5);
     --shadow-md: 0 4px 16px -4px hsl(220 25% 4% / 0.6);
     --shadow-lg: 0 8px 32px -8px hsl(220 25% 4% / 0.7);
-    --shadow-glow: 0 0 40px -10px hsl(190 90% 50% / 0.4);
+    --shadow-glow: 0 0 40px -10px hsl(38 92% 55% / 0.4);
     --shadow-glow-accent: 0 0 40px -10px hsl(355 85% 55% / 0.4);
-    --shadow-win: 0 0 20px -5px hsl(142 71% 45% / 0.4);
+    --shadow-win: 0 0 20px -5px hsl(150 62% 42% / 0.4);
     --shadow-loss: 0 0 20px -5px hsl(355 85% 55% / 0.4);
 
-    /* Sidebar - Darker with cyan accents */
+    /* Sidebar - Darker with gold accents */
     --sidebar-background: 220 25% 5%;
     --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 190 90% 50%;
+    --sidebar-primary: 38 92% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 210 25% 10%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 210 25% 12%;
-    --sidebar-ring: 190 90% 50%;
+    --sidebar-ring: 38 92% 55%;
   }
 
   .dark {
@@ -138,7 +138,7 @@
 
   /* Branded focus ring for keyboard navigation */
   *:focus-visible {
-    outline: 2px solid hsl(190 90% 55% / 0.85);
+    outline: 2px solid hsl(38 92% 55% / 0.85);
     outline-offset: 3px;
     border-radius: 4px;
     transition: outline-offset 0.15s ease;
@@ -147,7 +147,7 @@
   button:focus-visible,
   a:focus-visible,
   [role="button"]:focus-visible {
-    outline: 2px solid hsl(190 90% 60%);
+    outline: 2px solid hsl(38 92% 60%);
     outline-offset: 4px;
   }
 
@@ -329,7 +329,7 @@
   }
 
   .text-gradient-brand {
-    background: linear-gradient(90deg, hsl(190 90% 50%), hsl(355 85% 55%));
+    background: linear-gradient(90deg, hsl(38 92% 55%), hsl(355 85% 55%));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
