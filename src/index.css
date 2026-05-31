@@ -627,3 +627,32 @@
     .skeleton-shimmer { animation: pulse 2s ease-in-out infinite; }
   }
 }
+
+/* =================================================================
+   CLERK MODAL THEME BRIDGE
+   The @clerk/ui "shadcn" theme reads design tokens RAW, e.g.
+   `background: var(--card)`. Our app defines those tokens as bare
+   HSL triplets (`--card: 220 25% 9%`) for use via `hsl(var(--card))`,
+   so Clerk gets an invalid color → transparent modal + no backdrop.
+   Fix: scope COMPLETE-color versions of every token the theme reads
+   onto Clerk's portal subtree only. This leaves the app's own
+   `hsl(var(--x))` usage untouched. Unlayered so it beats Clerk's
+   `components` layer. Keep values in sync with :root above.
+   ================================================================= */
+.cl-modalBackdrop,
+.cl-rootBox {
+  --card: hsl(220 25% 9%);
+  --card-foreground: hsl(210 40% 98%);
+  --foreground: hsl(210 40% 98%);
+  --input: hsl(210 25% 14%);
+  --muted: hsl(210 25% 12%);
+  --muted-foreground: hsl(210 20% 55%);
+  --primary: hsl(38 92% 55%);
+  --primary-foreground: hsl(220 25% 6%);
+  --destructive: hsl(355 85% 55%);
+  --ring: hsl(38 92% 55%);
+  --color-black: #000;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+}
