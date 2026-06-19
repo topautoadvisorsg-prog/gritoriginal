@@ -26,6 +26,7 @@ Skip the rest of this README and start with `STATUS.md`.
 Anyone reviewing should add a dated entry to the top whenever they ship something meaningful. Keep it tight — one line per session.
 
 ### 2026-06-19 - Cody
+- Repaired Clerk authentication for Socket.IO and validated local single-process chat fanout at 1,000 and 1,500 concurrent synthetic clients; added a guarded load harness and auth/fanout regression coverage. Full results: `docs/testing/TEST_STATUS_2026-06-19.md`.
 - Completed the enterprise UI remediation pass: fixed both P0 first-session failures, mobile Settings and landing navigation, direct Clerk auth routes, leaderboard ordering, SVG country flags, fabricated/placeholder UI, and stale confidence-unit translations; audit evidence remains in `docs/ui-audit/`.
 
 ### 2026-05-27 - Cody

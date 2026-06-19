@@ -1,9 +1,11 @@
-import { Server as SocketIOServer } from 'socket.io';
+import { Server as SocketIOServer, Socket } from 'socket.io';
 import { Server as HTTPServer } from 'http';
-import passport from 'passport';
-import { sessionMiddleware } from '../replit_integrations/auth/replitAuth';
+import { verifyToken } from '@clerk/backend';
+import { eq } from 'drizzle-orm';
 import { logger } from '../utils/logger';
 import { env } from '../config/env';
+import { db } from '../db';
+import { users } from '../../shared/models/auth';
 
 // Socket request with user extension
 interface SocketRequest {
@@ -11,6 +13,38 @@ interface SocketRequest {
 }
 
 let io: SocketIOServer | null = null;
+
+type SocketUserResolver = (socket: Socket) => Promise<Express.User | null>;
+
+interface SocketInitOptions {
+    resolveUser?: SocketUserResolver;
+    logLifecycle?: boolean;
+}
+
+async function resolveClerkSocketUser(socket: Socket): Promise<Express.User | null> {
+    const token = typeof socket.handshake.auth?.token === 'string'
+        ? socket.handshake.auth.token
+        : null;
+
+    if (!token || !env.CLERK_SECRET_KEY) return null;
+
+    const payload = await verifyToken(token, { secretKey: env.CLERK_SECRET_KEY });
+    if (!payload.sub) return null;
+
+    const [user] = await db.select().from(users).where(eq(users.id, payload.sub)).limit(1);
+    if (!user) return null;
+
+    return {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        role: user.role ?? 'user',
+        tier: (user.tier ?? 'free') as Express.User['tier'],
+        country: user.country,
+        isAiChatBlocked: user.isAiChatBlocked ?? false,
+        language: user.language ?? 'en',
+    };
+}
 
 // Production CORS validation
 function getAllowedOrigins(): string[] | boolean {
@@ -40,10 +74,12 @@ export const socketService = {
      * Initializes the Socket.IO server.
      * @param httpServer The HTTP server to attach to.
      */
-    init(httpServer: HTTPServer) {
+    init(httpServer: HTTPServer, options: SocketInitOptions = {}) {
         if (io) return io;
 
         const allowedOrigins = getAllowedOrigins();
+        const resolveUser = options.resolveUser ?? resolveClerkSocketUser;
+        const logLifecycle = options.logLifecycle ?? true;
 
         io = new SocketIOServer(httpServer, {
             cors: {
@@ -53,16 +89,19 @@ export const socketService = {
             },
         });
 
-        // Use the same session middleware as Express
-        io.use((socket, next) => {
-            sessionMiddleware(socket.request as never, {} as never, next as never);
-        });
-
-        // Use passport to populate socket.request.user
-        io.use((socket, next) => {
-            passport.initialize()(socket.request as never, {} as never, () => {
-                passport.session()(socket.request as never, {} as never, next as never);
-            });
+        io.use(async (socket, next) => {
+            try {
+                const user = await resolveUser(socket);
+                if (!user) return next(new Error('Unauthorized'));
+                (socket.request as SocketRequest).user = user;
+                next();
+            } catch (error) {
+                logger.warn('Socket authentication failed', {
+                    socketId: socket.id,
+                    error: error instanceof Error ? error.message : String(error),
+                });
+                next(new Error('Unauthorized'));
+            }
         });
 
         io.on('connection', (socket) => {
@@ -75,8 +114,9 @@ export const socketService = {
                 return;
             }
 
-            logger.info(`Authenticated client connected: ${user.username || user.id} (${socket.id})`);
-            logger.metric('socket_connect', 1, { userId: user.id });
+            if (logLifecycle) logger.info(`Authenticated client connected: ${user.username || user.id} (${socket.id})`);
+            if (logLifecycle) logger.metric('socket_connect', 1, { userId: user.id });
+            socket.join('global');
 
             socket.on('join_event_chat', (eventId: string) => {
                 if (!eventId || typeof eventId !== 'string') return;
@@ -87,7 +127,7 @@ export const socketService = {
                     return;
                 }
                 socket.join(`event_${eventId}`);
-                logger.info(`User ${user.username || user.id} joined event chat: ${eventId}`);
+                if (logLifecycle) logger.info(`User ${user.username || user.id} joined event chat: ${eventId}`);
             });
 
             socket.on('join_country_chat', (countryCode: string) => {
@@ -104,13 +144,13 @@ export const socketService = {
                     return;
                 }
                 socket.join(`country_${normalizedCode}`);
-                logger.info(`User ${user.username || user.id} joined country chat: ${normalizedCode}`);
+                if (logLifecycle) logger.info(`User ${user.username || user.id} joined country chat: ${normalizedCode}`);
             });
 
             socket.on('leave_room', (roomName: string) => {
                 if (!roomName || typeof roomName !== 'string') return;
                 socket.leave(roomName);
-                logger.info(`User ${user.username || user.id} left room: ${roomName}`);
+                if (logLifecycle) logger.info(`User ${user.username || user.id} left room: ${roomName}`);
             });
 
             socket.on('typing', (data: { room: string }) => {
@@ -130,8 +170,8 @@ export const socketService = {
             });
 
             socket.on('disconnect', (reason) => {
-                logger.info(`Client disconnected: ${socket.id} (${reason})`, { userId: user.id });
-                logger.metric('socket_disconnect', 1, { userId: user.id, reason });
+                if (logLifecycle) logger.info(`Client disconnected: ${socket.id} (${reason})`, { userId: user.id });
+                if (logLifecycle) logger.metric('socket_disconnect', 1, { userId: user.id, reason });
             });
 
             socket.on('error', (err) => {
@@ -168,6 +208,12 @@ export const socketService = {
      */
     getIO() {
         return io;
+    },
+
+    async close() {
+        if (!io) return;
+        await new Promise<void>((resolve) => io!.close(() => resolve()));
+        io = null;
     },
 };
 

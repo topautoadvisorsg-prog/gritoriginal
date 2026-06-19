@@ -19,6 +19,7 @@
     "db:push": "drizzle-kit push",
     "test": "vitest run",
     "smoke:pipeline": "tsx tests/pipeline_smoke_test.ts",
+    "test:load:chat": "tsx tests/chat_load_test.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
@@ -27,6 +28,7 @@
     "@capacitor-community/admob": "^8.0.0",
     "@capacitor/cli": "^8.1.0",
     "@capacitor/core": "^8.1.0",
+    "@clerk/backend": "3.4.13",
     "@clerk/clerk-react": "^5.61.6",
     "@clerk/express": "^2.1.21",
     "@clerk/ui": "^1.13.1",

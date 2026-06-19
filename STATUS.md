@@ -1,6 +1,6 @@
 # GRIT — Live Status
 
-> **Latest update 2026-06-19 by Cody:** Enterprise UI remediation closed both P0 first-session blockers and the primary P1 batch: onboarding stays mounted through all seven steps, the new-user dashboard has a safe zero state, mobile Settings uses a compact section picker, the mobile landing header no longer collides, direct Clerk routes work while logged out, rankings preserve rank order, fake live/prize/ad scaffolding is removed, country flags use SVGs, and stale 1u-5u locale copy was replaced. Verification: `npx tsc --noEmit`, `npm run test` = 90/90, locale JSON validation, and `npm run build`.
+> **Latest update 2026-06-19 by Cody:** Chat authentication was repaired after the Clerk migration and locally load-tested beyond the 1,000-user target. The frontend now sends a Clerk token during the Socket.IO handshake; the server verifies it and resolves the local user. Local isolated results: 1,000/1,000 clients with 10,000/10,000 deliveries at 147 ms p95, and 1,500/1,500 with 15,000/15,000 deliveries at 210 ms p95. Pipeline smoke remains 7/7 and Vitest is 91/91. Production certification still requires Railway staging, database-backed chat load, and a Redis adapter before multi-replica scaling.
 > **The handoff doc.** Whoever opens the repo next picks up from here. Only one dev works at a time. No collision concerns — just a clean "what's done, what's next" baton pass.
 >
 > Different from `HANDOFF.md` (cold-pickup onboarding) and `SPEC.md` (the build plan).
@@ -46,7 +46,13 @@ Betting Tracker widget) is Week 8 work and waits.
 "Open Questions" — Claudio reprioritizes.
 
 ### Active Work
-- Enterprise UI audit remediation is in progress on `codex/ui-audit-2026-06-18`; P0 and primary P1 findings are fixed. Remaining visual sign-off needs isolated populated fixtures and a Clerk dashboard application-name update.
+- Testing hardening is in progress on `codex/ui-audit-2026-06-18`. UI P0/P1 remediation and local single-process chat concurrency are green. Next dependency is an isolated staging Supabase/Clerk environment for persistent populated fixtures and production-shaped HTTP/Railway load tests.
+
+### Chat concurrency and auth (2026-06-19 by Cody)
+- Fixed stale Replit Passport authentication in Socket.IO; Clerk session tokens are now verified at handshake and mapped to local GRIT users.
+- Fixed the React socket hook so connection availability triggers a render, and joined clients to the global room for typing presence.
+- Added `npm run test:load:chat`, a local-only synthetic-user harness, plus a permanent auth/fanout regression test.
+- Results and remaining production gaps are documented in `docs/testing/TEST_STATUS_2026-06-19.md`.
 
 ### Enterprise UI remediation (2026-06-19 by Cody)
 - Fixed the new-user dashboard null-badge crash and onboarding step-2 unmount bug.

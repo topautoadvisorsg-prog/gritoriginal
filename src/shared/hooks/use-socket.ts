@@ -1,42 +1,53 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
+import { useAuth as useClerkAuth } from '@clerk/clerk-react';
 import { io, Socket } from 'socket.io-client';
 
 export function useSocket() {
-    const socketRef = useRef<Socket | null>(null);
+    const { getToken, isSignedIn } = useClerkAuth();
+    const [socket, setSocket] = useState<Socket | null>(null);
 
     useEffect(() => {
-        // Initialize socket connection
-        const socket = io({
-            path: '/socket.io', // Default socket.io path
+        if (!isSignedIn) {
+            setSocket(null);
+            return;
+        }
+
+        const connection = io({
+            path: '/socket.io',
+            auth: async (callback) => {
+                try {
+                    callback({ token: await getToken() });
+                } catch {
+                    callback({ token: null });
+                }
+            },
             reconnection: true,
             reconnectionAttempts: 5,
             reconnectionDelay: 1000,
-            withCredentials: true, // Required to pass session cookies
+            withCredentials: true,
         });
 
-        socketRef.current = socket;
+        setSocket(connection);
 
-        socket.on('connect', () => {
-            if (import.meta.env.DEV) console.log('Socket.IO connected:', socket.id);
+        connection.on('connect', () => {
+            if (import.meta.env.DEV) console.log('Socket.IO connected:', connection.id);
         });
 
-        socket.on('disconnect', (reason) => {
+        connection.on('disconnect', (reason) => {
             if (import.meta.env.DEV) console.log('Socket.IO disconnected:', reason);
         });
 
-        socket.on('connect_error', (error) => {
+        connection.on('connect_error', (error) => {
             console.error('Socket.IO connection error:', error);
         });
 
         return () => {
-            if (socketRef.current) {
-                socketRef.current.disconnect();
-                socketRef.current = null;
-            }
+            connection.disconnect();
+            setSocket(null);
         };
-    }, []);
+    }, [getToken, isSignedIn]);
 
-    return socketRef.current;
+    return socket;
 }
 
 export default useSocket;
