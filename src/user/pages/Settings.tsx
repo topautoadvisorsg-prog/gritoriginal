@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { cn } from "@/shared/lib/utils";
-import { getCountryFlag } from "@/shared/lib/countries";
+import { CountryFlag } from "@/shared/components/CountryFlag";
 import { useAuth } from "@/shared/hooks/use-auth";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { ArrowLeft, Camera, Loader2, Trophy, Bell, Sparkles, User2, BarChart3, BrainCircuit, AlertTriangle, LineChart, ImagePlus } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/components/ui/dialog";
@@ -47,6 +48,7 @@ export default function Settings() {
     showUsername: true,
   });
   const [country, setCountry] = useState("");
+  const [activeTab, setActiveTab] = useState("profile");
 
   const { data: profile, isLoading: profileLoading } = useQuery<UserProfile>({
     queryKey: ["/api/me"],
@@ -246,7 +248,7 @@ export default function Settings() {
   const displayName = profile.username || `${profile.firstName || ""} ${profile.lastName || ""}`.trim() || "User";
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
+    <div className="min-h-screen bg-background p-4 pb-28 md:p-8">
       <div className="max-w-2xl mx-auto">
         <div className="flex items-center gap-4 mb-6">
           <Link to="/">
@@ -259,9 +261,9 @@ export default function Settings() {
 
         <Card className="mb-6">
           <CardHeader>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 sm:gap-6">
               <div className="relative group">
-                <Avatar className="w-24 h-24 border-2 border-white/10 group-hover:border-[#E8A020]/50 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.4)]">
+                <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-white/10 group-hover:border-[#E8A020]/50 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.4)]">
                   <AvatarImage src={avatarUrl || undefined} alt={displayName} className="object-cover" />
                   <AvatarFallback className="text-3xl font-black bg-[#0a0a0a] text-[#E8A020] border border-[#E8A020]/20 display-font italic">
                     {displayName.charAt(0).toUpperCase()}
@@ -299,12 +301,10 @@ export default function Settings() {
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <CardTitle className="text-2xl display-font italic tracking-tight">{displayName}</CardTitle>
-                  {getCountryFlag(profile.country || "") && (
-                    <span className="text-xl" title={profile.country}>{getCountryFlag(profile.country || "")}</span>
-                  )}
+                  <CardTitle className="min-w-0 truncate text-xl sm:text-2xl display-font italic tracking-tight">{displayName}</CardTitle>
+                  <CountryFlag country={profile.country} className="text-xl" />
                 </div>
-                <CardDescription className="text-white/40 font-medium">{profile.email}</CardDescription>
+                <CardDescription className="truncate text-white/40 font-medium" title={profile.email}>{profile.email}</CardDescription>
                 <div className="flex items-center gap-4 mt-3">
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
                     <Trophy className="w-3.5 h-3.5 text-[#E8A020]" />
@@ -322,8 +322,26 @@ export default function Settings() {
           </CardHeader>
         </Card>
 
-        <Tabs defaultValue="profile" className="space-y-4">
-          <TabsList className={`grid w-full overflow-x-auto ${isChallenger(user) ? 'grid-cols-8' : 'grid-cols-7'}`}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <div className="md:hidden">
+            <Select value={activeTab} onValueChange={setActiveTab}>
+              <SelectTrigger className="h-11 w-full" aria-label="Settings section">
+                <SelectValue placeholder="Choose a settings section" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="profile">Profile</SelectItem>
+                <SelectItem value="my-stats">My Stats</SelectItem>
+                <SelectItem value="privacy">Privacy</SelectItem>
+                <SelectItem value="tracker">Real Tracker</SelectItem>
+                <SelectItem value="notifications">Notifications</SelectItem>
+                <SelectItem value="gamification">Gamification</SelectItem>
+                {isChallenger(user) && <SelectItem value="my-slips">My Slips</SelectItem>}
+                <SelectItem value="account">Account</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="hidden w-full overflow-x-auto pb-1 md:block">
+          <TabsList className={`grid min-w-[760px] w-full ${isChallenger(user) ? 'grid-cols-8' : 'grid-cols-7'}`}>
             <TabsTrigger value="profile" data-testid="tab-profile">Profile</TabsTrigger>
             <TabsTrigger value="my-stats" data-testid="tab-my-stats">
               <BarChart3 className="w-4 h-4 mr-1" />
@@ -353,6 +371,7 @@ export default function Settings() {
               Account
             </TabsTrigger>
           </TabsList>
+          </div>
 
           <TabsContent value="profile">
             <ProfileTab

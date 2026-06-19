@@ -161,7 +161,7 @@
         "feat1_label": "Dashboard",
         "feat1_desc": "Live event cards, active picks, and your personal performance stats at a glance.",
         "feat2_label": "Event Picks",
-        "feat2_desc": "Pick the winner, method (KO / Sub / Decision), and round with confidence units.",
+        "feat2_desc": "Moneyline picks with locked odds. Optional method and round calls are tracked privately. Confidence flags shape your strategy.",
         "feat3_label": "Fighter Profiles",
         "feat3_desc": "Full career stats, fight history, grappling/striking data, and AI scout briefs.",
         "feat4_label": "Community Chat",
@@ -192,11 +192,11 @@
     "event_picks": {
         "label": "EVENT PICKS",
         "title": "THREE LAYERS. ONE LOCK.",
-        "desc": "Pick the winner, then go deeper. Choose the method — KO/TKO, Submission, or Decision. Then set your confidence from 1 to 5 units. Your full card locks when the fight opens.",
-        "feat1": "Moneyline pick — who wins",
-        "feat2": "Method pick — how they win",
-        "feat3": "Confidence — 1u cautious to 5u max conviction",
-        "feat4": "Multi-layer lock — time, event status, and manual flags"
+        "desc": "Every pick risks 1 unit at locked American moneyline odds. Method and round calls are tracked privately but do not affect rank. The leaderboard is pure net units, with no cash on the line.",
+        "feat1": "Moneyline pick (the one that counts)",
+        "feat2": "Method + round — private accuracy tracking",
+        "feat3": "Confidence flags: None / Green / Yellow / Red",
+        "feat4": "Multi-layer pick lock — time + event status + manual flag"
     },
     "intel_section": {
         "title": "LIVE INTEL FEED",

@@ -158,7 +158,7 @@
         "feat1_label": "Panel de Control",
         "feat1_desc": "Tarjetas de eventos en vivo, picks activos y tus estadísticas personales de un vistazo.",
         "feat2_label": "Picks de Eventos",
-        "feat2_desc": "Elige al ganador, el método (KO/Sub/Decisión) y la ronda con unidades de confianza.",
+        "feat2_desc": "Picks moneyline con cuotas bloqueadas. El método y la ronda se registran en privado. Las banderas de confianza definen tu estrategia.",
         "feat3_label": "Perfiles de Luchadores",
         "feat3_desc": "Estadísticas de carrera, historial de combates, datos y resúmenes scout de IA.",
         "feat4_label": "Chat Comunitario",
@@ -189,11 +189,11 @@
     "event_picks": {
         "label": "PICKS DE EVENTOS",
         "title": "TRES CAPAS. UN CIERRE.",
-        "desc": "Elige al ganador, luego profundiza. Selecciona el método — KO/TKO, Sumisión o Decisión. Establece tu confianza de 1 a 5 unidades. Tu tarjeta completa se bloquea cuando abre la pelea.",
-        "feat1": "Pick moneyline — quién gana",
-        "feat2": "Pick de método — cómo gana",
-        "feat3": "Confianza — 1u cauteloso a 5u máxima convicción",
-        "feat4": "Bloqueo multicapa — tiempo, estado del evento y banderas manuales"
+        "desc": "Cada pick arriesga 1 unidad con las cuotas moneyline bloqueadas. El método y la ronda se registran en privado, pero no afectan tu rango. El ranking usa unidades netas, sin dinero real en juego.",
+        "feat1": "Pick moneyline (el que cuenta)",
+        "feat2": "Método + ronda — seguimiento privado de precisión",
+        "feat3": "Banderas de confianza: Ninguna / Verde / Amarilla / Roja",
+        "feat4": "Bloqueo multicapa — tiempo + estado del evento + bandera manual"
     },
     "intel_section": {
         "title": "FEED DE INTELIGENCIA EN VIVO",

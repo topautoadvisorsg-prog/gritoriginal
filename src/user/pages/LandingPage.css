@@ -2341,11 +2341,41 @@ a:focus-visible,
   }
 
   .lp-nav__links {
-    gap: 16px;
+    gap: 10px;
   }
 
   .lp-nav__link--desktop {
     display: none;
+  }
+
+  .lp-nav {
+    padding: 12px 14px;
+  }
+
+  .lp-nav--scrolled {
+    padding: 9px 14px;
+  }
+
+  .lp-nav__brand {
+    gap: 8px;
+  }
+
+  .lp-nav__logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .lp-nav__name {
+    font-size: 1.2rem;
+  }
+
+  .lp-nav__cta {
+    display: none;
+  }
+
+  .lp-nav__login {
+    white-space: nowrap;
+    font-size: .82rem;
   }
 
   .lp-showcase {
@@ -4779,5 +4809,4 @@ a:focus-visible,
     display: flex;
   }
 }
-
 

@@ -2,7 +2,7 @@
 
 **MMA intelligence + fantasy prediction platform.** Not a sportsbook. Fans compete on real fight cards using real data, real odds, and AI.
 
-> 🕒 **Last Updated:** 2026-05-27 by Cody (Railway deploy hardening)
+> 🕒 **Last Updated:** 2026-06-19 by Cody (enterprise UI audit remediation)
 > 📍 **Current Status:** Phase 1 · Week 1 (Auth + Stack Provisioning) — scaffolding done, waiting on founder's provisioning sprint
 > 🧪 **Build State:** 90/90 Vitest tests passing · Pipeline smoke 7/7 passing · Production build passes · audit 39→10 moderate · DB 52 tables on Supabase us-west-2
 
@@ -24,6 +24,9 @@ Skip the rest of this README and start with `STATUS.md`.
 ## Recent Changes Log
 
 Anyone reviewing should add a dated entry to the top whenever they ship something meaningful. Keep it tight — one line per session.
+
+### 2026-06-19 - Cody
+- Completed the enterprise UI remediation pass: fixed both P0 first-session failures, mobile Settings and landing navigation, direct Clerk auth routes, leaderboard ordering, SVG country flags, fabricated/placeholder UI, and stale confidence-unit translations; audit evidence remains in `docs/ui-audit/`.
 
 ### 2026-05-27 - Cody
 - Fixed production blank page when `VITE_CLERK_PUBLISHABLE_KEY` is missing; frontend now boots public landing without Clerk and disables auth controls until Clerk is configured.

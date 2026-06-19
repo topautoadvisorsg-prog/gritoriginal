@@ -1,13 +1,13 @@
 # GRIT — Live Status
 
-> **Latest update 2026-05-27 by Cody:** Railway build now passes and runtime startup was hardened for Railway: build installs dev deps for Vite, Express binds to `0.0.0.0`, missing `ADMIN_EMAIL` disables email bootstrap instead of crashing, Socket.IO accepts Railway/custom domains, backend Clerk middleware disables itself until production Clerk keys are configured, and frontend Clerk provider no longer hard-crashes the public landing page when `VITE_CLERK_PUBLISHABLE_KEY` is missing. Verification: `npx tsc --noEmit`, `npm run test` = 90/90, `npm run build`, local `npm start` with Clerk keys blank + `/api/health` = 200 and `/` = 200.
+> **Latest update 2026-06-19 by Cody:** Enterprise UI remediation closed both P0 first-session blockers and the primary P1 batch: onboarding stays mounted through all seven steps, the new-user dashboard has a safe zero state, mobile Settings uses a compact section picker, the mobile landing header no longer collides, direct Clerk routes work while logged out, rankings preserve rank order, fake live/prize/ad scaffolding is removed, country flags use SVGs, and stale 1u-5u locale copy was replaced. Verification: `npx tsc --noEmit`, `npm run test` = 90/90, locale JSON validation, and `npm run build`.
 > **The handoff doc.** Whoever opens the repo next picks up from here. Only one dev works at a time. No collision concerns — just a clean "what's done, what's next" baton pass.
 >
 > Different from `HANDOFF.md` (cold-pickup onboarding) and `SPEC.md` (the build plan).
 
 ---
 
-## Snapshot — Updated 2026-05-27 by Cody
+## Snapshot — Updated 2026-06-19 by Cody
 
 | Field | Value |
 |---|---|
@@ -46,7 +46,13 @@ Betting Tracker widget) is Week 8 work and waits.
 "Open Questions" — Claudio reprioritizes.
 
 ### Active Work
-- None — Claudio just shipped a full landing page rewrite (copy + new sections + correct pricing). Awaiting founder review of new landing copy, Clerk keys, Week 2 migration approval, and Fiverr-generated fighter images per the 6 prompts already delivered.
+- Enterprise UI audit remediation is in progress on `codex/ui-audit-2026-06-18`; P0 and primary P1 findings are fixed. Remaining visual sign-off needs isolated populated fixtures and a Clerk dashboard application-name update.
+
+### Enterprise UI remediation (2026-06-19 by Cody)
+- Fixed the new-user dashboard null-badge crash and onboarding step-2 unmount bug.
+- Reskinned onboarding to GRIT gold, replaced emoji identity choices with photo upload and SVG flags, removed fabricated chat/live/prize content, hid empty ad scaffolding, and rewrote operator-only empty-state copy.
+- Rebuilt mobile Settings navigation, simplified the mobile landing header, restored logged-out `/sign-in` and `/sign-up`, kept leaderboard rows in canonical rank order, and corrected stale confidence-unit translations across supported locales.
+- Audit plan, 21-screen visual record, and prioritized report live in `docs/ui-audit/`.
 
 ### Landing Page Rewrite (late 2026-05-23 by Claudio — full CTO authority exercised)
 - ✅ **Full rewrite of `public/locales/en/translation.json`** — sharper copy throughout. Hero says "PROVE YOUR FIGHT IQ. REAL DATA. REAL ODDS. REAL RANK." with subtitle "No betting. No luck. Just your knowledge against the world." Mission-driven, blueprint-correct positioning.
@@ -157,6 +163,8 @@ Revised 2026-05-23 after founder feedback. Work is no longer split by frontend/b
 **UI work paused:** 7-step onboarding and Betting Tracker widget are deferred until the backend pipeline is blueprint-correct.
 
 ### Open Questions (cross-owner gaps surface here)
+
+- 2026-06-19 — Cody — Clerk's direct sign-in page currently says "Sign in to My Application." Rename the Clerk application to **GRIT** in the Clerk Dashboard; this is dashboard configuration, not a frontend code string. — needs: Jovan
 
 - 2026-05-23 — Cody review note — Manual odds entry path exists (`AdminOddsEditor` → `PUT /api/admin/fights/:fightId/odds`) and correctly updates `event_fights.odds`, which the pick route uses to lock odds at submission. However, this manual admin path does **not** currently insert into `fight_odds_history`; only the data-engine odds path does. Core picks/scoring still work, but manual line movement history will be incomplete unless we add a history insert on admin odds save. Recommendation: add a small backend patch before relying on line-movement analytics. — needs: Cody/Claudio
 - 2026-05-23 — Cody — OneSignal delivery itself is not proven because `ONESIGNAL_APP_ID` / `ONESIGNAL_API_KEY` are not configured. Smoke verifies notification code paths are invoked by counting the existing "OneSignal not configured" skip logs. — needs: Jovan

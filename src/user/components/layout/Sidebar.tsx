@@ -1,5 +1,5 @@
 import React from 'react';
-import { getCountryFlag } from '@/shared/lib/countries';
+import { CountryFlag } from '@/shared/components/CountryFlag';
 import { cn } from '@/shared/lib/utils';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/shared/hooks/use-auth';
@@ -184,9 +184,7 @@ function BottomNav({ isCollapsed, isAdmin }: { isCollapsed: boolean; isAdmin: bo
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
               <div className="text-sm font-black text-white display-font italic truncate">{displayName}</div>
-              <span className="text-sm shrink-0">
-                {getCountryFlag((user as any)?.country || "")}
-              </span>
+              <CountryFlag country={(user as any)?.country} className="shrink-0 text-sm" />
             </div>
             <div className="flex items-center gap-2 mt-1">
               <span className="text-[9px] text-white/30 uppercase font-bold tracking-widest">{roleLabel}</span>

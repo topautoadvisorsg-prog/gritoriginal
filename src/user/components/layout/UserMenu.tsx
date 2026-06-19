@@ -1,5 +1,5 @@
 import { useAuth } from "@/shared/hooks/use-auth";
-import { getCountryFlag } from "@/shared/lib/countries";
+import { CountryFlag } from "@/shared/components/CountryFlag";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -89,9 +89,7 @@ export function UserMenu() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-black leading-none display-font italic uppercase tracking-tight truncate">{displayName}</p>
-                  <span className="text-sm">
-                    {getCountryFlag((user as any)?.country || "")}
-                  </span>
+                  <CountryFlag country={(user as any)?.country} className="text-sm" />
                 </div>
                 <p className="text-[10px] leading-none text-muted-foreground uppercase font-medium truncate mt-1">
                   {(user as any)?.email}

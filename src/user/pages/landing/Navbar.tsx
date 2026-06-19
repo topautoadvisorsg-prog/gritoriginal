@@ -5,13 +5,13 @@ import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@cl
 import { isClerkEnabled } from '@/auth/clerkConfig';
 
 const LANGUAGES = [
-    { code: 'en', label: 'English', flag: '🇺🇸' },
-    { code: 'es', label: 'Español', flag: '🇪🇸' },
-    { code: 'fr', label: 'Français', flag: '🇫🇷' },
-    { code: 'pt', label: 'Português', flag: '🇧🇷' },
-    { code: 'ja', label: '日本語', flag: '🇯🇵' },
-    { code: 'ko', label: '한국어', flag: '🇰🇷' },
-    { code: 'ru', label: 'Русский', flag: '🇷🇺' },
+    { code: 'en', label: 'English', flagCode: 'us' },
+    { code: 'es', label: 'Español', flagCode: 'es' },
+    { code: 'fr', label: 'Français', flagCode: 'fr' },
+    { code: 'pt', label: 'Português', flagCode: 'br' },
+    { code: 'ja', label: '日本語', flagCode: 'jp' },
+    { code: 'ko', label: '한국어', flagCode: 'kr' },
+    { code: 'ru', label: 'Русский', flagCode: 'ru' },
 ];
 
 function LanguageSelector() {
@@ -37,7 +37,7 @@ function LanguageSelector() {
                 aria-label="Select language"
             >
                 <Globe size={16} />
-                <span className="lp-lang__current">{currentLang.flag}</span>
+                <span className={`fi fi-${currentLang.flagCode} lp-lang__current`} />
             </button>
             {open && (
                 <ul className="lp-lang__dropdown">
@@ -47,7 +47,7 @@ function LanguageSelector() {
                                 className={`lp-lang__option ${i18n.language.startsWith(lang.code) ? 'lp-lang__option--active' : ''}`}
                                 onClick={() => { i18n.changeLanguage(lang.code); setOpen(false); }}
                             >
-                                <span className="lp-lang__flag">{lang.flag}</span>
+                                <span className={`fi fi-${lang.flagCode} lp-lang__flag`} />
                                 <span>{lang.label}</span>
                             </button>
                         </li>

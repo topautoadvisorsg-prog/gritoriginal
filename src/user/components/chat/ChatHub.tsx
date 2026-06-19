@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { getCountryFlag } from '@/shared/lib/countries';
+import { CountryFlag } from '@/shared/components/CountryFlag';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/shared/hooks/use-auth';
 import { Send, Loader2, Globe, Flag, Lock, Pin, Instagram, Twitter, Smile, ImageIcon, Trophy, X, MessageCircle } from 'lucide-react';
@@ -203,9 +203,7 @@ const ChatMessageRow: React.FC<{ msg: ChatMessage; isOwn: boolean }> = ({ msg, i
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <span className="font-black text-white text-sm">{name}</span>
                     {msg.countryCode && (
-                        <span className="text-xs" title={msg.countryCode}>
-                            {getCountryFlag(msg.countryCode)}
-                        </span>
+                        <CountryFlag country={msg.countryCode} className="text-xs" />
                     )}
                     {rank && <RankBadge rank={rank} small />}
                     {progressBadge && progressBadge !== 'none' && <ProgressBadge badge={progressBadge} />}

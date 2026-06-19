@@ -34,10 +34,10 @@ export function SignInPage() {
     >
       <SignIn
         signUpUrl="/sign-up"
-        afterSignInUrl="/dashboard"
+        fallbackRedirectUrl="/dashboard"
         appearance={{
           variables: {
-            colorPrimary: 'hsl(190 90% 50%)',
+            colorPrimary: 'hsl(38 82% 52%)',
             colorBackground: 'hsl(220 25% 8%)',
             colorText: 'hsl(0 0% 95%)',
             colorInputBackground: 'hsl(220 25% 10%)',

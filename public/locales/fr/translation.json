@@ -192,7 +192,7 @@
         "desc": "Choisissez le gagnant, puis allez plus loin. Choisissez la méthode — KO/TKO, Soumission ou Décision. Fixez votre confiance de 1 à 5 unités. Votre carte complète se verrouille à l'ouverture du combat.",
         "feat1": "Pick moneyline — qui gagne",
         "feat2": "Pick de méthode — comment il gagne",
-        "feat3": "Confiance — 1u prudent à 5u conviction maximale",
+        "feat3": "Drapeaux de confiance : Aucun / Vert / Jaune / Rouge",
         "feat4": "Verrouillage multicouche — heure, statut de l'événement et signaux manuels"
     },
     "intel_section": {

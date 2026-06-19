@@ -192,7 +192,7 @@
         "desc": "Escolha o vencedor, depois aprofunde. Escolha o método — KO/TKO, Finalização ou Decisão. Defina sua confiança de 1 a 5 unidades. Seu card completo bloqueia quando a luta abre.",
         "feat1": "Pick moneyline — quem vence",
         "feat2": "Pick de método — como vence",
-        "feat3": "Confiança — 1u cauteloso a 5u máxima convicção",
+        "feat3": "Sinalizadores de confiança: Nenhum / Verde / Amarelo / Vermelho",
         "feat4": "Bloqueio multicamada — tempo, status do evento e sinalizadores manuais"
     },
     "intel_section": {

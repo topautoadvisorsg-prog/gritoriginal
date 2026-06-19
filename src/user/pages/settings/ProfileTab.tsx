@@ -3,6 +3,7 @@ import { COUNTRIES } from "@/shared/lib/countries";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
 import { Loader2, Check, X } from "lucide-react";
 
 interface ProfileTabProps {
@@ -89,20 +90,20 @@ export function ProfileTab({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="country">Country</Label>
-          <select
-            id="country"
-            className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-          >
-            <option value="">Select your country</option>
+          <Label>Country</Label>
+          <Select value={country || undefined} onValueChange={setCountry}>
+            <SelectTrigger aria-label="Country">
+              <SelectValue placeholder="Select your country" />
+            </SelectTrigger>
+            <SelectContent>
             {COUNTRIES.map((c) => (
-              <option key={c.code} value={c.name}>
-                {c.flag} {c.name}
-              </option>
+              <SelectItem key={c.code} value={c.name}>
+                <span className={`fi fi-${c.code.toLowerCase()} mr-2`} />
+                {c.name}
+              </SelectItem>
             ))}
-          </select>
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">

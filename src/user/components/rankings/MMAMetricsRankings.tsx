@@ -103,10 +103,6 @@ export const MMAMetricsRankings: React.FC = () => {
         ? mapGlobalRankings(rawData?.leaderboard || [])
         : mapSnapshotRankings(rawData?.rankings || []);
 
-    // Find current user's row for pinning
-    const currentUserRow = rankings.find(r => r.id === authUser?.id);
-    const filteredRankings = rankings.filter(r => r.id !== authUser?.id);
-
     const tabs: { id: LeaderboardType; label: string }[] = [
         { id: 'global', label: 'Global All-Time' },
         { id: 'monthly', label: 'Monthly Champions' },
@@ -179,35 +175,15 @@ export const MMAMetricsRankings: React.FC = () => {
                             <div className="flex-1 min-w-[250px]">USER</div>
                             <div className="w-[120px] text-center">TIER</div>
                             <div className="w-[140px] text-center">
-                                {leaderboardType === 'global' ? 'POINTS' : 'NET UNITS'}
+                                {leaderboardType === 'global' ? 'CAREER SCORE' : 'NET UNITS'}
                             </div>
                         </div>
 
                         {/* Rows */}
                         <div className="flex flex-col space-y-3">
-                    {/* Pinned User Row (if exists) */}
-                    {currentUserRow && (
-                        <motion.div
-                            key={`pinned-${currentUserRow.id}`}
-                            layout
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ type: 'spring', stiffness: 400, damping: 40 }}
-                            className="sticky top-0 z-10"
-                        >
-                            <RankingRow
-                                user={currentUserRow}
-                                animationIndex={0}
-                                isSelf={true}
-                                currentStreak={currentUserRow.currentStreak}
-                                disableAnimation={false}
-                            />
-                        </motion.div>
-                    )}
-                    
-                    {/* Other Rankings */}
+                    {/* Rankings stay in canonical rank order; the current user is highlighted in place. */}
                     <AnimatePresence mode="popLayout">
-                        {filteredRankings.map((user, index) => (
+                        {rankings.map((user, index) => (
                             <motion.div
                                 key={user.id}
                                 layout

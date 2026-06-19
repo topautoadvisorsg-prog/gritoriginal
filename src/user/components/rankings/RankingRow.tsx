@@ -1,5 +1,5 @@
 import React from 'react';
-import { getCountryFlag } from '@/shared/lib/countries';
+import { CountryFlag } from '@/shared/components/CountryFlag';
 import { cn } from '@/shared/lib/utils';
 import { RankBadge, RankTier } from './RankBadge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
@@ -88,9 +88,7 @@ export const RankingRow: React.FC<RankingRowProps> = ({
                 <span className="text-[10px] font-black text-orange-500">{currentStreak}</span>
               </div>
             )}
-            <span className="text-xl" title={user.country || "Global"}>
-              {getCountryFlag(user.country || "")}
-            </span>
+            <CountryFlag country={user.country} className="text-xl" />
             {isNumberOne && <span className="text-[#E8A020] text-sm">👑</span>}
           </div>
         </div>

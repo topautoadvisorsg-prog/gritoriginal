@@ -94,7 +94,7 @@ function AppRoutes() {
           width: 40,
           height: 40,
           border: '3px solid hsl(210 25% 18%)',
-          borderTopColor: 'hsl(190 90% 50%)',
+          borderTopColor: 'hsl(38 82% 52%)',
           borderRadius: '50%',
           animation: 'spin 0.8s linear infinite',
         }} />
@@ -104,7 +104,18 @@ function AppRoutes() {
   }
 
   if (!user) {
-    return <LandingPage />;
+    return (
+      <Routes>
+        <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
+        <Route path="/tos" element={<TermsOfService />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/cookie" element={<CookiePolicy />} />
+        <Route path="/creator-agreement" element={<CreatorAgreement />} />
+        <Route path="/aup" element={<AcceptableUsePolicy />} />
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
+    );
   }
 
   const needsOnboarding = (onboardingLatched || !user.username) && !onboardingDismissed;
