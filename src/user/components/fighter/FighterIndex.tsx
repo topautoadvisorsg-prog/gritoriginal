@@ -100,9 +100,9 @@ export const FighterIndex: React.FC<FighterIndexProps> = ({ onFighterSelect, onN
         <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
           <Database className="h-10 w-10 text-muted-foreground/50" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">No Fighter Data</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-2">Fighters Coming Soon</h2>
         <p className="text-muted-foreground max-w-md mb-6">
-          Your fighter database is empty. Import fighter data to populate profiles, rankings, and analytics.
+          Fighter profiles, records, and analytics will appear here as soon as the roster goes live.
         </p>
         {onNavigateToImport && (
           <Button onClick={onNavigateToImport} className="gap-2">

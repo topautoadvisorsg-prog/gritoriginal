@@ -511,7 +511,7 @@ export const ChatHub: React.FC = () => {
                     className="font-black uppercase tracking-tight leading-none"
                     style={{ fontSize: 'clamp(18px, 4vw, 28px)', color: GOLD, textShadow: `0 0 30px ${GOLD}55` }}
                 >
-                    UFC 300: PEREIRA VS HILL
+                    GRIT Live Chat
                 </h1>
                 <div className="flex items-center gap-4 mt-1.5 flex-wrap justify-center">
                     <div className="flex items-center gap-1.5">
@@ -520,9 +520,8 @@ export const ChatHub: React.FC = () => {
                             {isChatOpen ? 'LIVE' : 'CLOSED'}
                         </span>
                     </div>
-                    <span className="text-white/30 text-[11px] font-semibold uppercase tracking-wider">45K USERS ONLINE</span>
-                    <span className="text-[11px] font-black uppercase tracking-wider" style={{ color: GOLD }}>
-                        TOTAL PRIZE POOL: $250,000
+                    <span className="text-white/30 text-[11px] font-semibold uppercase tracking-wider">
+                        {isChatOpen ? 'Global & country rooms' : 'Opens during live events'}
                     </span>
                 </div>
 

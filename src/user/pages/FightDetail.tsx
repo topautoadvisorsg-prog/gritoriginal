@@ -259,8 +259,8 @@ const FightDetail: React.FC = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4">
           <Database className="w-16 h-16 text-muted-foreground/50 mx-auto" />
-          <h2 className="text-xl font-bold text-foreground">No Fighter Data</h2>
-          <p className="text-muted-foreground">Import fighter data to view fight details.</p>
+          <h2 className="text-xl font-bold text-foreground">Fight Details Unavailable</h2>
+          <p className="text-muted-foreground">This fight isn't available yet. Check back when the card is finalized.</p>
           <button
             onClick={() => navigate('/')}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium"

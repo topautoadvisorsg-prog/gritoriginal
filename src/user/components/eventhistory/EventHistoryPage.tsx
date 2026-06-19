@@ -134,9 +134,9 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
         <div className="w-20 h-20 rounded-full bg-muted/50 flex items-center justify-center mb-6">
           <Database className="h-10 w-10 text-muted-foreground/50" />
         </div>
-        <h2 className="text-2xl font-bold text-foreground mb-2">No Fighter Data</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-2">No Past Events Yet</h2>
         <p className="text-muted-foreground max-w-md mb-6">
-          Import fighter data to view event history with full fighter details.
+          Once events wrap up, full results and fighter breakdowns will show up here.
         </p>
         {onNavigateToImport && (
           <Button onClick={onNavigateToImport} className="gap-2">
