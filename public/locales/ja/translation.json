@@ -30,7 +30,11 @@
         "user_manager": "ユーザー管理",
         "audit_log": "監査ログ",
         "system_settings": "システム設定",
-        "suggested_questions": "Suggested Questions"
+        "suggested_questions": "Suggested Questions",
+        "fight_cards": "ファイトカード",
+        "intel_feed": "インテルフィード",
+        "chat_management": "チャット管理",
+        "jobs_queue": "ジョブキュー"
     },
     "header": {
         "search_placeholder": "選手、イベントを検索...",

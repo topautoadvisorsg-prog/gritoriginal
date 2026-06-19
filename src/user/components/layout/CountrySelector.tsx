@@ -100,7 +100,7 @@ export const CountrySelector = () => {
                 <SelectContent>
                     {COUNTRIES.map(c => (
                         <SelectItem key={c.code} value={c.name}>
-                            <span className="mr-2">{c.flag}</span> {c.name}
+                            <span className={`fi fi-${c.code.toLowerCase()} mr-2`} /> {c.name}
                         </SelectItem>
                     ))}
                 </SelectContent>

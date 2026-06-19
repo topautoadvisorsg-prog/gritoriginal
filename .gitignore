@@ -4,6 +4,9 @@ build/
 .env
 .env.local
 .env.*.local
+.env.backup
+.env.railway.backup
+.env.*.backup
 *.log
 *.zip
 *.tar
@@ -26,3 +29,7 @@ pw api.*
 *.swp
 .DS_Store
 Thumbs.db
+
+# local tooling artifacts
+.claude/
+.playwright-cli/

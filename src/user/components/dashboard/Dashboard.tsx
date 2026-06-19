@@ -66,8 +66,11 @@ export const Dashboard: React.FC = () => {
     if (!dashboard) return null;
 
     const displayName = user?.username || user?.firstName || 'Fighter';
-    const tier = dashboard.progression.badge.toUpperCase() as RankTier;
-    const starLevel = dashboard.progression.starLevel;
+    // New users have no progression history — normalize to a stable zero-state
+    // so the dashboard never crashes on a missing badge/starLevel.
+    const progression = dashboard.progression ?? {};
+    const tier = String(progression.badge ?? 'ninja').toUpperCase() as RankTier;
+    const starLevel = progression.starLevel ?? 0;
     const rankProgress = (starLevel / 5) * 100;
 
     const upcoming = dashboard.upcomingEvent;
@@ -148,7 +151,7 @@ export const Dashboard: React.FC = () => {
                 className="grid grid-cols-2 lg:grid-cols-4 gap-4"
                 variants={itemVariants}
             >
-                <AnimatedCounter label="Keys" value={dashboard.progression.keys} suffix="◈" />
+                <AnimatedCounter label="Keys" value={progression.keys ?? 0} suffix="◈" />
                 <AnimatedCounter value={dashboard.currentStreak} label={dashboard.currentStreak >= 2 ? "W Streak 🔥" : "Streak"} />
                 <div className="flex flex-col items-center justify-center p-4 bg-[#111] border border-white/5 rounded-2xl hover-glow">
                     <span className="text-[10px] font-black uppercase tracking-widest text-white/40 mb-1">Raffle Status</span>

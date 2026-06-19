@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
-import { Swords, ChevronRight, Loader2 } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Swords, ChevronRight, Loader2, Camera } from 'lucide-react';
 import { COUNTRIES } from '@/shared/lib/countries';
 import { useQueryClient } from '@tanstack/react-query';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import './WelcomeModal.css';
 
-/* MMA-themed avatar options */
-const AVATARS = ['🥊', '🥋', '🦅', '🐺', '🦁', '🐉', '🏆', '⚔️', '🔥', '💀'];
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2MB
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 interface WelcomeModalProps {
     onComplete: () => void;
@@ -15,11 +16,61 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
     const queryClient = useQueryClient();
     const [username, setUsername] = useState('');
     const [country, setCountry] = useState('');
-    const [avatar, setAvatar] = useState('');
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const isValid = username.length >= 3 && country.length > 0;
+
+    // Reuses the same presigned-URL avatar flow as Settings.tsx:
+    // request-url -> PUT file -> confirm. Confirm persists avatarUrl server-side.
+    const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        if (file.size > MAX_AVATAR_BYTES) {
+            setError('Image must be less than 2MB');
+            return;
+        }
+        if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+            setError('Only JPG, PNG, and WebP are allowed');
+            return;
+        }
+
+        setUploading(true);
+        setError('');
+        try {
+            const urlRes = await fetch('/api/me/avatar/request-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ size: file.size, contentType: file.type }),
+            });
+            if (!urlRes.ok) throw new Error('Failed to get upload URL');
+            const { uploadURL, objectPath } = await urlRes.json();
+
+            const putRes = await fetch(uploadURL, {
+                method: 'PUT',
+                body: file,
+                headers: { 'Content-Type': file.type },
+            });
+            if (!putRes.ok) throw new Error('Failed to upload image');
+
+            const confirmRes = await fetch('/api/me/avatar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ objectPath }),
+            });
+            if (!confirmRes.ok) throw new Error('Failed to save image');
+            const data = await confirmRes.json();
+            setAvatarUrl(data.avatarUrl || data.profileImageUrl || URL.createObjectURL(file));
+        } catch {
+            setError('Image upload failed. Try again.');
+        } finally {
+            setUploading(false);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    }, []);
 
     const handleSubmit = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,9 +86,9 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
                 body: JSON.stringify({
                     username: username.trim(),
                     country,
-                    // Store avatar emoji as a simple string in avatarUrl for now
-                    // The app can render this as the fallback when no real image is set
-                    avatarUrl: avatar || null,
+                    // Avatar (if any) is already persisted by the /api/me/avatar
+                    // confirm step; resend for idempotency.
+                    avatarUrl: avatarUrl || null,
                 }),
             });
 
@@ -88,35 +139,54 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
                     {/* Country */}
                     <div className="welcome-modal__field">
                         <label className="welcome-modal__label">Country</label>
-                        <select
-                            className="welcome-modal__select"
-                            value={country}
-                            onChange={(e) => setCountry(e.target.value)}
-                        >
-                            <option value="">Select your country</option>
-                            {COUNTRIES.map((c) => (
-                                <option key={c.code} value={c.name}>
-                                    {c.flag} {c.name}
-                                </option>
-                            ))}
-                        </select>
+                        <Select value={country} onValueChange={setCountry}>
+                            <SelectTrigger className="welcome-modal__select">
+                                <SelectValue placeholder="Select your country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {COUNTRIES.map((c) => (
+                                    <SelectItem key={c.code} value={c.name}>
+                                        <span className={`fi fi-${c.code.toLowerCase()} mr-2`} /> {c.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
-                    {/* Avatar */}
+                    {/* Avatar — real image upload */}
                     <div className="welcome-modal__field">
-                        <label className="welcome-modal__label">Profile Picture</label>
-                        <div className="welcome-modal__avatars">
-                            {AVATARS.map((a) => (
-                                <button
-                                    type="button"
-                                    key={a}
-                                    className={`welcome-modal__avatar ${avatar === a ? 'welcome-modal__avatar--selected' : ''}`}
-                                    onClick={() => setAvatar(a)}
-                                >
-                                    {a}
-                                </button>
-                            ))}
-                        </div>
+                        <label className="welcome-modal__label">Profile Picture <span className="welcome-modal__optional">(optional)</span></label>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            className="welcome-modal__file-input"
+                            onChange={handleAvatarUpload}
+                            disabled={uploading}
+                        />
+                        <button
+                            type="button"
+                            className="welcome-modal__upload"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={uploading}
+                        >
+                            <span className="welcome-modal__upload-preview">
+                                {avatarUrl ? (
+                                    <img src={avatarUrl} alt="Profile preview" />
+                                ) : (
+                                    <Camera size={24} />
+                                )}
+                                {uploading && (
+                                    <span className="welcome-modal__upload-spinner">
+                                        <Loader2 size={20} className="animate-spin" />
+                                    </span>
+                                )}
+                            </span>
+                            <span className="welcome-modal__upload-text">
+                                {uploading ? 'Uploading…' : avatarUrl ? 'Change photo' : 'Upload a photo'}
+                                <small>JPG, PNG or WebP · max 2MB</small>
+                            </span>
+                        </button>
                     </div>
 
                     {/* Error */}

@@ -8,12 +8,14 @@
  * Mount: rendered from App.tsx when user is signed in but has no username set.
  * On final step, calls onComplete() to dismiss for the session.
  */
-import React, { useState, useCallback } from 'react';
-import { Swords, ChevronRight, ChevronLeft, X, Loader2, Trophy, Target, TrendingUp, Crown, Sparkles } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Swords, ChevronRight, ChevronLeft, X, Loader2, Trophy, Target, TrendingUp, Crown, Sparkles, Camera } from 'lucide-react';
 import { COUNTRIES } from '@/shared/lib/countries';
 import { useQueryClient } from '@tanstack/react-query';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 
-const AVATARS = ['🥊', '🥋', '🦅', '🐺', '🦁', '🐉', '🏆', '⚔️', '🔥', '💀'];
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2MB
+const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 interface OnboardingFlowProps {
   onComplete: () => void;
@@ -26,12 +28,48 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState('');
   const [country, setCountry] = useState('');
-  const [avatar, setAvatar] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [profileSaved, setProfileSaved] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isProfileValid = username.length >= 3 && country.length > 0;
+
+  // Real headshot upload — same presigned-URL flow as Settings.tsx.
+  const handleAvatarUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_AVATAR_BYTES) { setError('Image must be less than 2MB'); return; }
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) { setError('Only JPG, PNG, and WebP are allowed'); return; }
+    setUploading(true);
+    setError('');
+    try {
+      const urlRes = await fetch('/api/me/avatar/request-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ size: file.size, contentType: file.type }),
+      });
+      if (!urlRes.ok) throw new Error();
+      const { uploadURL, objectPath } = await urlRes.json();
+      const putRes = await fetch(uploadURL, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } });
+      if (!putRes.ok) throw new Error();
+      const confirmRes = await fetch('/api/me/avatar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ objectPath }),
+      });
+      if (!confirmRes.ok) throw new Error();
+      const data = await confirmRes.json();
+      setAvatarUrl(data.avatarUrl || data.profileImageUrl || URL.createObjectURL(file));
+    } catch {
+      setError('Image upload failed. Try again.');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, []);
 
   const saveProfile = useCallback(async (): Promise<boolean> => {
     if (!isProfileValid || submitting) return false;
@@ -44,7 +82,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
         body: JSON.stringify({
           username: username.trim(),
           country,
-          avatarUrl: avatar || null,
+          avatarUrl: avatarUrl || null,
         }),
       });
       if (!res.ok) {
@@ -63,7 +101,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       setSubmitting(false);
       return false;
     }
-  }, [username, country, avatar, isProfileValid, submitting, queryClient]);
+  }, [username, country, avatarUrl, isProfileValid, submitting, queryClient]);
 
   const goNext = useCallback(async () => {
     // Step 2 requires profile save before advancing.
@@ -103,8 +141,11 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
               setUsername={setUsername}
               country={country}
               setCountry={setCountry}
-              avatar={avatar}
-              setAvatar={setAvatar}
+              avatarUrl={avatarUrl}
+              uploading={uploading}
+              onPickAvatar={() => fileInputRef.current?.click()}
+              fileInputRef={fileInputRef}
+              onAvatarChange={handleAvatarUpload}
               error={error}
               profileSaved={profileSaved}
             />
@@ -161,10 +202,14 @@ function StepWelcome() {
   );
 }
 
-function StepProfile({ username, setUsername, country, setCountry, avatar, setAvatar, error, profileSaved }: {
+function StepProfile({ username, setUsername, country, setCountry, avatarUrl, uploading, onPickAvatar, fileInputRef, onAvatarChange, error, profileSaved }: {
   username: string; setUsername: (v: string) => void;
   country: string; setCountry: (v: string) => void;
-  avatar: string; setAvatar: (v: string) => void;
+  avatarUrl: string | null;
+  uploading: boolean;
+  onPickAvatar: () => void;
+  fileInputRef: React.RefObject<HTMLInputElement>;
+  onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: string;
   profileSaved: boolean;
 }) {
@@ -192,38 +237,45 @@ function StepProfile({ username, setUsername, country, setCountry, avatar, setAv
       </div>
 
       <div style={fieldStyle}>
-        <label style={labelStyle}>Country Flag</label>
-        <select
-          style={inputStyle}
-          value={country}
-          onChange={(e) => setCountry(e.target.value)}
-          disabled={profileSaved}
-        >
-          <option value="">Select your country</option>
-          {COUNTRIES.map(c => (
-            <option key={c.code} value={c.name}>{c.flag} {c.name}</option>
-          ))}
-        </select>
+        <label style={labelStyle}>Country</label>
+        <Select value={country} onValueChange={setCountry} disabled={profileSaved}>
+          <SelectTrigger style={inputStyle}>
+            <SelectValue placeholder="Select your country" />
+          </SelectTrigger>
+          <SelectContent>
+            {COUNTRIES.map(c => (
+              <SelectItem key={c.code} value={c.name}>
+                <span className={`fi fi-${c.code.toLowerCase()}`} style={{ marginRight: 8 }} /> {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div style={fieldStyle}>
-        <label style={labelStyle}>Avatar (optional)</label>
-        <div style={avatarGridStyle}>
-          {AVATARS.map(a => (
-            <button
-              type="button"
-              key={a}
-              onClick={() => setAvatar(a)}
-              disabled={profileSaved}
-              style={{
-                ...avatarBtnStyle,
-                ...(avatar === a ? avatarBtnSelectedStyle : {}),
-              }}
-            >
-              {a}
-            </button>
-          ))}
-        </div>
+        <label style={labelStyle}>Profile Picture (optional)</label>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          style={{ display: 'none' }}
+          onChange={onAvatarChange}
+          disabled={profileSaved || uploading}
+        />
+        <button type="button" style={uploadZoneStyle} onClick={onPickAvatar} disabled={profileSaved || uploading}>
+          <span style={uploadPreviewStyle}>
+            {avatarUrl
+              ? <img src={avatarUrl} alt="Profile preview" style={uploadImgStyle} />
+              : <Camera size={22} />}
+            {uploading && (
+              <span style={uploadSpinnerStyle}><Loader2 size={18} className="animate-spin" /></span>
+            )}
+          </span>
+          <span style={uploadTextStyle}>
+            {uploading ? 'Uploading…' : avatarUrl ? 'Change photo' : 'Upload a photo'}
+            <small style={uploadHintStyle}>JPG, PNG or WebP · max 2MB</small>
+          </span>
+        </button>
       </div>
 
       {error && <div style={errorBoxStyle}>{error}</div>}
@@ -379,7 +431,7 @@ const progressBarStyle: React.CSSProperties = {
 
 const progressFillStyle: React.CSSProperties = {
   height: '100%',
-  background: 'hsl(190 90% 50%)',
+  background: 'hsl(38 92% 55%)',
   transition: 'width 0.3s ease',
 };
 
@@ -400,8 +452,8 @@ const stepContainerStyle: React.CSSProperties = {
 
 const iconCircleStyle: React.CSSProperties = {
   width: 64, height: 64, borderRadius: '50%',
-  background: 'hsl(190 90% 50% / 0.15)',
-  color: 'hsl(190 90% 50%)',
+  background: 'hsl(38 92% 55% / 0.15)',
+  color: 'hsl(38 92% 55%)',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   margin: '0 auto',
 };
@@ -441,22 +493,42 @@ const inputStyle: React.CSSProperties = {
   fontSize: 14,
 };
 
-const avatarGridStyle: React.CSSProperties = {
-  display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6,
-};
-
-const avatarBtnStyle: React.CSSProperties = {
+const uploadZoneStyle: React.CSSProperties = {
+  display: 'flex', alignItems: 'center', gap: 14,
   background: 'hsl(220 25% 10%)',
   border: '1px solid hsl(210 25% 18%)',
-  borderRadius: 6,
-  padding: '8px 0',
-  fontSize: 22, cursor: 'pointer',
+  borderRadius: 8,
+  padding: '10px 12px',
+  cursor: 'pointer', textAlign: 'left', width: '100%',
   transition: 'all 0.15s',
 };
 
-const avatarBtnSelectedStyle: React.CSSProperties = {
-  background: 'hsl(190 90% 50% / 0.15)',
-  borderColor: 'hsl(190 90% 50%)',
+const uploadPreviewStyle: React.CSSProperties = {
+  position: 'relative', width: 52, height: 52, flexShrink: 0,
+  borderRadius: '50%',
+  border: '2px solid hsl(210 25% 20%)',
+  background: 'hsl(220 25% 13%)',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  color: 'hsl(210 20% 45%)', overflow: 'hidden',
+};
+
+const uploadImgStyle: React.CSSProperties = {
+  width: '100%', height: '100%', objectFit: 'cover',
+};
+
+const uploadSpinnerStyle: React.CSSProperties = {
+  position: 'absolute', inset: 0,
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  background: 'hsla(220 25% 6% / 0.65)', color: 'hsl(38 92% 55%)',
+};
+
+const uploadTextStyle: React.CSSProperties = {
+  display: 'flex', flexDirection: 'column', gap: 2,
+  fontSize: 14, fontWeight: 600, color: 'hsl(0 0% 92%)',
+};
+
+const uploadHintStyle: React.CSSProperties = {
+  fontSize: 11, fontWeight: 400, color: 'rgba(255,255,255,0.45)',
 };
 
 const errorStyle: React.CSSProperties = {
@@ -520,7 +592,7 @@ const stepCounterStyle: React.CSSProperties = {
 
 const nextBtnStyle: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6,
-  background: 'hsl(190 90% 50%)',
+  background: 'hsl(38 92% 55%)',
   border: 'none', borderRadius: 6,
   padding: '10px 18px',
   color: 'hsl(220 25% 8%)',

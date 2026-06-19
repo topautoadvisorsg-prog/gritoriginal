@@ -30,7 +30,11 @@
         "user_manager": "User Manager",
         "audit_log": "Journal d'audit",
         "system_settings": "Paramètres système",
-        "suggested_questions": "Suggested Questions"
+        "suggested_questions": "Suggested Questions",
+        "fight_cards": "Cartes de Combat",
+        "intel_feed": "Flux d'Info",
+        "chat_management": "Gestion du Chat",
+        "jobs_queue": "File de Tâches"
     },
     "header": {
         "search_placeholder": "Rechercher combattants, événements...",

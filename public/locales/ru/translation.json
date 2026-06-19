@@ -30,7 +30,11 @@
         "user_manager": "Менеджер пользователей",
         "audit_log": "Журнал аудита",
         "system_settings": "Системные настройки",
-        "suggested_questions": "Suggested Questions"
+        "suggested_questions": "Suggested Questions",
+        "fight_cards": "Карты боёв",
+        "intel_feed": "Лента данных",
+        "chat_management": "Управление чатом",
+        "jobs_queue": "Очередь задач"
     },
     "header": {
         "search_placeholder": "Поиск бойцов, событий...",

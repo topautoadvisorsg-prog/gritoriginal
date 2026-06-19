@@ -31,7 +31,10 @@
         "audit_log": "Audit Log",
         "system_settings": "System Settings",
         "suggested_questions": "Suggested Questions",
-        "intel_feed": "Intel Feed"
+        "intel_feed": "Intel Feed",
+        "fight_cards": "Fight Cards",
+        "chat_management": "Chat Management",
+        "jobs_queue": "Jobs Queue"
     },
     "header": {
         "search_placeholder": "Search fighters, events...",

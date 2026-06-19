@@ -30,7 +30,11 @@
         "user_manager": "Gerenciador de Usuários",
         "audit_log": "Log de Auditoria",
         "system_settings": "Configurações do Sistema",
-        "suggested_questions": "Suggested Questions"
+        "suggested_questions": "Suggested Questions",
+        "fight_cards": "Cartões de Luta",
+        "intel_feed": "Feed de Inteligência",
+        "chat_management": "Gestão de Chat",
+        "jobs_queue": "Fila de Tarefas"
     },
     "header": {
         "search_placeholder": "Pesquisar lutadores, eventos...",

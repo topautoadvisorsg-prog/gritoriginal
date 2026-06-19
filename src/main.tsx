@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import "flag-icons/css/flag-icons.min.css";
 import './i18n';
 import * as Sentry from "@sentry/react";
 import { ClerkProvider } from "@clerk/clerk-react";

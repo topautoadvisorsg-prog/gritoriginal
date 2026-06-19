@@ -30,7 +30,11 @@
         "user_manager": "사용자 관리",
         "audit_log": "감사 로그",
         "system_settings": "시스템 설정",
-        "suggested_questions": "Suggested Questions"
+        "suggested_questions": "Suggested Questions",
+        "fight_cards": "파이트 카드",
+        "intel_feed": "인텔 피드",
+        "chat_management": "채팅 관리",
+        "jobs_queue": "작업 대기열"
     },
     "header": {
         "search_placeholder": "선수, 이벤트 검색...",

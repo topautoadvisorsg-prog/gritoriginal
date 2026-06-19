@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "@/shared/components/ui/toaster";
 import { Toaster as Sonner } from "@/shared/components/ui/sonner";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
@@ -63,9 +63,20 @@ function AppRoutes() {
   const navigate = useNavigate();
   const { user, isLoading } = useAuth();
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  // Latch onboarding open once a signed-in user without a username appears.
+  // OnboardingFlow persists the username at step 2; without this latch,
+  // `!user.username` would flip to false and unmount the flow mid-way.
+  // The flow stays mounted until the user explicitly finishes or skips.
+  const [onboardingLatched, setOnboardingLatched] = useState(false);
 
   // Request notification permission on first login
   useRequestNotificationPermission();
+
+  useEffect(() => {
+    if (user && !user.username && !onboardingDismissed) {
+      setOnboardingLatched(true);
+    }
+  }, [user, onboardingDismissed]);
 
   // Block all rendering until the session check resolves.
   // Without this guard, the router renders before AuthContext knows if
@@ -96,7 +107,7 @@ function AppRoutes() {
     return <LandingPage />;
   }
 
-  const needsOnboarding = !user.username && !onboardingDismissed;
+  const needsOnboarding = (onboardingLatched || !user.username) && !onboardingDismissed;
 
   return (
     <>
