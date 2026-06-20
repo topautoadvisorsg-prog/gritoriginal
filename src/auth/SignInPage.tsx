@@ -1,5 +1,5 @@
 import { SignIn } from '@clerk/clerk-react';
-import { isClerkEnabled } from './clerkConfig';
+import { clerkAppearance, isClerkEnabled } from './clerkConfig';
 
 export function SignInPage() {
   if (!isClerkEnabled) {
@@ -35,16 +35,7 @@ export function SignInPage() {
       <SignIn
         signUpUrl="/sign-up"
         fallbackRedirectUrl="/dashboard"
-        appearance={{
-          variables: {
-            colorPrimary: 'hsl(38 82% 52%)',
-            colorBackground: 'hsl(220 25% 8%)',
-            colorText: 'hsl(0 0% 95%)',
-            colorInputBackground: 'hsl(220 25% 10%)',
-            colorInputText: 'hsl(0 0% 95%)',
-            borderRadius: '6px',
-          },
-        }}
+        appearance={clerkAppearance}
       />
     </div>
   );

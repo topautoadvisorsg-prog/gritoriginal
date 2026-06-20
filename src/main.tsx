@@ -6,8 +6,7 @@ import "flag-icons/css/flag-icons.min.css";
 import './i18n';
 import * as Sentry from "@sentry/react";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { shadcn } from "@clerk/ui/themes";
-import { clerkPublishableKey, isClerkEnabled } from "./auth/clerkConfig";
+import { clerkAppearance, clerkPublishableKey, isClerkEnabled } from "./auth/clerkConfig";
 
 if (import.meta.env.VITE_SENTRY_DSN) {
   Sentry.init({
@@ -26,7 +25,7 @@ const app = isClerkEnabled ? (
   <ClerkProvider
     publishableKey={clerkPublishableKey}
     afterSignOutUrl="/"
-    appearance={{ theme: shadcn }}
+    appearance={clerkAppearance}
   >
     <App />
   </ClerkProvider>
