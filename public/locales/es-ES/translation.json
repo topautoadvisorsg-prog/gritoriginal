@@ -21,6 +21,7 @@
         "fighter_manager": "Gestor de Luchadores",
         "create_news": "Crear Noticias",
         "tag_manager": "Gestor de Etiquetas",
+        "news_tag_manager": "Gestor de Etiquetas de Noticias",
         "badge_manager": "Gestor de Insignias",
         "raffle_manager": "Gestor de Sorteos",
         "user_verification": "Verificación de Usuario",

@@ -40,14 +40,14 @@ export function SocialProofStrip() {
             <div className="lp-section__inner">
                 <div className="lp-intel-section__heading lp-animate">
                     <span className="lp-intel-section__dot" />
-                    <span className="lp-intel-section__title">{isLiveFeed ? t('intel_section.title') : 'INTELLIGENCE FEED PREVIEW'}</span>
-                    <span className="lp-intel-section__sub">{isLiveFeed ? t('intel_section.sub') : 'Examples of operator-curated signals available in GRIT'}</span>
+                    <span className="lp-intel-section__title">{t(isLiveFeed ? 'intel_section.title' : 'intel_section.preview_title')}</span>
+                    <span className="lp-intel-section__sub">{t(isLiveFeed ? 'intel_section.sub' : 'intel_section.preview_sub')}</span>
                 </div>
             </div>
             <div className="lp-ticker">
                 <div className="lp-ticker__label">
                     <span className="lp-ticker__dot" />
-                    {isLiveFeed ? 'INTEL' : 'EXAMPLE'}
+                    {t(isLiveFeed ? 'intel_section.live_badge' : 'intel_section.preview_badge')}
                 </div>
                 <div className="lp-ticker__track">
                     <div className="lp-ticker__inner">

@@ -21,6 +21,7 @@
         "fighter_manager": "Gestor de Luchadores",
         "create_news": "Crear Noticias",
         "tag_manager": "Gestor de Etiquetas",
+        "news_tag_manager": "Gestor de Etiquetas de Noticias",
         "badge_manager": "Gestor de Insignias",
         "raffle_manager": "Gestor de Sorteos",
         "user_verification": "Verificación de Usuario",
@@ -108,6 +109,15 @@
         "badge_progression": "INSIGNIAS — NINJA → SAMURAI → MASTER → GRANDMASTER → GOAT",
         "stars_this_month": "Estrellas Este Evento"
     },
+    "creator": {
+        "label": "Economia de Creadores",
+        "title": "VENDE TUS PICKS CON TRANSPARENCIA.",
+        "desc": "Los analistas verificados pueden publicar picks gratis o de pago con visibilidad controlada y sesiones protegidas.",
+        "feat1": "Empieza gratis con donaciones, sin requisito de rango.",
+        "feat2": "Los picks de pago se desbloquean con antiguedad, eventos calificados y 2FA.",
+        "feat3": "Sesiones individuales con proteccion de pago y reembolso por ausencia.",
+        "feat4": "La visibilidad de cada pick se aplica en la base de datos."
+    },
     "pricing": {
         "label": "Planes",
         "title": "Elige Tu Nivel",
@@ -132,6 +142,8 @@
         "plus_feat3": "Chat de análisis de peleas con IA",
         "plus_feat4": "Analíticas avanzadas",
         "plus_feat5": "Soporte prioritario",
+        "plus_feat6": "Entrada al sorteo desde el segundo mes",
+        "plus_feat7": "Opcion de comprar tokens para funciones de IA",
         "plus_cta": "Empezar Plus",
         "pro_name": "Pro",
         "pro_price": "$9.99",
@@ -149,13 +161,16 @@
         "compare_feat4": "Subida de slips",
         "compare_feat5": "Visibilidad de insignia en chat",
         "compare_feat6": "Chat IA (Grok, GPT-4o, Claude)",
+        "compare_feat7": "Comprar tokens de IA",
+        "tokens_toggle": "Ver precios de tokens de IA",
         "compare_header": "Característica"
     },
     "footer_cta": {
         "title1": "¿Listo para Entrar en ",
         "title2": "GRIT?",
         "subtitle": "Únete a la liga. Haz picks más inteligentes, escala en los rankings y demuestra tu IQ de combate en el escenario global.",
-        "cta": "Entrar en GRIT"
+        "cta": "Entrar en GRIT",
+        "trust": "Competicion de habilidad, sin apuestas con dinero real."
     },
     "core_features": {
         "label": "FUNCIONES DE LA PLATAFORMA",
@@ -203,6 +218,10 @@
     },
     "intel_section": {
         "title": "FEED DE INTELIGENCIA EN VIVO",
+        "preview_title": "VISTA PREVIA DEL FEED DE INTELIGENCIA",
+        "preview_sub": "Ejemplos de senales seleccionadas por el equipo de GRIT",
+        "live_badge": "INTEL",
+        "preview_badge": "EJEMPLO",
         "sub": "Señales en tiempo real — campamentos, movimiento de cuotas, lesiones"
     }
 }

@@ -14,7 +14,7 @@ import {
   MessageSquare,
   Zap,
 } from 'lucide-react';
-import { userNavItems, adminNavItems } from '@/shared/config/navigation';
+import { userNavItems, adminNavGroups } from '@/shared/config/navigation';
 
 interface SidebarProps {
   isCollapsed?: boolean;
@@ -31,7 +31,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       className={cn(
-        'fixed left-0 top-0 z-40 h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 flex flex-col',
+        'fixed left-0 top-0 z-40 hidden h-screen bg-sidebar border-r border-sidebar-border transition-all duration-300 md:flex md:flex-col',
         isCollapsed ? 'w-16' : 'w-64'
       )}
     >
@@ -94,8 +94,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </span>
               </div>
             )}
-            <div className="space-y-1">
-              {adminNavItems.map((item) => {
+            <div className="space-y-4">
+              {adminNavGroups.map((group) => (
+                <section key={group.label} aria-label={`${group.label} admin tools`}>
+                  {!isCollapsed && <p className="mb-1 px-3 text-[9px] font-black uppercase tracking-[0.18em] text-white/25">{group.label}</p>}
+                  <div className="space-y-1">
+              {group.items.map((item) => {
                 const Icon = item.icon;
                 const isActive = location.pathname.startsWith(item.path);
 
@@ -119,6 +123,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </NavLink>
                 );
               })}
+                  </div>
+                </section>
+              ))}
             </div>
           </>
         )}
@@ -155,22 +162,6 @@ function BottomNav({ isCollapsed, isAdmin }: { isCollapsed: boolean; isAdmin: bo
         <Settings className="h-5 w-5" />
         {!isCollapsed && <span>{t('sidebar.settings')}</span>}
       </Link>
-
-      {/* Admin Fight Cards Link (Admin only) */}
-      {isAdmin && (
-        <Link
-          to="/admin/fight-cards"
-          className={cn(
-            'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
-            'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-            isCollapsed && 'justify-center'
-          )}
-          data-testid="link-admin-fights"
-        >
-          <Shield className="h-5 w-5" />
-          {!isCollapsed && <span>{t('sidebar.fight_management')}</span>}
-        </Link>
-      )}
 
       {/* User Profile */}
       <div className={cn(

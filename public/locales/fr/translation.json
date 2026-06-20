@@ -21,6 +21,7 @@
         "fighter_manager": "Gestion des Combattants",
         "create_news": "Créer une Actualité",
         "tag_manager": "Gestion des Tags",
+        "news_tag_manager": "Tags Actualites",
         "badge_manager": "Gestion des Badges",
         "raffle_manager": "Gestion de la Tombola",
         "user_verification": "Vérification Utilisateur",

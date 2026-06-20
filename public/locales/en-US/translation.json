@@ -21,6 +21,7 @@
         "fighter_manager": "Fighter Manager",
         "create_news": "Create News",
         "tag_manager": "Tag Manager",
+        "news_tag_manager": "News Tag Manager",
         "badge_manager": "Badge Manager",
         "raffle_manager": "Raffle Manager",
         "user_verification": "User Verification",

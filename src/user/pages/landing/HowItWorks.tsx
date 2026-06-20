@@ -17,8 +17,8 @@ function StepVisual01() {
         <rect x="44" y="40" width="28" height="5" rx="2.5" fill="hsl(210 20% 20%)" />
         <rect x="6" y="56" width="22" height="10" rx="5" fill="hsl(150 60% 45% / .15)" stroke="hsl(150 60% 50% / .4)" strokeWidth="0.5" />
         <rect x="32" y="56" width="22" height="10" rx="5" fill="hsl(354 90% 52% / .1)" stroke="hsl(354 90% 52% / .3)" strokeWidth="0.5" />
-        <text x="17" y="64" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="5" fontFamily="'Inter', sans-serif">🥷 NINJA</text>
-        <text x="43" y="64" textAnchor="middle" fill="hsl(354 90% 62%)" fontSize="5" fontFamily="'Inter', sans-serif">USA 🇺🇸</text>
+        <text x="17" y="64" textAnchor="middle" fill="hsl(150 60% 55%)" fontSize="5" fontFamily="'Inter', sans-serif">NINJA</text>
+        <text x="43" y="64" textAnchor="middle" fill="hsl(354 90% 62%)" fontSize="5" fontFamily="'Inter', sans-serif">USA</text>
       </svg>
     </div>
   );
@@ -41,7 +41,7 @@ function StepVisual02() {
         <text x="18" y="52" fill="hsl(210 20% 50%)" fontSize="6" fontFamily="'Inter', sans-serif">CONFIDENCE</text>
         <rect x="6" y="56" width="88" height="4" rx="2" fill="hsl(210 20% 18%)" />
         <rect x="6" y="56" width="64" height="4" rx="2" fill="hsl(354 90% 52%)" />
-        <text x="100" y="60" fill="hsl(354 90% 62%)" fontSize="5.5" fontFamily="'Inter', sans-serif">4u</text>
+        <text x="100" y="60" fill="hsl(354 90% 62%)" fontSize="5.5" fontFamily="'Inter', sans-serif">LOCKED</text>
       </svg>
     </div>
   );

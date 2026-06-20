@@ -208,7 +208,7 @@ function AddFightPanel({ fighters, fightersLoading, onConfirm, onCancel, default
   };
 
   return (
-    <div className="p-3 rounded-lg border border-cyan-500/30 bg-cyan-500/5 space-y-3">
+    <div className="p-3 rounded-lg border border-[#E8A020]/30 bg-[#E8A020]/5 space-y-3">
       <div className="grid grid-cols-2 gap-2">
         {/* Fighter 1 */}
         <div className="space-y-1">
@@ -341,8 +341,8 @@ function FightRow({
         <span className="text-xs text-muted-foreground flex-shrink-0">{fight.rounds}R</span>
       </div>
       <div className="flex items-center gap-1 flex-shrink-0">
-        <Clock className="h-3 w-3 text-cyan-400" />
-        <span className="text-xs text-cyan-300 font-mono w-20">{scheduledTime}</span>
+        <Clock className="h-3 w-3 text-[#E8A020]" />
+        <span className="text-xs text-[#E8A020] font-mono w-20">{scheduledTime}</span>
         <button
           onClick={() => onOffsetChange(fight.id, -5)}
           className="text-muted-foreground hover:text-foreground text-xs px-0.5 rounded"
@@ -650,7 +650,7 @@ export const CreateEvent = () => {
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Calendar className="h-4 w-4 text-cyan-400" />
+            <Calendar className="h-4 w-4 text-[#E8A020]" />
             Event Details
           </CardTitle>
           <p className="text-xs text-muted-foreground mt-2">
@@ -779,7 +779,7 @@ export const CreateEvent = () => {
 
       {/* Pre-Prelims Section */}
       <CardSectionPanel
-        sectionId="pre-prelims" label="Pre-Prelims" color="border-l-purple-500/60"
+        sectionId="pre-prelims" label="Pre-Prelims" color="border-l-white/30"
         fights={prePrelimFights} times={schedule.prePrelimTimes}
         startTime={prePrelimStartTime} onStartTimeChange={setPrePrelimStartTime}
         optional={true}
@@ -795,7 +795,7 @@ export const CreateEvent = () => {
 
       {/* Prelims Section */}
       <CardSectionPanel
-        sectionId="prelims" label="Prelims" color="border-l-blue-500/60"
+        sectionId="prelims" label="Prelims" color="border-l-[#C4172C]/60"
         fights={prelimFights} times={schedule.prelimTimes}
         startTime={prelimStartTime} onStartTimeChange={setPrelimStartTime}
         addingHere={addingTo === 'prelims'}
@@ -810,7 +810,7 @@ export const CreateEvent = () => {
 
       {/* Main Card Section */}
       <CardSectionPanel
-        sectionId="main-card" label="Main Card" color="border-l-cyan-500/60"
+        sectionId="main-card" label="Main Card" color="border-l-[#E8A020]/60"
         fights={mainCardFights} times={schedule.mainCardTimes}
         startTime={mainCardStartTime} onStartTimeChange={setMainCardStartTime}
         addingHere={addingTo === 'main-card'}

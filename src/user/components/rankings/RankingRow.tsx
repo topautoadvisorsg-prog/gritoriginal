@@ -3,7 +3,7 @@ import { CountryFlag } from '@/shared/components/CountryFlag';
 import { cn } from '@/shared/lib/utils';
 import { RankBadge, RankTier } from './RankBadge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/components/ui/avatar';
-import { Flame } from 'lucide-react';
+import { Crown, Flame } from 'lucide-react';
 
 export interface RankingUser {
   id: string;
@@ -89,7 +89,7 @@ export const RankingRow: React.FC<RankingRowProps> = ({
               </div>
             )}
             <CountryFlag country={user.country} className="text-xl" />
-            {isNumberOne && <span className="text-[#E8A020] text-sm">👑</span>}
+            {isNumberOne && <Crown className="h-4 w-4 text-[#E8A020]" aria-label="First place" />}
           </div>
         </div>
       </div>

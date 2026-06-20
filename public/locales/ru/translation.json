@@ -21,6 +21,7 @@
         "fighter_manager": "Менеджер Бойцов",
         "create_news": "Создать Новость",
         "tag_manager": "Менеджер Тегов",
+        "news_tag_manager": "Теги Новостей",
         "badge_manager": "Менеджер Значков",
         "raffle_manager": "Менеджер Розыгрышей",
         "user_verification": "Верификация",

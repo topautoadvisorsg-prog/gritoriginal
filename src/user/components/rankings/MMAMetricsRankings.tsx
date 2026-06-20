@@ -72,9 +72,10 @@ const mapGlobalRankings = (entries: GlobalLeaderboardEntry[]): RankingUser[] => 
         avatarUrl: entry.avatarUrl || undefined,
         rank: entry.rank,
         tier: determineTier(entry.rank),
-        score: entry.totalPoints,
-        scoreLabel: 'Points',
-        scoreIsUnits: false,
+        // totalPoints is legacy storage for net-unit hundredths.
+        score: entry.totalPoints / 100,
+        scoreLabel: 'Net Units',
+        scoreIsUnits: true,
         country: entry.country,
     }));
 };
@@ -102,6 +103,8 @@ export const MMAMetricsRankings: React.FC = () => {
     const rankings = leaderboardType === 'global'
         ? mapGlobalRankings(rawData?.leaderboard || [])
         : mapSnapshotRankings(rawData?.rankings || []);
+    const currentUserRanking = rankings.find((entry) => entry.id === authUser?.id);
+    const leaderboardRankings = rankings.filter((entry) => entry.id !== authUser?.id);
 
     const tabs: { id: LeaderboardType; label: string }[] = [
         { id: 'global', label: 'Global All-Time' },
@@ -175,15 +178,24 @@ export const MMAMetricsRankings: React.FC = () => {
                             <div className="flex-1 min-w-[250px]">USER</div>
                             <div className="w-[120px] text-center">TIER</div>
                             <div className="w-[140px] text-center">
-                                {leaderboardType === 'global' ? 'CAREER SCORE' : 'NET UNITS'}
+                                NET UNITS
                             </div>
                         </div>
+
+                        {currentUserRanking && (
+                            <section className="mb-8" aria-label="Your leaderboard position">
+                                <p className="mb-2 px-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#E8A020]">
+                                    Your Position
+                                </p>
+                                <RankingRow user={currentUserRanking} isSelf disableAnimation />
+                            </section>
+                        )}
 
                         {/* Rows */}
                         <div className="flex flex-col space-y-3">
                     {/* Rankings stay in canonical rank order; the current user is highlighted in place. */}
                     <AnimatePresence mode="popLayout">
-                        {rankings.map((user, index) => (
+                        {leaderboardRankings.map((user, index) => (
                             <motion.div
                                 key={user.id}
                                 layout

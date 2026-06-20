@@ -13,14 +13,14 @@ const MODELS = [
     {
         icon: '🤖', name: 'GPT-4o',
         pick: 'Makhachev', pickColor: 'hsl(355 85% 65%)',
-        confidence: '88%', units: '4u',
+        confidence: '88%',
         confClass: 'lp-model-card__confidence--high',
         confStyle: {}, cardStyle: {},
     },
     {
         icon: '🚀', name: 'Grok 3',
         pick: 'Makhachev', pickColor: 'hsl(355 85% 65%)',
-        confidence: '94%', units: '5u',
+        confidence: '94%',
         confClass: 'lp-model-card__confidence--high',
         confStyle: { color: TEAL, background: TEAL_BG },
         cardStyle: { borderColor: TEAL_BORDER, boxShadow: TEAL_SHADOW },
@@ -28,7 +28,7 @@ const MODELS = [
     {
         icon: '🧠', name: 'Claude 3.5',
         pick: 'Oliveira', pickColor: 'hsl(45 90% 60%)',
-        confidence: '65%', units: '1u',
+        confidence: '65%',
         confClass: 'lp-model-card__confidence--med',
         confStyle: {}, cardStyle: {},
     },
@@ -72,10 +72,6 @@ export function AICompetitionBanner() {
                                     <span className={`lp-model-card__confidence ${m.confClass}`}
                                         style={m.confStyle}>
                                         <Zap size={11} /> {m.confidence}
-                                    </span>
-                                    <span className="lp-model-card__label"
-                                        style={m.name === 'Grok 3' ? { color: TEAL } : {}}>
-                                        {m.units}
                                     </span>
                                 </div>
                             </div>

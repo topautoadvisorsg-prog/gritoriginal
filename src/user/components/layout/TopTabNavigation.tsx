@@ -26,7 +26,8 @@ export const TopTabNavigation: React.FC = () => {
             {/* Left Scroll Arrow (Desktop) */}
             <button
                 onClick={() => handleScroll('left')}
-                className="hidden md:flex absolute left-0 z-10 w-12 h-full items-center justify-center bg-gradient-to-r from-background via-background/90 to-transparent text-white/30 hover:text-white/70 transition-colors"
+                className="flex absolute left-0 z-10 w-9 md:w-12 h-full items-center justify-center bg-gradient-to-r from-background via-background/90 to-transparent text-white/40 hover:text-white/70 transition-colors"
+                aria-label="Scroll navigation left"
             >
                 <ChevronLeft className="w-5 h-5 ml-2" />
             </button>
@@ -69,7 +70,8 @@ export const TopTabNavigation: React.FC = () => {
             {/* Right Scroll Arrow (Desktop) */}
             <button
                 onClick={() => handleScroll('right')}
-                className="hidden md:flex absolute right-0 z-10 w-12 h-full items-center justify-center bg-gradient-to-l from-background via-background/90 to-transparent text-white/30 hover:text-white/70 transition-colors"
+                className="flex absolute right-0 z-10 w-9 md:w-12 h-full items-center justify-center bg-gradient-to-l from-background via-background/90 to-transparent text-white/40 hover:text-white/70 transition-colors"
+                aria-label="Scroll navigation right"
             >
                 <ChevronRight className="w-5 h-5 mr-2" />
             </button>

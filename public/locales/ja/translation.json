@@ -21,6 +21,7 @@
         "fighter_manager": "選手管理",
         "create_news": "ニュース作成",
         "tag_manager": "タグ管理",
+        "news_tag_manager": "ニュースタグ管理",
         "badge_manager": "バッジ管理",
         "raffle_manager": "抽選管理",
         "user_verification": "ユーザー確認",

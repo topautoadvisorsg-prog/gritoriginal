@@ -22,6 +22,7 @@
         "fighter_manager": "Fighter Manager",
         "create_news": "Create News",
         "tag_manager": "Tag Manager",
+        "news_tag_manager": "News Tag Manager",
         "badge_manager": "Badge Manager",
         "raffle_manager": "Raffle Manager",
         "user_verification": "User Verification",
@@ -242,6 +243,10 @@
     },
     "intel_section": {
         "title": "Intelligence Alerts (Challenger)",
+        "preview_title": "INTELLIGENCE FEED PREVIEW",
+        "preview_sub": "Examples of operator-curated signals available in GRIT",
+        "live_badge": "INTEL",
+        "preview_badge": "EXAMPLE",
         "sub": "Injuries, weight cuts, camp changes, sharp money, line moves — admin-curated signals"
     }
 }

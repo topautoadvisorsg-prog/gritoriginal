@@ -21,6 +21,7 @@
         "fighter_manager": "Gerenciar Lutadores",
         "create_news": "Criar Notícia",
         "tag_manager": "Gerenciar Tags",
+        "news_tag_manager": "Tags de Noticias",
         "badge_manager": "Gerenciar Emblemas",
         "raffle_manager": "Gerenciar Sorteios",
         "user_verification": "Verificação de Usuário",

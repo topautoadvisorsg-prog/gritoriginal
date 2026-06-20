@@ -70,6 +70,13 @@ export const adminNavItems: NavItem[] = [
     { id: 'admin-jobs', labelKey: 'sidebar.jobs_queue', icon: Activity, path: '/admin/admin-jobs' },
 ];
 
+export const adminNavGroups = [
+    { label: 'Events', ids: ['create-event', 'event-editor', 'fight-cards', 'admin-odds'] },
+    { label: 'Content', ids: ['import', 'fighter-manager', 'create-news', 'admin-tags', 'admin-news-tags', 'admin-intel-feed'] },
+    { label: 'Community', ids: ['admin-users', 'admin-verification', 'admin-badges', 'admin-raffle', 'admin-chat'] },
+    { label: 'Operations', ids: ['admin-jobs', 'admin-audit', 'admin-settings', 'admin-suggested-questions'] },
+].map((group) => ({ ...group, items: group.ids.map((id) => adminNavItems.find((item) => item.id === id)!).filter(Boolean) }));
+
 // Tab Titles Helper
 export const tabTitles: Record<string, { title: string; subtitle: string }> = {
     // User tabs

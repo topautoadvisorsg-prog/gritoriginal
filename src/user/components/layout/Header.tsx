@@ -26,7 +26,7 @@ export const Header: React.FC<HeaderProps> = ({
     <header
       className={cn(
         'fixed top-0 right-0 z-30 h-16 bg-background/80 backdrop-blur-xl border-b border-border transition-all duration-300',
-        isAdmin ? (isSidebarCollapsed ? 'left-16' : 'left-64') : 'left-0'
+        isAdmin ? (isSidebarCollapsed ? 'left-0 md:left-16' : 'left-0 md:left-64') : 'left-0'
       )}
     >
       <div className="flex h-full items-center justify-between px-6">
@@ -36,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               onClick={onToggleSidebar}
               aria-label={isSidebarCollapsed ? 'Open sidebar' : 'Close sidebar'}
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
+              className="hidden p-2 rounded-lg hover:bg-muted transition-colors md:block"
             >
               {isSidebarCollapsed ? (
                 <Menu className="h-5 w-5 text-muted-foreground" />

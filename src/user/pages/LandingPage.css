@@ -2392,12 +2392,16 @@ a:focus-visible,
   }
 
   .lp-nav__cta {
-    display: none;
+    display: inline-flex;
+    width: auto;
+    min-height: 38px;
+    padding: 9px 13px;
+    font-size: .72rem;
+    white-space: nowrap;
   }
 
   .lp-nav__login {
-    white-space: nowrap;
-    font-size: .82rem;
+    display: none;
   }
 
   .lp-showcase {
