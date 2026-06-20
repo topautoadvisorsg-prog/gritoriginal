@@ -198,7 +198,9 @@ async function startUserServer() {
         });
     }
 
-    const PORT = process.env.PORT || process.env.USER_PORT || 3001;
+    const PORT = process.env.NODE_ENV === 'production'
+      ? (process.env.PORT || process.env.USER_PORT || 3001)
+      : (process.env.USER_PORT || 3001);
     const server = app.listen(PORT, '0.0.0.0', () => {
         logger.info(`User API server running on port ${PORT}`);
     });
