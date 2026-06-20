@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { CountryFlag } from '@/shared/components/CountryFlag';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/shared/hooks/use-auth';
-import { Send, Loader2, Globe, Flag, Lock, Pin, Instagram, Twitter, Smile, ImageIcon, Trophy, X, MessageCircle } from 'lucide-react';
+import { Send, Loader2, Globe, Flag, Lock, Pin, Instagram, Twitter, Smile, ImageIcon, Trophy, X, MessageCircle, Radio, Zap } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSocket } from '@/shared/hooks/use-socket';
 import { SlipPicker } from './SlipPicker';
 import { SlipWall } from './SlipWall';
+import { useFighters } from '@/shared/hooks/useFighters';
+import type { Event, EventFight, Fighter } from '@/shared/types/fighter';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -320,6 +322,70 @@ const RecentDonationRow: React.FC<{ donor: DonorEntry; index: number }> = ({ don
     </div>
 );
 
+const FighterStage: React.FC<{ fighter?: Fighter; side: 'left' | 'right' }> = ({ fighter, side }) => {
+    const [imageFailed, setImageFailed] = useState(false);
+    const record = fighter?.record;
+
+    return (
+        <div className={cn('relative flex-1 min-w-0 h-44 md:h-52 overflow-hidden', side === 'right' && 'text-right')}>
+            {fighter?.bodyImageUrl && !imageFailed && (
+                <img
+                    src={fighter.bodyImageUrl}
+                    alt={`${fighter.firstName} ${fighter.lastName}`}
+                    onError={() => setImageFailed(true)}
+                    className={cn(
+                        'absolute inset-0 w-full h-full object-contain object-bottom drop-shadow-[0_14px_20px_rgba(0,0,0,0.8)]',
+                        side === 'right' && 'scale-x-[-1]'
+                    )}
+                />
+            )}
+            <div className={cn(
+                'absolute inset-0',
+                side === 'left'
+                    ? 'bg-gradient-to-r from-black/20 via-transparent to-black/80'
+                    : 'bg-gradient-to-l from-black/20 via-transparent to-black/80'
+            )} />
+            <div className={cn('absolute bottom-4 z-10 max-w-[75%]', side === 'left' ? 'left-4' : 'right-4')}>
+                <p className="text-[9px] font-black uppercase tracking-[0.22em] text-white/45">
+                    {record ? `${record.wins}-${record.losses}-${record.draws}` : 'Record unavailable'}
+                </p>
+                <p className="text-xs font-bold uppercase tracking-widest text-white/70">{fighter?.firstName || 'TBD'}</p>
+                <p className="truncate text-xl md:text-2xl font-black uppercase leading-none text-white">
+                    {fighter?.lastName || ''}
+                </p>
+            </div>
+        </div>
+    );
+};
+
+const LiveBoutStage: React.FC<{
+    event: Event;
+    fight: EventFight;
+    fighter1?: Fighter;
+    fighter2?: Fighter;
+}> = ({ event, fight, fighter1, fighter2 }) => (
+    <section
+        aria-label={`Live bout: ${fighter1?.lastName || 'TBD'} versus ${fighter2?.lastName || 'TBD'}`}
+        className="relative overflow-hidden border-b border-red-500/25 bg-black"
+    >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(185,28,28,0.22),transparent_55%)]" />
+        <div className="relative flex items-center">
+            <FighterStage fighter={fighter1} side="left" />
+            <div className="relative z-20 -mx-6 flex w-28 flex-shrink-0 flex-col items-center text-center md:w-40">
+                <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-[9px] font-black uppercase tracking-[0.22em] text-red-400">
+                    <Radio className="h-3 w-3 animate-pulse" /> Live Bout
+                </div>
+                <p className="max-w-40 truncate text-[9px] font-bold uppercase tracking-wider text-white/40">{event.name}</p>
+                <p className="my-1 text-2xl font-black italic text-[#E8A020]">VS</p>
+                <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/60">
+                    {fight.isTitleFight ? 'Title Fight' : fight.weightClass}
+                </p>
+            </div>
+            <FighterStage fighter={fighter2} side="right" />
+        </div>
+    </section>
+);
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 async function fetchWithAuth(url: string, options: RequestInit = {}) {
@@ -332,6 +398,7 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
 
 export const ChatHub: React.FC = () => {
     const { user } = useAuth();
+    const { fighterMap } = useFighters();
     const queryClient = useQueryClient();
     const [activeChatType, setActiveChatType] = useState<ChatType>('global');
     const [chatView, setChatView] = useState<ChatView>('chat');
@@ -342,6 +409,35 @@ export const ChatHub: React.FC = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const userCountry = (user as any)?.country;
+
+    const { data: events = [] } = useQuery<Event[]>({
+        queryKey: ['/api/events'],
+        queryFn: () => fetch('/api/events').then(r => {
+            if (!r.ok) throw new Error('Failed to load events');
+            return r.json();
+        }),
+        staleTime: 30_000,
+    });
+
+    const liveEventSummary = useMemo(
+        () => events.find(event => String(event.status).toUpperCase() === 'LIVE'),
+        [events]
+    );
+
+    const { data: liveEvent } = useQuery<Event>({
+        queryKey: ['/api/events', liveEventSummary?.id],
+        queryFn: () => fetch(`/api/events/${liveEventSummary!.id}`).then(r => {
+            if (!r.ok) throw new Error('Failed to load live event');
+            return r.json();
+        }),
+        enabled: Boolean(liveEventSummary?.id),
+        refetchInterval: 30_000,
+    });
+
+    const liveFight = useMemo(
+        () => liveEvent?.fights?.find(fight => String(fight.status).toUpperCase() === 'LIVE'),
+        [liveEvent]
+    );
 
     // Tier check: Challenger = premium tier or active subscription
     const isChallenger = (user as any)?.tier === 'premium' || (user as any)?.subscriptionStatus === 'active';
@@ -500,86 +596,61 @@ export const ChatHub: React.FC = () => {
             className="flex flex-col w-full select-none"
             style={{ background: '#080808', minHeight: '100vh' }}
         >
-            {/* ── Full-Width Header ─────────────────────────── */}
-            <div
-                className="w-full px-6 py-4 flex flex-col items-center text-center border-b flex-shrink-0"
-                style={{ borderColor: 'rgba(232,160,32,0.15)', background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)' }}
-            >
-                <h1
-                    className="font-black uppercase tracking-tight leading-none"
-                    style={{ fontSize: 'clamp(18px, 4vw, 28px)', color: GOLD, textShadow: `0 0 30px ${GOLD}55` }}
-                >
-                    GRIT Live Chat
-                </h1>
-                <div className="flex items-center gap-4 mt-1.5 flex-wrap justify-center">
-                    <div className="flex items-center gap-1.5">
-                        <span className={cn('w-2 h-2 rounded-full', isChatOpen ? 'bg-green-400 animate-pulse' : 'bg-red-400')} />
-                        <span className={cn('text-[11px] font-black uppercase tracking-widest', isChatOpen ? 'text-green-400' : 'text-red-400')}>
-                            {isChatOpen ? 'LIVE' : 'CLOSED'}
-                        </span>
+            {liveEvent && liveFight && (
+                <LiveBoutStage
+                    event={liveEvent}
+                    fight={liveFight}
+                    fighter1={fighterMap.get(liveFight.fighter1Id)}
+                    fighter2={fighterMap.get(liveFight.fighter2Id)}
+                />
+            )}
+
+            {/* Full-width room command bar */}
+            <div className="flex w-full flex-shrink-0 flex-col gap-3 border-b border-[#E8A020]/15 bg-black/70 px-4 py-3 backdrop-blur-xl md:flex-row md:items-center md:justify-between md:px-6">
+                <div className="flex min-w-0 items-center gap-3">
+                    <div>
+                        <h1 className="text-base font-black uppercase leading-none tracking-tight text-[#E8A020] md:text-xl">GRIT Fight Chat</h1>
+                        <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.18em] text-white/35">
+                            {isChatOpen ? 'Talk the card. Back your picks.' : 'Chat opens during live events.'}
+                        </p>
                     </div>
-                    <span className="text-white/30 text-[11px] font-semibold uppercase tracking-wider">
-                        {isChatOpen ? 'Global & country rooms' : 'Opens during live events'}
+                    <span className={cn(
+                        'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-widest',
+                        isChatOpen ? 'border-green-500/25 bg-green-500/10 text-green-400' : 'border-red-500/25 bg-red-500/10 text-red-400'
+                    )}>
+                        <span className={cn('h-1.5 w-1.5 rounded-full', isChatOpen ? 'bg-green-400 animate-pulse' : 'bg-red-400')} />
+                        {isChatOpen ? 'Open' : 'Closed'}
                     </span>
                 </div>
 
-                {/* View Toggle: Chat / Slip Wall */}
-                <div className="flex gap-1.5 mt-3">
-                    {(['chat', 'wall'] as ChatView[]).map(view => {
-                        const isActive = chatView === view;
-                        return (
-                            <button
-                                key={view}
-                                onClick={() => setChatView(view)}
-                                className={cn(
-                                    'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border transition-all',
-                                    isActive
-                                        ? 'border-yellow-500/50 text-yellow-400 bg-yellow-500/10'
-                                        : 'border-white/10 text-white/40 hover:border-white/20 hover:text-white/60'
-                                )}
-                            >
-                                {view === 'chat' ? <Globe className="w-3 h-3" /> : <Trophy className="w-3 h-3" />}
-                                {view === 'chat' ? 'Chat' : 'Slip Wall'}
-                            </button>
-                        );
-                    })}
-                </div>
-
-                {/* Chat Type Tabs (only visible in chat view) */}
-                {chatView === 'chat' && (
-                    <div className="flex gap-2 mt-2">
-                        {(['global', 'country'] as ChatType[]).map(tab => {
-                            const isActive = activeChatType === tab;
-                            const isDisabled = tab === 'country' && !userCountry;
-                            return (
-                                <button
-                                    key={tab}
-                                    onClick={() => !isDisabled && setActiveChatType(tab)}
-                                    disabled={isDisabled}
-                                    className={cn(
-                                        'flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest border transition-all',
-                                        isActive
-                                            ? 'border-yellow-500/30 text-yellow-400/80 bg-yellow-500/05'
-                                            : isDisabled
-                                                ? 'border-white/5 text-white/20 cursor-not-allowed'
-                                                : 'border-white/08 text-white/30 hover:border-white/15 hover:text-white/50'
-                                    )}
-                                >
-                                    {tab === 'global' ? <Globe className="w-3 h-3" /> : <Flag className="w-3 h-3" />}
-                                    {tab}
-                                    {isDisabled && <Lock className="w-2.5 h-2.5" />}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
+                <nav aria-label="Chat rooms" className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-white/10 bg-white/[0.025] p-1">
+                    <button
+                        onClick={() => { setChatView('chat'); setActiveChatType('global'); }}
+                        className={cn('flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors', chatView === 'chat' && activeChatType === 'global' ? 'bg-[#E8A020] text-black' : 'text-white/45 hover:text-white')}
+                    >
+                        <Globe className="h-3.5 w-3.5" /> Global
+                    </button>
+                    <button
+                        onClick={() => { if (userCountry) { setChatView('chat'); setActiveChatType('country'); } }}
+                        disabled={!userCountry}
+                        className={cn('flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors', chatView === 'chat' && activeChatType === 'country' ? 'bg-[#E8A020] text-black' : !userCountry ? 'cursor-not-allowed text-white/20' : 'text-white/45 hover:text-white')}
+                    >
+                        <Flag className="h-3.5 w-3.5" /> Country {!userCountry && <Lock className="h-2.5 w-2.5" />}
+                    </button>
+                    <button
+                        onClick={() => setChatView('wall')}
+                        className={cn('flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors', chatView === 'wall' ? 'bg-[#E8A020] text-black' : 'text-white/45 hover:text-white')}
+                    >
+                        <Trophy className="h-3.5 w-3.5" /> Slip Wall
+                    </button>
+                </nav>
             </div>
 
             {/* ── Body: Two Panel Split ─────────────────────── */}
-            <div className="flex flex-1 overflow-hidden" style={{ height: 'calc(100vh - 200px)', minHeight: 400 }}>
+            <div className="flex flex-1 flex-col overflow-hidden lg:flex-row" style={{ minHeight: 440 }}>
 
                 {/* ── Left Panel (70%): Chat Feed or Slip Wall ─ */}
-                <div className="flex flex-col flex-[7] border-r overflow-hidden" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
+                <div className="flex min-h-[520px] flex-col overflow-hidden border-white/5 lg:min-h-0 lg:flex-[7] lg:border-r">
 
                     {chatView === 'wall' ? (
                         <SlipWall />
@@ -708,12 +779,33 @@ export const ChatHub: React.FC = () => {
                     )}
                 </div>
 
-                {/* ── Right Panel (30%): Leaderboard ───────── */}
-                <div className="flex-[3] flex flex-col overflow-hidden min-w-[200px] max-w-[280px]">
+                {/* Right panel: GRIT Boosts */}
+                <aside className="flex w-full flex-col overflow-hidden border-t border-white/5 lg:w-[340px] lg:flex-none lg:border-t-0">
+
+                    <div className="relative overflow-hidden border-b border-red-500/20 bg-gradient-to-br from-red-950/70 via-black to-amber-950/30 p-5">
+                        <div className="absolute -right-8 -top-10 h-28 w-28 rounded-full bg-red-600/15 blur-2xl" />
+                        <div className="relative">
+                            <div className="mb-3 flex items-center justify-between">
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E8A020]/30 bg-[#E8A020]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] text-[#E8A020]">
+                                    <Zap className="h-3 w-3" /> GRIT Boosts
+                                </span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-white/25">Coming soon</span>
+                            </div>
+                            <h2 className="text-xl font-black uppercase leading-none text-white">Fuel the Fight</h2>
+                            <p className="mt-2 text-xs leading-relaxed text-white/45">
+                                Boost a message during fight night and put your take above the noise.
+                            </p>
+                            <div className="mt-4 flex items-center gap-2 border-t border-white/5 pt-3 text-[9px] font-bold uppercase tracking-wider text-white/30">
+                                <Pin className="h-3 w-3 text-[#E8A020]" /> Highlighted in chat
+                                <span className="text-white/10">•</span>
+                                <Trophy className="h-3 w-3 text-[#E8A020]" /> Supporter rank
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Top Support */}
                     <div className="flex-shrink-0 p-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.05)' }}>
-                        <h3 className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: GOLD }}>TOP SUPPORT</h3>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: GOLD }}>FIGHT NIGHT SUPPORTERS</h3>
 
                         {topDonors.length > 0 ? (
                             <>
@@ -725,24 +817,24 @@ export const ChatHub: React.FC = () => {
                                 </div>
                             </>
                         ) : (
-                            <p className="text-center text-[11px] text-white/30 py-4">No supporters yet — be the first.</p>
+                            <p className="text-center text-[11px] text-white/30 py-4">Supporter rankings appear when GRIT Boosts go live.</p>
                         )}
                     </div>
 
                     {/* Recent Donations */}
                     <div className="flex flex-col flex-1 overflow-hidden p-3">
-                        <h3 className="text-[10px] font-black uppercase tracking-widest mb-2 flex-shrink-0" style={{ color: GOLD }}>RECENT DONATIONS</h3>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest mb-2 flex-shrink-0" style={{ color: GOLD }}>RECENT BOOSTS</h3>
                         <div className="flex-1 overflow-y-auto space-y-0.5" style={{ scrollbarWidth: 'thin', scrollbarColor: 'rgba(255,255,255,0.05) transparent' }}>
                             {recentDonations.length > 0 ? (
                                 recentDonations.map((d, i) => (
                                     <RecentDonationRow key={i} donor={d} index={i} />
                                 ))
                             ) : (
-                                <p className="text-center text-[11px] text-white/30 py-4">No donations yet.</p>
+                                <p className="text-center text-[11px] text-white/30 py-4">No boosts yet.</p>
                             )}
                         </div>
                     </div>
-                </div>
+                </aside>
             </div>
         </div>
     );
