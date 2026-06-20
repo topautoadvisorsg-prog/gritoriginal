@@ -61,7 +61,7 @@ const queryClient = new QueryClient({
 
 function AppRoutes() {
   const navigate = useNavigate();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, needsOnboarding: profileNeedsOnboarding } = useAuth();
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
   // Latch onboarding open once a signed-in user without a username appears.
   // OnboardingFlow persists the username at step 2; without this latch,
@@ -73,10 +73,10 @@ function AppRoutes() {
   useRequestNotificationPermission();
 
   useEffect(() => {
-    if (user && !user.username && !onboardingDismissed) {
+    if (profileNeedsOnboarding && !onboardingDismissed) {
       setOnboardingLatched(true);
     }
-  }, [user, onboardingDismissed]);
+  }, [profileNeedsOnboarding, onboardingDismissed]);
 
   // Block all rendering until the session check resolves.
   // Without this guard, the router renders before AuthContext knows if
@@ -118,7 +118,7 @@ function AppRoutes() {
     );
   }
 
-  const needsOnboarding = (onboardingLatched || !user.username) && !onboardingDismissed;
+  const needsOnboarding = (onboardingLatched || profileNeedsOnboarding) && !onboardingDismissed;
 
   return (
     <>

@@ -20,6 +20,7 @@ import { useAuth as useClerkAuth, useUser, useClerk } from '@clerk/clerk-react';
 import { useQuery } from '@tanstack/react-query';
 import type { AuthUser } from '../../../shared/models/auth';
 import { isClerkEnabled } from '@/auth/clerkConfig';
+import { shouldStartOnboarding } from './auth-state';
 
 const fixtureUser = {
   id: 'audit-user-03', email: 'long.audit.address@example.test', firstName: 'Jordan', lastName: 'Rivera',
@@ -33,8 +34,11 @@ const fixtureUser = {
   createdAt: null, updatedAt: null, permissions: [],
 } satisfies AuthUser;
 
-async function fetchLocalUser(): Promise<AuthUser | null> {
-  const res = await fetch('/api/me', { credentials: 'include' });
+async function fetchLocalUser(token: string | null): Promise<AuthUser | null> {
+  const res = await fetch('/api/me', {
+    credentials: 'include',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
   if (res.status === 401) return null;
   if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`);
   return res.json();
@@ -43,7 +47,7 @@ async function fetchLocalUser(): Promise<AuthUser | null> {
 export function useAuth() {
   if (import.meta.env.UI_AUDIT_FIXTURES === '1') {
     return { user: fixtureUser, clerkUser: null, isLoading: false, isAuthenticated: true,
-      login: () => undefined, logout: () => undefined, isLoggingOut: false };
+      needsOnboarding: false, login: () => undefined, logout: () => undefined, isLoggingOut: false };
   }
 
   if (!isClerkEnabled) {
@@ -52,20 +56,21 @@ export function useAuth() {
       clerkUser: null,
       isLoading: false,
       isAuthenticated: false,
+      needsOnboarding: false,
       login: () => undefined,
       logout: () => undefined,
       isLoggingOut: false,
     };
   }
 
-  const { isLoaded: clerkLoaded, isSignedIn } = useClerkAuth();
+  const { isLoaded: clerkLoaded, isSignedIn, getToken } = useClerkAuth();
   const { user: clerkUser } = useUser();
   const clerk = useClerk();
 
   // Only fetch local record when Clerk confirms signed in.
-  const { data: localUser, isLoading: localLoading } = useQuery<AuthUser | null>({
+  const { data: localUser, isLoading: localLoading, isSuccess: localProfileLoaded } = useQuery<AuthUser | null>({
     queryKey: ['/api/me', clerkUser?.id],
-    queryFn: fetchLocalUser,
+    queryFn: async () => fetchLocalUser(await getToken()),
     enabled: !!isSignedIn,
     retry: false,
     staleTime: 30_000,
@@ -118,6 +123,7 @@ export function useAuth() {
     clerkUser: clerkUser ?? null,
     isLoading,
     isAuthenticated: !!isSignedIn,
+    needsOnboarding: shouldStartOnboarding(localUser, localProfileLoaded),
     login: () => clerk.openSignIn(),
     logout: () => clerk.signOut(),
     isLoggingOut: false,
