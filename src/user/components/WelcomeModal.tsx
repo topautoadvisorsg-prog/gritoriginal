@@ -140,7 +140,7 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
                     <div className="welcome-modal__field">
                         <label className="welcome-modal__label">Country</label>
                         <Select value={country} onValueChange={setCountry}>
-                            <SelectTrigger className="welcome-modal__select">
+                            <SelectTrigger className="welcome-modal__select" aria-label="Country" data-testid="welcome-country-select">
                                 <SelectValue placeholder="Select your country" />
                             </SelectTrigger>
                             <SelectContent>

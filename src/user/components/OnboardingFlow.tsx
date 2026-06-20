@@ -239,7 +239,7 @@ function StepProfile({ username, setUsername, country, setCountry, avatarUrl, up
       <div style={fieldStyle}>
         <label style={labelStyle}>Country</label>
         <Select value={country} onValueChange={setCountry} disabled={profileSaved}>
-          <SelectTrigger style={inputStyle}>
+          <SelectTrigger style={inputStyle} aria-label="Country" data-testid="onboarding-country-select">
             <SelectValue placeholder="Select your country" />
           </SelectTrigger>
           <SelectContent>
