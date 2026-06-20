@@ -2,9 +2,9 @@
 
 **MMA intelligence + fantasy prediction platform.** Not a sportsbook. Fans compete on real fight cards using real data, real odds, and AI.
 
-> 🕒 **Last Updated:** 2026-06-19 by Cody (enterprise UI audit remediation)
+> 🕒 **Last Updated:** 2026-06-19 by Cody (second enterprise UI audit)
 > 📍 **Current Status:** Phase 1 · Week 1 (Auth + Stack Provisioning) — scaffolding done, waiting on founder's provisioning sprint
-> 🧪 **Build State:** 90/90 Vitest tests passing · Pipeline smoke 7/7 passing · Production build passes · audit 39→10 moderate · DB 52 tables on Supabase us-west-2
+> 🧪 **Build State:** 91/91 Vitest tests passing · Pipeline smoke 7/7 passing · Production build passes · audit 39→10 moderate · DB 52 tables on Supabase us-west-2
 
 ---
 
@@ -26,6 +26,7 @@ Skip the rest of this README and start with `STATUS.md`.
 Anyone reviewing should add a dated entry to the top whenever they ship something meaningful. Keep it tight — one line per session.
 
 ### 2026-06-19 - Cody
+- Completed a second strict visual audit: replaced the watermarked hero locally, corrected clipped hierarchy and preview labeling, aligned the pick mock with the one-unit model, repaired Spanish landing copy, and documented the empty production fighter catalog in `docs/ui-audit/SECOND_PASS_2026-06-19.md`.
 - Repaired Clerk authentication for Socket.IO and validated local single-process chat fanout at 1,000 and 1,500 concurrent synthetic clients; added a guarded load harness and auth/fanout regression coverage. Full results: `docs/testing/TEST_STATUS_2026-06-19.md`.
 - Completed the enterprise UI remediation pass: fixed both P0 first-session failures, mobile Settings and landing navigation, direct Clerk auth routes, leaderboard ordering, SVG country flags, fabricated/placeholder UI, and stale confidence-unit translations; audit evidence remains in `docs/ui-audit/`.
 

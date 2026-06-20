@@ -7,11 +7,11 @@ import { NinjaBadge, SamuraiBadge, MasterBadge, GoatBadge } from './Badges';
 // Ranked by NET UNITS only — the single metric the real leaderboard uses
 // ("Just pure net units. Highest net units = Rank 1.")
 const LB = [
-    { rank: 1, name: 'NightHawk', units: '+248.6u', BadgeComponent: GoatBadge, rc: 'lp-lb__rank--gold' },
-    { rank: 2, name: 'OctagonKing', units: '+211.0u', BadgeComponent: MasterBadge, rc: 'lp-lb__rank--silver' },
-    { rank: 3, name: 'MatWarrior', units: '+193.4u', BadgeComponent: SamuraiBadge, rc: 'lp-lb__rank--bronze' },
-    { rank: 4, name: 'StrikeForce', units: '+167.2u', BadgeComponent: NinjaBadge, rc: '' },
-    { rank: 5, name: 'GroundGame', units: '+151.9u', BadgeComponent: null, rc: '' },
+    { rank: 1, name: 'Challenger 01', units: '+24.8u', BadgeComponent: GoatBadge, rc: 'lp-lb__rank--gold' },
+    { rank: 2, name: 'Challenger 02', units: '+21.1u', BadgeComponent: MasterBadge, rc: 'lp-lb__rank--silver' },
+    { rank: 3, name: 'Challenger 03', units: '+19.3u', BadgeComponent: SamuraiBadge, rc: 'lp-lb__rank--bronze' },
+    { rank: 4, name: 'Challenger 04', units: '+16.7u', BadgeComponent: NinjaBadge, rc: '' },
+    { rank: 5, name: 'Challenger 05', units: '+15.1u', BadgeComponent: null, rc: '' },
 ];
 
 const BADGE_TIERS = [
@@ -57,7 +57,7 @@ export function LeaderboardPreview() {
                     <div className="lp-lb lp-animate lp-animate-delay-3">
                         <div className="lp-lb__header">
                             <Trophy size={16} /> {t('leaderboard.header')}
-                            <span className="lp-lb__live">{t('leaderboard.live')}</span>
+                            <span className="lp-lb__live">PREVIEW</span>
                         </div>
                         {LB.map((e) => (
                             <div key={e.rank} className="lp-lb__row">

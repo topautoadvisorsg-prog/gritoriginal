@@ -34,14 +34,10 @@ export default function LandingPage() {
 
     return (
         <div className="landing-page">
-            <video
+            <div
                 className="lp-video-bg"
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="auto"
-                src="/hero_bg.mp4"
+                role="img"
+                aria-label="Empty mixed martial arts arena under broadcast lights"
             />
             <div
                 className="lp-video-overlay"

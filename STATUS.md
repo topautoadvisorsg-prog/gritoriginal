@@ -1,6 +1,6 @@
 # GRIT — Live Status
 
-> **Latest update 2026-06-19 by Cody:** Chat authentication was repaired after the Clerk migration and locally load-tested beyond the 1,000-user target. The frontend now sends a Clerk token during the Socket.IO handshake; the server verifies it and resolves the local user. Local isolated results: 1,000/1,000 clients with 10,000/10,000 deliveries at 147 ms p95, and 1,500/1,500 with 15,000/15,000 deliveries at 210 ms p95. Pipeline smoke remains 7/7 and Vitest is 91/91. Production certification still requires Railway staging, database-backed chat load, and a Redis adapter before multi-replica scaling.
+> **Latest update 2026-06-19 by Cody:** Second enterprise UI pass completed. Removed the watermarked landing hero locally, tightened first-viewport hierarchy, labeled fallback intelligence/leaderboard/chat as previews, corrected the one-unit pick mock, and repaired the Spanish hero schema. Production health is green but `/api/fighters` returns `[]`, so the populated pick journey remains blocked on staging data. Build and 91/91 tests pass.
 > **The handoff doc.** Whoever opens the repo next picks up from here. Only one dev works at a time. No collision concerns — just a clean "what's done, what's next" baton pass.
 >
 > Different from `HANDOFF.md` (cold-pickup onboarding) and `SPEC.md` (the build plan).
@@ -46,7 +46,13 @@ Betting Tracker widget) is Week 8 work and waits.
 "Open Questions" — Claudio reprioritizes.
 
 ### Active Work
-- Testing hardening is in progress on `codex/ui-audit-2026-06-18`. UI P0/P1 remediation and local single-process chat concurrency are green. Next dependency is an isolated staging Supabase/Clerk environment for persistent populated fixtures and production-shaped HTTP/Railway load tests.
+- Second UI audit is complete on `codex/ui-audit-2026-06-18`. Landing remediation is verified locally. The next dependency is an isolated staging Supabase/Clerk environment with 24 fighters and a 12-fight card for the real signed-in pick-flow audit.
+
+### Second enterprise UI pass (2026-06-19 by Cody)
+- Replaced the visibly watermarked hero video with a project-owned, optimized arena WebP and repaired desktop/mobile headline scale.
+- Marked fallback intelligence, leaderboard, and chat content as previews; removed the obsolete 1-5 unit selector from the landing pick mock.
+- Repaired the Spanish hero translation schema and stale metric/feature copy.
+- Confirmed production `/api/health` is green but `/api/fighters` returns no records. Full findings: `docs/ui-audit/SECOND_PASS_2026-06-19.md`.
 
 ### Chat concurrency and auth (2026-06-19 by Cody)
 - Fixed stale Replit Passport authentication in Socket.IO; Clerk session tokens are now verified at handshake and mapped to local GRIT users.
@@ -169,6 +175,10 @@ Revised 2026-05-23 after founder feedback. Work is no longer split by frontend/b
 **UI work paused:** 7-step onboarding and Betting Tracker widget are deferred until the backend pipeline is blueprint-correct.
 
 ### Open Questions (cross-owner gaps surface here)
+
+- 2026-06-19 - Cody - Production has zero fighters (`GET /api/fighters` returns `[]`). The smoke-test fighters were intentionally disposable and were deleted. Before populated visual QA, provision a staging Supabase/Clerk environment and seed 24 fighters plus a 12-fight event; do not seed fake data into the shared production project. - needs: Jovan/Claudio
+
+- 2026-06-19 - Cody - The root `.env` was missing. A local backup could boot the servers, but its database configuration is schema-incompatible and fighter/health requests return 500. Establish one canonical ignored local env or staging env export before the next signed-in audit. - needs: Jovan
 
 - 2026-06-19 — Cody — Clerk's direct sign-in page currently says "Sign in to My Application." Rename the Clerk application to **GRIT** in the Clerk Dashboard; this is dashboard configuration, not a frontend code string. — needs: Jovan
 

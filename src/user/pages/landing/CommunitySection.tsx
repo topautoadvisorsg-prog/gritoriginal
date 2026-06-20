@@ -12,8 +12,8 @@ function ChatMockup() {
     return (
         <div className="lp-t2-mockup lp-chat-mockup">
             <div className="lp-chat-mockup__header">
-                <span className="lp-chat-mockup__title">UFC 312 · Fight Chat</span>
-                <span className="lp-picks-mockup__live">● 847 online</span>
+                <span className="lp-chat-mockup__title">EVENT FIGHT CHAT</span>
+                <span className="lp-picks-mockup__live">PREVIEW</span>
             </div>
             <div className="lp-chat-mockup__msgs">
                 {msgs.map((m, i) => (

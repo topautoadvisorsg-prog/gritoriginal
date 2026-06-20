@@ -51,12 +51,17 @@
         "get_started": "Comenzar"
     },
     "hero": {
-        "badge": "Competición Global en Vivo",
-        "title_main": "Analiza. Compite. Domina.",
-        "title_accent": "Plataforma de Predicciones y Análisis de MMA",
-        "subtitle": "Múltiples Sistemas de IA. Una Arena Global. Tu IQ de Combate.",
-        "desc": "GRIT es una plataforma de la Liga de Fantasía Global de MMA donde los usuarios analizan predicciones de peleas, estudian el historial de rendimiento de los luchadores y siguen los rankings competitivos.",
-        "cta": "Únete a la Liga"
+        "badge": "Los primeros 1,000 suscriptores reciben insignias Founder",
+        "title_main": "DEMUESTRA TU",
+        "title_main_red": "FIGHT IQ.",
+        "title_accent_red1": "DATOS REALES.",
+        "title_accent_white": "CUOTAS REALES.",
+        "title_accent_red2": "RANGO REAL.",
+        "subtitle": "Sin apuestas. Sin suerte. Tu conocimiento contra el mundo.",
+        "desc": "GRIT es una arena competitiva de análisis para fans de MMA. Haz picks con cuotas reales, construye un historial verificable y escala la clasificación global.",
+        "cta": "Reclama Tu Lugar",
+        "cta_secondary": "Cómo Funciona",
+        "trust": "Competición de habilidad — sin apuestas con dinero real."
     },
     "ai_arena": {
         "label": "Arena IA",
@@ -88,19 +93,20 @@
         "step4_desc": "Asciende en las tablas de clasificación globales. Gana estrellas, desbloquea niveles de insignias y demuestra que eres el mejor."
     },
     "leaderboard": {
-        "label": "Ventaja Competitiva",
-        "title": "Esto No Es Solo una App.",
-        "title2": "Es una Liga.",
-        "subtitle": "Demuestra Tu IQ de MMA Contra el Mundo",
-        "desc": "Cada pick cuenta. Cada evento moldea tu ranking. Compite en un entorno basado en datos donde la precisión y la consistencia separan a los contendientes de los pretendientes.",
-        "highlight1": "Tabla de clasificación global en vivo con puntuación en tiempo real",
-        "highlight2": "Progresión mensual — gana estrellas y niveles de insignias",
-        "highlight3": "El seguimiento del ROI refleja el rendimiento real de apuestas",
-        "highlight4": "Las estrellas premian la consistencia — hasta 5★ por mes",
+        "label": "Clasificación Global",
+        "title": "TU FIGHT IQ.",
+        "title2": "EN EL ESCENARIO GLOBAL.",
+        "subtitle": "",
+        "desc": "Puntuación en tiempo real basada en unidades netas. Acertar te hace subir; fallar te hace bajar. Tu posición refleja exactamente lo que ganaste.",
+        "highlight1": "Clasificaciones por evento, mes y año",
+        "highlight2": "Estrellas e insignias premian el rendimiento constante",
+        "highlight3": "Las unidades netas son la métrica principal",
+        "highlight4": "El primer cierre de tarjeta completa desempata",
         "header": "Tabla de Clasificación Global",
         "live": "EN VIVO",
-        "badge_progression": "PROGRESIÓN DE INSIGNIAS — NINJA → GOAT",
-        "stars_this_month": "Estrellas Este Mes"
+        "net_units": "Unidades Netas",
+        "badge_progression": "INSIGNIAS — NINJA → SAMURAI → MASTER → GRANDMASTER → GOAT",
+        "stars_this_month": "Estrellas Este Evento"
     },
     "pricing": {
         "label": "Planes",
@@ -162,9 +168,9 @@
         "feat3_label": "Perfiles de Luchadores",
         "feat3_desc": "Estadísticas de carrera, historial de combates, datos y resúmenes scout de IA.",
         "feat4_label": "Chat Comunitario",
-        "feat4_desc": "Salas globales y por evento. Cientos hablando ahora mismo.",
-        "feat5_label": "Chat IA",
-        "feat5_desc": "Acceso premium a Grok, GPT-4o y Claude para análisis profundo de peleas."
+        "feat4_desc": "Chat por evento, slips compartidos y moderación integrada.",
+        "feat5_label": "Análisis IA (Tokens)",
+        "feat5_desc": "Desgloses rápidos y análisis de enfrentamientos con pago por consulta."
     },
     "ai_banner": {
         "label": "ARENA DE IA",

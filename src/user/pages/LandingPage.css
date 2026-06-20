@@ -572,12 +572,12 @@ a:focus-visible,
    HERO
    =============================================== */
 .lp-hero {
-  min-height: 100vh;
+  min-height: min(940px, 100svh);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 100px 24px 60px;
+  padding: 96px 24px 48px;
   overflow: hidden;
 }
 
@@ -673,7 +673,7 @@ a:focus-visible,
   background: hsl(220 20% 8% / .55);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  margin-bottom: 40px;
+  margin-bottom: 24px;
   animation: hero-reveal .8s ease-out .2s both;
 }
 
@@ -704,8 +704,8 @@ a:focus-visible,
 .lp-hero__title {
   font-family: 'Barlow Condensed', sans-serif;
   font-weight: 900;
-  font-size: clamp(3.5rem, 10vw, 8rem);
-  line-height: 1.0;
+  font-size: clamp(3.25rem, 7.2vw, 6.75rem);
+  line-height: .92;
   letter-spacing: .02em;
   text-transform: uppercase;
   margin-bottom: 12px;
@@ -725,7 +725,7 @@ a:focus-visible,
   color: hsl(0 0% 96%);
   letter-spacing: .02em;
   white-space: normal;
-  font-size: clamp(2.5rem, 7.5vw, 6.5rem);
+  font-size: clamp(2.4rem, 5.4vw, 5rem);
 }
 
 .lp-hero__title-red {
@@ -742,13 +742,13 @@ a:focus-visible,
 
 /* Hero description */
 .lp-hero__desc {
-  font-size: clamp(1.1rem, 2.6vw, 1.35rem);
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
   /* Brand red, brighter — visible against the video background */
   color: hsl(354 90% 68%);
   font-weight: 600;
   max-width: 620px;
-  margin: 0 auto 48px;
-  line-height: 1.7;
+  margin: 0 auto 28px;
+  line-height: 1.55;
   /* Soft dark halo improves legibility over moving footage */
   text-shadow:
     0 1px 2px rgba(0, 0, 0, 0.85),
@@ -2299,7 +2299,29 @@ a:focus-visible,
   }
 
   .lp-hero {
-    padding: 80px 16px 60px;
+    min-height: 100svh;
+    padding: 84px 16px 44px;
+  }
+
+  .lp-hero__badge {
+    margin-bottom: 18px;
+    padding: 8px 14px;
+    font-size: .62rem;
+    letter-spacing: .16em;
+  }
+
+  .lp-hero__title {
+    font-size: clamp(3rem, 16vw, 4.1rem);
+  }
+
+  .lp-hero__title-accent {
+    font-size: clamp(2.15rem, 11vw, 3rem);
+  }
+
+  .lp-hero__desc {
+    margin-bottom: 24px;
+    font-size: 1rem;
+    line-height: 1.5;
   }
 
   .lp-proof__inner {
@@ -2395,6 +2417,11 @@ a:focus-visible,
   object-fit: cover;
   z-index: 0;
   pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(5, 7, 10, .2), rgba(5, 7, 10, .68)),
+    url('/grit-arena-hero-v2.webp');
+  background-position: center;
+  background-size: cover;
 }
 
 .lp-video-overlay {

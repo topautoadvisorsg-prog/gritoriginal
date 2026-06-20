@@ -94,18 +94,8 @@ function PicksMockup() {
             </div>
 
             <div className="lp-picks-mockup__confidence">
-                <span className="lp-picks-mockup__conf-label">HOW MANY UNITS?</span>
-                <div className="lp-picks-mockup__conf-units">
-                    {[1, 2, 3, 4, 5].map((u) => (
-                        <button
-                            key={u}
-                            type="button"
-                            className={`lp-conf-unit${u === 3 ? ' lp-conf-unit--active' : ''}`}
-                        >
-                            {u}u
-                        </button>
-                    ))}
-                </div>
+                <span className="lp-picks-mockup__conf-label">RANKED PICK VALUE</span>
+                <div className="lp-conf-unit lp-conf-unit--active">1 UNIT</div>
             </div>
 
             <button type="button" className="lp-picks-mockup__lock">
