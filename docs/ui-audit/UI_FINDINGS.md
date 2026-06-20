@@ -6,6 +6,10 @@ Benchmark: DraftKings / Underdog Fantasy
 
 Verdict: **Not launch-ready at enterprise visibility.** The visual foundation is credible, but two broken first-session flows and multiple mobile defects block a commercial release.
 
+## Remediation Status (2026-06-19)
+
+All P0/P1 findings and the listed P2 polish items have been remediated on `codex/ui-audit-2026-06-18`. A read-only `UI_AUDIT_FIXTURES=1` mode now provides the populated QA matrix without database writes. Verification evidence is indexed in `SCREENSHOT_INDEX.md`.
+
 ## Executive Summary
 
 The English landing hero, Clerk modal, Rules page, typography, and core gold/red identity show a strong product direction. The application falls below that bar once a user signs in: the new-user dashboard crashes, onboarding cannot reliably reach all seven steps, responsive settings are unusable, and empty/shared-data states expose implementation language or fabricated live context. Admin tools are broad but read as internal scaffolding rather than a finished operations product.

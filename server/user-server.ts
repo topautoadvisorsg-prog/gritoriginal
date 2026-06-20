@@ -79,6 +79,7 @@ import { publicApiLimiter, strictApiLimiter, authApiLimiter, aiChatLimiter } fro
 import { seedSuggestedQuestions } from './seeds/seedSuggestedQuestions';
 import { initJobService } from './services/jobService';
 import { requestLogger } from './middleware/requestLogger';
+import { registerUiAuditFixtures } from './fixtures/uiAuditFixtures';
 
 async function startUserServer() {
     const app = express();
@@ -87,6 +88,8 @@ async function startUserServer() {
     registerStripeWebhook(app);
 
     app.use(express.json({ limit: '50mb' }));
+
+    registerUiAuditFixtures(app);
 
     // Health check — must be BEFORE auth so Railway healthchecks succeed
     app.get('/api/health', (_req, res) => {

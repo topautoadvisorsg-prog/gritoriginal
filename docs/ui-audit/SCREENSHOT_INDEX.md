@@ -1,5 +1,14 @@
 # GRIT UI Audit Screenshot Index
 
+## Remediation Verification (2026-06-19)
+
+- `22-settings-desktop-remediated.png` - responsive desktop settings tabs at 1440px.
+- `23-rankings-fixture-desktop.png` - 25-user fixture leaderboard with pinned current-user position and net units.
+- `24-settings-mobile-remediated.png` - 390px settings navigation, constrained identity, and bottom-nav clearance.
+- `25-fixture-event-desktop.png` - isolated 12-fight fixture event with photographic fighter imagery.
+- `26-admin-create-event-remediated.png` - grouped admin navigation and GRIT gold/red event workflow.
+- `27-landing-mobile-remediated.png` - 390px logged-out landing with one compact primary header CTA.
+
 Date: 2026-06-18
 
 Desktop viewport: 1440x1000

@@ -21,6 +21,18 @@ import { useQuery } from '@tanstack/react-query';
 import type { AuthUser } from '../../../shared/models/auth';
 import { isClerkEnabled } from '@/auth/clerkConfig';
 
+const fixtureUser = {
+  id: 'audit-user-03', email: 'long.audit.address@example.test', firstName: 'Jordan', lastName: 'Rivera',
+  username: 'jordan_rivera', avatarUrl: null, profileImageUrl: null, socialLinks: {},
+  privacySettings: { showAvatar: true, showSocialLinks: true, showUsername: true }, role: 'admin', tier: 'premium',
+  totalPoints: 785, isVerified: true, country: 'MX', language: 'en', featuredInfluencer: false,
+  starLevel: 4, progressBadge: 'master', currentStreak: 5, maxStreak: 8, lastProgressionCalc: null,
+  monthlyLoginCount: 12, lastLoginMonth: null, lastLoginDate: null, isAiChatBlocked: false,
+  subscriptionId: null, subscriptionStatus: 'active', currentPeriodEnd: null, subscriptionStartDate: null,
+  yellowRedFlagsUsed: 1, flagBudget: 3, currentEventId: 'audit-event', lastFlagResetAt: null,
+  createdAt: null, updatedAt: null, permissions: [],
+} satisfies AuthUser;
+
 async function fetchLocalUser(): Promise<AuthUser | null> {
   const res = await fetch('/api/me', { credentials: 'include' });
   if (res.status === 401) return null;
@@ -29,6 +41,11 @@ async function fetchLocalUser(): Promise<AuthUser | null> {
 }
 
 export function useAuth() {
+  if (import.meta.env.UI_AUDIT_FIXTURES === '1') {
+    return { user: fixtureUser, clerkUser: null, isLoading: false, isAuthenticated: true,
+      login: () => undefined, logout: () => undefined, isLoggingOut: false };
+  }
+
   if (!isClerkEnabled) {
     return {
       user: null,
