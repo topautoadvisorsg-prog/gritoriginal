@@ -5,11 +5,16 @@ const lastNames = ['Stone', 'Rivera', 'Nascimento', 'Washington-Jones', 'Tanaka'
 const countries = ['US', 'MX', 'BR', 'US', 'JP', 'AE', 'RU', 'BR'];
 const portraitIds = ['photo-1560250097-0b93528c311a', 'photo-1500648767791-00dcc994a43e', 'photo-1506794778202-cad84cf45f1d', 'photo-1534528741775-53994a69daeb'];
 
-const fighters = firstNames.map((firstName, index) => ({
+const fighters = firstNames.map((generatedFirstName, index) => {
+  const featuredIdentity = index === 0
+    ? { firstName: 'Mateo', lastName: 'Rivera', nickname: 'El Fuego', bodyImageUrl: '/fixtures/fighters/mateo-rivera.jpg' }
+    : index === 1
+      ? { firstName: 'Darius', lastName: 'Washington', nickname: 'Blackout', bodyImageUrl: '/fixtures/fighters/darius-washington.jpg' }
+      : { firstName: generatedFirstName, lastName: lastNames[index], nickname: index === 3 ? 'The Relentless Technician' : null, bodyImageUrl: undefined };
+
+  return ({
   id: `audit-fighter-${String(index + 1).padStart(2, '0')}`,
-  firstName,
-  lastName: lastNames[index],
-  nickname: index === 3 ? 'The Relentless Technician' : null,
+  ...featuredIdentity,
   country: countries[index % countries.length],
   organization: 'UFC',
   weightClass: ['Lightweight', 'Welterweight', 'Featherweight', 'Bantamweight'][index % 4],
@@ -18,25 +23,33 @@ const fighters = firstNames.map((firstName, index) => ({
   record: { wins: 8 + index, losses: index % 6, draws: index % 5 === 0 ? 1 : 0 },
   physicalStats: index % 6 === 0 ? {} : { age: 25 + (index % 11), height: `5'${7 + index % 5}\"`, reach: `${68 + index % 10}\"` },
   performance: {}, notes: [], riskSignals: [], isActive: true, status: 'active', isVerified: true,
-}));
+  });
+});
 
 const fights = Array.from({ length: 12 }, (_, index) => ({
   id: `audit-fight-${String(index + 1).padStart(2, '0')}`,
   eventId: 'audit-event', fighter1Id: fighters[index * 2].id, fighter2Id: fighters[index * 2 + 1].id,
-  cardPlacement: index < 5 ? 'main-card' : index < 9 ? 'prelims' : 'early-prelims', boutOrder: index + 1,
+  cardPlacement: index === 0 ? 'Main Event' : index < 5 ? 'Main Card' : index < 9 ? 'Prelim' : 'Early Prelim', boutOrder: index + 1,
   weightClass: fighters[index * 2].weightClass, isTitleFight: index === 0, rounds: index === 0 ? 5 : 3,
-  status: index < 3 ? 'CLOSED' : 'OPEN', scheduledTime: `${18 + Math.floor(index / 2)}:${index % 2 ? '30' : '00'}`,
+  status: index === 0 ? 'LIVE' : index < 3 ? 'CLOSED' : 'OPEN', scheduledTime: `${18 + Math.floor(index / 2)}:${index % 2 ? '30' : '00'}`,
   odds: { fighter1Odds: index % 2 ? '+135' : '-165', fighter2Odds: index % 2 ? '-155' : '+145', source: 'Audit fixture' },
   winnerId: index < 3 ? fighters[index * 2].id : null,
   fighter1Result: index < 3 ? 'WIN' : null, fighter2Result: index < 3 ? 'LOSS' : null,
 }));
 
 const event = {
-  id: 'audit-event', name: 'GRIT Championship Night: Rivera vs. Washington-Jones', date: '2026-07-18T19:00:00.000Z',
+  id: 'audit-event', name: 'GRIT Championship Night: Rivera vs. Washington', date: '2026-07-18T19:00:00.000Z',
   lockTime: '2026-07-18T18:55:00.000Z', venue: 'T-Mobile Arena', city: 'Las Vegas', state: 'NV', country: 'US',
   organization: 'UFC', description: 'Local visual-audit fixture. No production data.',
-  imageUrl: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1600&q=80', status: 'ready', fights,
+  imageUrl: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1600&q=80', status: 'LIVE', fights,
 };
+
+const chatMessages = [
+  { id: 'audit-chat-01', userId: 'audit-user-01', eventId: 'audit-event', chatType: 'global', countryCode: 'US', message: 'Rivera is finding the body early. That left hook is open.', messageType: 'text', createdAt: '2026-07-18T19:12:00.000Z', user: { username: 'fightiq_01', displayName: 'FightIQ', avatarUrl: null, rank: 'GRANDMASTER', progressBadge: 'master' } },
+  { id: 'audit-chat-02', userId: 'audit-user-03', eventId: 'audit-event', chatType: 'global', countryCode: 'MX', message: 'Washington needs to stop backing straight into the fence.', messageType: 'text', createdAt: '2026-07-18T19:12:20.000Z', user: { username: 'jordan_rivera', displayName: 'Jordan Rivera', avatarUrl: null, rank: 'MASTER', progressBadge: 'samurai' } },
+  { id: 'audit-chat-03', userId: 'audit-admin', eventId: 'audit-event', chatType: 'global', countryCode: null, message: 'Keep it respectful. Debate the fight, not each other.', messageType: 'text', createdAt: '2026-07-18T19:11:30.000Z', isAdmin: true, user: { username: 'GRIT', displayName: 'GRIT' } },
+  { id: 'audit-chat-04', userId: 'audit-user-04', eventId: 'audit-event', chatType: 'country', countryCode: 'MX', message: 'Vamos Mateo. Pressure and body work all night.', messageType: 'text', createdAt: '2026-07-18T19:12:40.000Z', user: { username: 'mx_fight_club', displayName: 'MX Fight Club', avatarUrl: null, rank: 'SAMURAI', progressBadge: 'ninja' } },
+];
 
 const leaderboard = Array.from({ length: 25 }, (_, index) => ({
   rank: index + 1, id: index === 2 ? 'audit-user-03' : `audit-user-${String(index + 1).padStart(2, '0')}`,
@@ -66,9 +79,38 @@ export function registerUiAuditFixtures(app: Express): void {
   if (process.env.UI_AUDIT_FIXTURES !== '1') return;
 
   app.use('/api', (req: Request, res: Response, next: NextFunction) => {
-    if (!['GET', 'HEAD'].includes(req.method)) return res.status(405).json({ error: 'UI audit fixtures are read-only.' });
     const path = req.path;
+    if (path === '/chat' && req.method === 'POST') {
+      const message = String(req.body?.message || '').trim();
+      if (!message) return res.status(400).json({ error: 'Message is required.' });
+      const created = {
+        id: `audit-chat-local-${Date.now()}`,
+        userId: fixtureUser.id,
+        eventId: 'audit-event',
+        chatType: req.body?.chatType === 'country' ? 'country' : 'global',
+        countryCode: req.body?.chatType === 'country' ? fixtureUser.country : null,
+        message,
+        messageType: 'text',
+        createdAt: new Date().toISOString(),
+        user: { username: fixtureUser.username, displayName: fixtureUser.username, avatarUrl: null, rank: 'MASTER', progressBadge: 'master' },
+      };
+      chatMessages.unshift(created);
+      return res.status(201).json(created);
+    }
+    if (!['GET', 'HEAD'].includes(req.method)) return res.status(405).json({ error: 'UI audit fixtures are read-only except for in-memory chat.' });
     if (path === '/me') return res.json(fixtureUser);
+    if (path === '/me/settings') return res.json({
+      enableSounds: true,
+      enableCelebrations: true,
+      showStreaks: true,
+      showBadges: true,
+      enablePushNotifications: false,
+      enableEventReminders: true,
+      enableResultAlerts: true,
+      enableLeaderboardUpdates: false,
+      showBettingTracker: false,
+      unitSize: 0,
+    });
     if (path === '/events') return res.json([event]);
     if (path === '/events/audit-event') return res.json(event);
     if (path === '/fighters') return res.json(fighters);
@@ -78,6 +120,12 @@ export function registerUiAuditFixtures(app: Express): void {
     if (path === '/news') return res.json(news);
     if (path.startsWith('/news/')) return res.json(news.find((article) => article.id === path.split('/')[2]) || news[0]);
     if (path === '/picks' || path.startsWith('/picks/event/')) return res.json(picks);
+    if (path === '/chat/config') return res.json({ isOpen: true, cooldownMinutes: 0 });
+    if (path === '/chat') {
+      const chatType = req.query.chat_type === 'country' ? 'country' : 'global';
+      return res.json(chatMessages.filter(message => message.chatType === chatType));
+    }
+    if (path === '/slip-wall' || path === '/slips/mine') return res.json([]);
     next();
   });
 }

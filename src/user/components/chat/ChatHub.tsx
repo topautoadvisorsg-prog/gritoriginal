@@ -284,7 +284,7 @@ const TopDonorCard: React.FC<{ donor: DonorEntry; isFirst?: boolean }> = ({ dono
         >
             {isFirst && (
                 <span className="text-[9px] font-black uppercase tracking-widest mb-2" style={{ color: GOLD }}>
-                    #1 TOP DONOR
+                    #1 TOP SUPPORTER
                 </span>
             )}
             {!isFirst && (
@@ -303,7 +303,7 @@ const TopDonorCard: React.FC<{ donor: DonorEntry; isFirst?: boolean }> = ({ dono
             <span className="font-black mt-1" style={{ color: GOLD, fontSize: isFirst ? '1.5rem' : '1rem' }}>
                 ${donor.amount.toLocaleString()}
             </span>
-            <span className="text-[8px] uppercase tracking-widest text-white/30 block mt-0.5">DONATED</span>
+            <span className="text-[8px] uppercase tracking-widest text-white/30 block mt-0.5">BOOSTED</span>
         </div>
     );
 };
@@ -345,12 +345,12 @@ const FighterStage: React.FC<{ fighter?: Fighter; side: 'left' | 'right' }> = ({
                     ? 'bg-gradient-to-r from-black/20 via-transparent to-black/80'
                     : 'bg-gradient-to-l from-black/20 via-transparent to-black/80'
             )} />
-            <div className={cn('absolute bottom-4 z-10 max-w-[75%]', side === 'left' ? 'left-4' : 'right-4')}>
+            <div className={cn('absolute bottom-4 z-10 max-w-[95%] md:max-w-[75%]', side === 'left' ? 'left-3 md:left-4' : 'right-3 md:right-4')}>
                 <p className="text-[9px] font-black uppercase tracking-[0.22em] text-white/45">
                     {record ? `${record.wins}-${record.losses}-${record.draws}` : 'Record unavailable'}
                 </p>
                 <p className="text-xs font-bold uppercase tracking-widest text-white/70">{fighter?.firstName || 'TBD'}</p>
-                <p className="truncate text-xl md:text-2xl font-black uppercase leading-none text-white">
+                <p className="truncate text-lg md:text-2xl font-black uppercase leading-none text-white">
                     {fighter?.lastName || ''}
                 </p>
             </div>
@@ -375,7 +375,7 @@ const LiveBoutStage: React.FC<{
                 <div className="mb-2 inline-flex items-center gap-1.5 rounded-full border border-red-500/40 bg-red-500/15 px-3 py-1 text-[9px] font-black uppercase tracking-[0.22em] text-red-400">
                     <Radio className="h-3 w-3 animate-pulse" /> Live Bout
                 </div>
-                <p className="max-w-40 truncate text-[9px] font-bold uppercase tracking-wider text-white/40">{event.name}</p>
+                <p className="hidden max-w-40 line-clamp-2 text-[9px] font-bold uppercase leading-tight tracking-wider text-white/40 md:block">{event.name}</p>
                 <p className="my-1 text-2xl font-black italic text-[#E8A020]">VS</p>
                 <p className="text-[9px] font-black uppercase tracking-[0.18em] text-white/60">
                     {fight.isTitleFight ? 'Title Fight' : fight.weightClass}
@@ -464,10 +464,19 @@ export const ChatHub: React.FC = () => {
 
     const messages = apiMessages;
 
-    // Donations are not yet wired to a backend feed — render empty until the
-    // donations API lands. No mock/seed data is shown to users.
-    const topDonors: DonorEntry[] = [];
-    const recentDonations: DonorEntry[] = [];
+    // Fixture-only supporter activity. Production stays empty until the real
+    // Boosts API lands; fake money must never appear to users.
+    const fixtureMode = import.meta.env.UI_AUDIT_FIXTURES === '1';
+    const topDonors: DonorEntry[] = fixtureMode ? [
+        { rank: 1, username: 'fightiq_01', amount: 125, tier: 'ULTIMATE GOLD', initials: 'FI' },
+        { rank: 2, username: 'mx_fight_club', amount: 75, tier: 'GRANDMASTER', initials: 'MX' },
+        { rank: 3, username: 'southpaw_sage', amount: 50, tier: 'MASTER', initials: 'SS' },
+    ] : [];
+    const recentDonations: DonorEntry[] = fixtureMode ? [
+        { username: 'jordan_rivera', amount: 25, tier: 'MASTER', initials: 'JR' },
+        { username: 'cage_metrics', amount: 10, tier: 'SAMURAI', initials: 'CM' },
+        { username: 'late_round', amount: 5, tier: 'ROOKIE', initials: 'LR' },
+    ] : [];
 
     const socket = useSocket();
 
@@ -623,7 +632,7 @@ export const ChatHub: React.FC = () => {
                     </span>
                 </div>
 
-                <nav aria-label="Chat rooms" className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-white/10 bg-white/[0.025] p-1">
+                <nav aria-label="Chat rooms" className="flex max-w-full items-center gap-1 overflow-x-auto rounded-xl border border-white/10 bg-white/[0.025] p-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                     <button
                         onClick={() => { setChatView('chat'); setActiveChatType('global'); }}
                         className={cn('flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors', chatView === 'chat' && activeChatType === 'global' ? 'bg-[#E8A020] text-black' : 'text-white/45 hover:text-white')}
@@ -789,7 +798,7 @@ export const ChatHub: React.FC = () => {
                                 <span className="inline-flex items-center gap-1.5 rounded-full border border-[#E8A020]/30 bg-[#E8A020]/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.2em] text-[#E8A020]">
                                     <Zap className="h-3 w-3" /> GRIT Boosts
                                 </span>
-                                <span className="text-[8px] font-black uppercase tracking-widest text-white/25">Coming soon</span>
+                                <span className="text-[8px] font-black uppercase tracking-widest text-white/25">{fixtureMode ? 'Fixture mode' : 'Coming soon'}</span>
                             </div>
                             <h2 className="text-xl font-black uppercase leading-none text-white">Fuel the Fight</h2>
                             <p className="mt-2 text-xs leading-relaxed text-white/45">
