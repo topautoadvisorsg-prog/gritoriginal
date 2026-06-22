@@ -10,7 +10,7 @@ export interface GamificationSettings {
 
 export interface NotificationSettings {
     eventReminders: boolean;
-    pickDeadlineAlerts: boolean;
+    pushNotifications: boolean;
     resultNotifications: boolean;
     leaderboardUpdates: boolean;
 }
@@ -38,7 +38,7 @@ const defaultGamificationSettings: GamificationSettings = {
 
 const defaultNotificationSettings: NotificationSettings = {
     eventReminders: true,
-    pickDeadlineAlerts: true,
+    pushNotifications: true,
     resultNotifications: true,
     leaderboardUpdates: false,
 };
@@ -101,7 +101,7 @@ export function GamificationProvider({ children }: GamificationProviderProps) {
                     setNotificationSettings(prev => ({
                         ...prev,
                         eventReminders: settings.enableEventReminders,
-                        pickDeadlineAlerts: settings.enablePushNotifications,
+                        pushNotifications: settings.enablePushNotifications,
                         resultNotifications: settings.enableResultAlerts,
                         leaderboardUpdates: settings.enableLeaderboardUpdates,
                     }));
@@ -154,7 +154,7 @@ export function GamificationProvider({ children }: GamificationProviderProps) {
             Object.entries(updates).forEach(([key, value]) => {
                 let backendKey = key;
                 if (key === 'eventReminders') backendKey = 'enableEventReminders';
-                if (key === 'pickDeadlineAlerts') backendKey = 'enablePushNotifications';
+                if (key === 'pushNotifications') backendKey = 'enablePushNotifications';
                 if (key === 'resultNotifications') backendKey = 'enableResultAlerts';
                 if (key === 'leaderboardUpdates') backendKey = 'enableLeaderboardUpdates';
 

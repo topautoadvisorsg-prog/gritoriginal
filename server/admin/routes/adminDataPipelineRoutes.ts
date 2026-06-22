@@ -1,6 +1,16 @@
 import type { Express, Request, Response } from "express";
 import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { logger } from '../../utils/logger';
+
+export function isSensitivePipelineConfigKey(key: string): boolean {
+  return /(API_KEY|SECRET|TOKEN|PASSWORD)$/i.test(key);
+}
+
+export function serializePipelineConfigValue(key: string, value: string) {
+  return isSensitivePipelineConfigKey(key)
+    ? { key, value: '', configured: true }
+    : { key, value, configured: true };
+}
 import * as dataEngineService from '../../services/dataEngineService';
 import { db } from '../../db';
 import { dataPipeline, fighters, events, eventFights } from '../../../shared/schema';
@@ -213,7 +223,7 @@ export function registerAdminDataPipelineRoutes(app: Express) {
         return res.status(404).json({ error: "Configuration key not found" });
       }
 
-      res.json({ key, value });
+      res.json(serializePipelineConfigValue(key, value));
     } catch (error) {
       logger.error("Error fetching config:", error);
       res.status(500).json({ error: "Failed to fetch configuration" });
@@ -232,7 +242,7 @@ export function registerAdminDataPipelineRoutes(app: Express) {
 
       await dataEngineService.setDataEngineConfig(key, value, description, adminUserId);
       
-      res.json({ message: "Configuration saved successfully", key, value });
+      res.json({ message: "Configuration saved successfully", key, configured: true });
     } catch (error) {
       logger.error("Error saving config:", error);
       res.status(500).json({ error: "Failed to save configuration" });

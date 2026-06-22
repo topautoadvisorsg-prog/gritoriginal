@@ -1,10 +1,10 @@
 import React from 'react';
-import { LayoutDashboard, Target, Users, MessageSquare, Brain } from 'lucide-react';
+import { LayoutDashboard, Target, Users, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useScrollAnimation } from './hooks';
 
-const FEATURE_COLORS = ['#38bdf8', '#f43f5e', '#facc15', '#34d399', '#a78bfa'];
-const FEATURE_ICONS = [LayoutDashboard, Target, Users, MessageSquare, Brain];
+const FEATURE_COLORS = ['#38bdf8', '#f43f5e', '#facc15', '#34d399'];
+const FEATURE_ICONS = [LayoutDashboard, Target, Users, MessageSquare];
 
 function FighterFlank({ side, src }: { side: 'left' | 'right'; src: string }) {
     return (
@@ -28,7 +28,6 @@ export function CoreFeaturesSection() {
         { icon: FEATURE_ICONS[1], label: t('core_features.feat2_label'), desc: t('core_features.feat2_desc'), color: FEATURE_COLORS[1] },
         { icon: FEATURE_ICONS[2], label: t('core_features.feat3_label'), desc: t('core_features.feat3_desc'), color: FEATURE_COLORS[2] },
         { icon: FEATURE_ICONS[3], label: t('core_features.feat4_label'), desc: t('core_features.feat4_desc'), color: FEATURE_COLORS[3] },
-        { icon: FEATURE_ICONS[4], label: t('core_features.feat5_label'), desc: t('core_features.feat5_desc'), color: FEATURE_COLORS[4] },
     ];
 
     return (

@@ -30,18 +30,25 @@ const LANGUAGES = [
     { code: "ru", name: "Русский" },
 ];
 
+const normalizeCountryCode = (value?: string | null) => {
+    const normalized = value?.trim().toLowerCase();
+    return COUNTRIES.find((item) =>
+        item.code.toLowerCase() === normalized || item.name.toLowerCase() === normalized
+    )?.code ?? 'US';
+};
+
 export const CountrySelector = () => {
     const { user, isAuthenticated } = useAuth();
     const queryClient = useQueryClient();
     const { i18n } = useTranslation();
 
-    const [country, setCountry] = useState(user?.country || "United States");
+    const [country, setCountry] = useState(normalizeCountryCode(user?.country));
     const [language, setLanguage] = useState(user?.language || "en");
 
     // Sync local state with user data
     useEffect(() => {
         if (user) {
-            if (user.country) setCountry(user.country);
+            if (user.country) setCountry(normalizeCountryCode(user.country));
             if (user.language) {
                 setLanguage(user.language);
                 i18n.changeLanguage(user.language); // Sync i18n with user profile on load
@@ -99,7 +106,7 @@ export const CountrySelector = () => {
                 </SelectTrigger>
                 <SelectContent>
                     {COUNTRIES.map(c => (
-                        <SelectItem key={c.code} value={c.name}>
+                        <SelectItem key={c.code} value={c.code}>
                             <span className={`fi fi-${c.code.toLowerCase()} mr-2`} /> {c.name}
                         </SelectItem>
                     ))}

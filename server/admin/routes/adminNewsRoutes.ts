@@ -9,7 +9,16 @@ import { validate } from '../../middleware/validate';
 import { createNewsSchema } from '../../schemas';
 
 export function registerAdminNewsRoutes(app: Express) {
-  app.post("/api/news", isAuthenticated, requireAdmin, validate(createNewsSchema), async (req: Request, res: Response) => {
+  app.get("/api/admin/news", isAuthenticated, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      res.json(await storage.getAllNewsArticles());
+    } catch (error) {
+      logger.error("Error fetching admin articles:", error);
+      res.status(500).json({ message: "Failed to fetch articles" });
+    }
+  });
+
+  app.post("/api/admin/news", isAuthenticated, requireAdmin, validate(createNewsSchema), async (req: Request, res: Response) => {
     try {
       const articleData = insertNewsArticleSchema.parse(req.body);
 
@@ -31,7 +40,7 @@ export function registerAdminNewsRoutes(app: Express) {
     }
   });
 
-  app.put("/api/news/:id", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+  app.put("/api/admin/news/:id", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
     try {
       const articleData = insertNewsArticleSchema.partial().parse(req.body);
 
@@ -55,7 +64,7 @@ export function registerAdminNewsRoutes(app: Express) {
     }
   });
 
-  app.delete("/api/news/:id", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+  app.delete("/api/admin/news/:id", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
     try {
       const success = await storage.deleteNewsArticle(req.params.id);
       if (!success) {

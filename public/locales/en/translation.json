@@ -49,10 +49,10 @@
         "features": "Features",
         "how_it_works": "How It Works",
         "pricing": "Pricing",
-        "get_started": "Claim Your Spot"
+        "get_started": "Join Free"
     },
     "hero": {
-        "badge": "First 1,000 Subscribers Earn Founder Badges",
+        "badge": "Free Beta Access",
         "title_main": "PROVE YOUR",
         "title_main_red": "FIGHT IQ.",
         "title_accent_red1": "REAL DATA.",
@@ -60,7 +60,7 @@
         "title_accent_red2": "REAL RANK.",
         "subtitle": "No betting. No luck. Just your knowledge against the world.",
         "desc": "GRIT is a competitive analytics arena for MMA fans. Pick fights with real odds. Build a track record that means something. Climb a global leaderboard that doesn't care who you are — only how sharp you are.",
-        "cta": "Claim Your Spot",
+        "cta": "Join Free",
         "cta_secondary": "See How It Works",
         "trust": "Skill-based — no real-money wagering."
     },
@@ -202,7 +202,7 @@
         "title": "EVERYTHING YOU NEED.",
         "subtitle": "Pick fights with real odds. Track fighters with real data. Climb a leaderboard that doesn't lie. Unlock AI when you want deeper analysis.",
         "feat1_label": "Dashboard",
-        "feat1_desc": "Live event countdown, your active picks, current rank, stars to next badge, keys collected — all at a glance.",
+        "feat1_desc": "Live event cards, active picks, current rank, and your personal performance stats at a glance.",
         "feat2_label": "Event Picks",
         "feat2_desc": "Moneyline picks with locked odds. Optional method and round calls tracked privately. Confidence flags shape your strategy.",
         "feat3_label": "Fighter Profiles",

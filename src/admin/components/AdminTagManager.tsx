@@ -58,7 +58,7 @@ export const AdminTagManager: React.FC = () => {
 
     // Fetch fighter's tags when selected
     const { data: fighterTags = [] } = useQuery<FighterTag[]>({
-        queryKey: [`/api/tags/fighter/${selectedFighter?.id}`],
+        queryKey: [`/api/fighters/${selectedFighter?.id}/tags`],
         enabled: !!selectedFighter,
     });
 
@@ -92,24 +92,30 @@ export const AdminTagManager: React.FC = () => {
     // Assign tag to fighter
     const assignMutation = useMutation({
         mutationFn: async ({ tagDefinitionId, value, color }: { tagDefinitionId: string; value: number; color: string }) => {
-            const res = await fetchWithAuth(`/api/tags/fighter/${selectedFighter!.id}`, {
+            const tags = [
+                ...fighterTags
+                    .filter((tag) => tag.tagDefinitionId !== tagDefinitionId)
+                    .map((tag) => ({ tagDefinitionId: tag.tagDefinitionId, value: tag.value, color: tag.color })),
+                { tagDefinitionId, value, color },
+            ];
+            const res = await fetchWithAuth(`/api/fighters/${selectedFighter!.id}/tags`, {
                 method: 'POST',
-                body: JSON.stringify({ tagDefinitionId, value, color }),
+                body: JSON.stringify({ tags }),
             });
             if (!res.ok) throw new Error('Failed to assign tag');
             return res.json();
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/tags/fighter/${selectedFighter?.id}`] }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/fighters/${selectedFighter?.id}/tags`] }),
     });
 
     // Remove tag from fighter
     const removeMutation = useMutation({
         mutationFn: async (tagId: string) => {
-            const res = await fetchWithAuth(`/api/tags/${tagId}`, { method: 'DELETE' });
+            const res = await fetchWithAuth(`/api/fighters/${selectedFighter!.id}/tags/${tagId}`, { method: 'DELETE' });
             if (!res.ok) throw new Error('Failed to remove tag');
             return res.json();
         },
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/tags/fighter/${selectedFighter?.id}`] }),
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: [`/api/fighters/${selectedFighter?.id}/tags`] }),
     });
 
     const filteredFighters = fighters.filter((f) => {

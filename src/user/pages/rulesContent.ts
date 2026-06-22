@@ -70,7 +70,7 @@ export const flagRows = [
   },
 ];
 
-export const rulesSections: RuleSection[] = [
+const allRulesSections: RuleSection[] = [
   {
     id: "picks",
     title: "Picks",
@@ -101,11 +101,11 @@ export const rulesSections: RuleSection[] = [
     id: "participation",
     title: "Participation",
     kicker: "Fixed Card Table",
-    summary: "Every event has a minimum pick count. Miss it and the event does not move stars or rankings.",
+    summary: "Every event has a minimum pick count for progression. Ranked net units still use the active eligible-pick policy.",
     tone: "red",
     icon: ShieldCheck,
     items: [
-      { label: "No percentage formula", value: "Fixed card sizes replace the old 70% rule." },
+      { label: "Progression minimum", value: "Fixed card sizes replace the old 70% progression rule." },
       { label: "Voids recompute", value: "Canceled fights lower the effective card size and qualification requirement." },
       { label: "Live banner", value: "Fight cards show how many more picks are needed to qualify." },
     ],
@@ -258,5 +258,6 @@ export const rulesSections: RuleSection[] = [
   },
 ];
 
+const blockedUntilOperational = new Set(['keys', 'founder', 'monthly-bonus', 'raffle', 'creator', 'tokens']);
+export const rulesSections = allRulesSections.filter((section) => !blockedUntilOperational.has(section.id));
 export const rulesSectionTitles = rulesSections.map((section) => section.title);
-

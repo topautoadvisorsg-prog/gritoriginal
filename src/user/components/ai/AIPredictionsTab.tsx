@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/shared/hooks/use-auth';
+import { useAuth } from '@/shared/hooks/use-auth-clerk';
 import { AIChatTab } from '@/user/components/aichat/AIChatTab';
 import {
     Brain,
@@ -52,6 +52,54 @@ export const AIPredictionsTab: React.FC = () => {
 
     const { data: events, isLoading: eventsLoading } = useQuery<Event[]>({
         queryKey: ['/api/ai/events'],
+        queryFn: async () => {
+            const [eventsResponse, fightersResponse] = await Promise.all([
+                fetch('/api/events'),
+                fetch('/api/fighters'),
+            ]);
+            if (!eventsResponse.ok || !fightersResponse.ok) {
+                throw new Error('Failed to load AI fight selection data');
+            }
+            const eventSummaries = await eventsResponse.json() as Array<{
+                id: string;
+                name: string;
+                date?: string;
+                status: string;
+            }>;
+            const fighters = await fightersResponse.json() as Array<{
+                id: string;
+                firstName: string;
+                lastName: string;
+            }>;
+            const fighterById = new Map(fighters.map((fighter) => [fighter.id, fighter]));
+            const selectableEvents = eventSummaries.filter((event) =>
+                event.status === 'Upcoming' || event.status === 'Live'
+            );
+
+            return Promise.all(selectableEvents.map(async (event) => {
+                const response = await fetch(`/api/events/${event.id}`);
+                if (!response.ok) throw new Error(`Failed to load ${event.name}`);
+                const detail = await response.json() as {
+                    fights?: Array<{
+                        id: string;
+                        fighter1Id: string;
+                        fighter2Id: string;
+                        weightClass?: string;
+                        boutOrder?: number;
+                    }>;
+                };
+                return {
+                    id: event.id,
+                    name: event.name,
+                    date: event.date,
+                    fights: (detail.fights ?? []).flatMap((fight) => {
+                        const fighter1 = fighterById.get(fight.fighter1Id);
+                        const fighter2 = fighterById.get(fight.fighter2Id);
+                        return fighter1 && fighter2 ? [{ ...fight, fighter1, fighter2, hasCachedPrediction: false }] : [];
+                    }),
+                };
+            }));
+        },
         enabled: !!user && isPremium,
     });
 

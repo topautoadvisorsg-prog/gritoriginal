@@ -244,7 +244,7 @@ function StepProfile({ username, setUsername, country, setCountry, avatarUrl, up
           </SelectTrigger>
           <SelectContent>
             {COUNTRIES.map(c => (
-              <SelectItem key={c.code} value={c.name}>
+              <SelectItem key={c.code} value={c.code}>
                 <span className={`fi fi-${c.code.toLowerCase()}`} style={{ marginRight: 8 }} /> {c.name}
               </SelectItem>
             ))}

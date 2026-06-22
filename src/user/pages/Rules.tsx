@@ -61,7 +61,7 @@ export default function Rules() {
             </p>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center sm:min-w-[360px]">
-            <QuickStat label="Systems" value="15" />
+            <QuickStat label="Systems" value={String(rulesSections.length)} />
             <QuickStat label="Badge Tiers" value="5" />
             <QuickStat label="Unit Floor" value="0" />
           </div>
@@ -203,4 +203,3 @@ function QuickStat({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-

@@ -97,7 +97,7 @@ export function ProfileTab({
             </SelectTrigger>
             <SelectContent>
             {COUNTRIES.map((c) => (
-              <SelectItem key={c.code} value={c.name}>
+              <SelectItem key={c.code} value={c.code}>
                 <span className={`fi fi-${c.code.toLowerCase()} mr-2`} />
                 {c.name}
               </SelectItem>

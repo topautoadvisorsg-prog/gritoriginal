@@ -56,6 +56,12 @@ export const AdminOddsEditor: React.FC = () => {
     // Fetch fights for selected event
     const { data: fights = [], isLoading: fightsLoading } = useQuery<Fight[]>({
         queryKey: [`/api/events/${selectedEventId}/fights`],
+        queryFn: async () => {
+            const response = await fetch(`/api/events/${selectedEventId}`);
+            if (!response.ok) throw new Error('Failed to load event fights');
+            const event = await response.json() as { fights?: Fight[] };
+            return event.fights ?? [];
+        },
         enabled: !!selectedEventId,
     });
 
@@ -71,6 +77,7 @@ export const AdminOddsEditor: React.FC = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [`/api/events/${selectedEventId}/fights`] });
+            queryClient.invalidateQueries({ queryKey: [`/api/events/${selectedEventId}`] });
         },
     });
 

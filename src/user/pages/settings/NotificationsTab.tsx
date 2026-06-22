@@ -31,13 +31,13 @@ export function NotificationsTab() {
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label>Pick Deadline Alerts</Label>
-            <p className="text-sm text-muted-foreground">Remind me before picks lock</p>
+            <Label>Push Notifications</Label>
+            <p className="text-sm text-muted-foreground">Allow GRIT notification delivery to this account</p>
           </div>
           <Switch
-            checked={notificationSettings.pickDeadlineAlerts}
-            onCheckedChange={(checked) => updateNotificationSettings({ pickDeadlineAlerts: checked })}
-            data-testid="switch-pick-deadline"
+            checked={notificationSettings.pushNotifications}
+            onCheckedChange={(checked) => updateNotificationSettings({ pushNotifications: checked })}
+            data-testid="switch-push-notifications"
           />
         </div>
 

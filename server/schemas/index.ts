@@ -8,7 +8,7 @@ export const updateProfileSchema = z.object({
   style: z.string().max(50).optional(),
   firstName: z.string().max(100).optional(),
   lastName: z.string().max(100).optional(),
-  country: z.string().max(100).optional(),
+  country: z.string().regex(/^[A-Za-z]{2}$/, 'Country must be an ISO alpha-2 code').transform((value) => value.toUpperCase()).optional(),
   language: z.string().max(10).optional(),
   fightingOutOf: z.string().max(200).optional(),
   socialLinks: z.object({

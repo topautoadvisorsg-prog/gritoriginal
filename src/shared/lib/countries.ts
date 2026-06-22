@@ -41,6 +41,10 @@ export const COUNTRIES = [
     { code: 'CZ', name: 'Czech Republic', flag: '🇨🇿' },
 ];
 
-export const getCountryFlag = (countryName: string) => {
-    return COUNTRIES.find(c => c.name === countryName)?.flag || '🏳️';
-};
+export function normalizeCountryCode(country?: string | null): string | null {
+    const normalized = country?.trim().toLowerCase();
+    if (!normalized) return null;
+    return COUNTRIES.find((item) =>
+        item.code.toLowerCase() === normalized || item.name.toLowerCase() === normalized
+    )?.code ?? null;
+}

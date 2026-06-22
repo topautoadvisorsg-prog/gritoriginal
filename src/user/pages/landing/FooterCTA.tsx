@@ -31,12 +31,12 @@ export function FooterCTA({ onSignIn }: { onSignIn: () => void }) {
                 <div className="lp-footer-cta__corner lp-footer-cta__corner--br" />
                 <div className="lp-section__inner lp-animate" style={{ textAlign: 'center', position: 'relative', zIndex: 10 }}>
                     <h2 className="lp-footer-cta__title">
-                        <span className="lp-hero__title-main">{t('footer_cta.title1')}</span>
-                        <span className="lp-hero__title-accent" data-text={t('footer_cta.title2')}>{t('footer_cta.title2')}</span>
+                        <span className="lp-hero__title-main">{t('hero.title_main')} {t('hero.title_main_red')}</span>
+                        <span className="lp-hero__title-accent">{t('hero.title_accent_red1')} {t('hero.title_accent_white')} {t('hero.title_accent_red2')}</span>
                     </h2>
-                    <p className="lp-footer-cta__subtitle">{t('footer_cta.subtitle')}</p>
-                    <button className="lp-btn lp-btn--primary" onClick={onSignIn}><Swords size={18} /> {t('footer_cta.cta')} <ChevronRight size={18} /></button>
-                    <div className="lp-footer-cta__trust"><ShieldCheck size={13} /> {t('footer_cta.trust')}</div>
+                    <p className="lp-footer-cta__subtitle">{t('hero.desc')}</p>
+                    <button className="lp-btn lp-btn--primary" onClick={onSignIn}><Swords size={18} /> {t('hero.cta')} <ChevronRight size={18} /></button>
+                    <div className="lp-footer-cta__trust"><ShieldCheck size={13} /> {t('hero.trust')}</div>
                 </div>
             </section>
             <footer className="lp-footer">

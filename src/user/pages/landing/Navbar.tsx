@@ -77,7 +77,6 @@ export function Navbar({ onSignIn: _onSignIn }: { onSignIn: () => void }) {
                 <div className="lp-nav__links">
                     <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('features')}>{t('nav.features')}</button>
                     <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('how-it-works')}>{t('nav.how_it_works')}</button>
-                    <button type="button" className="lp-nav__link lp-nav__link--desktop" onClick={() => go('pricing')}>{t('nav.pricing')}</button>
                     <LanguageSelector />
                     {isClerkEnabled ? (
                         <>

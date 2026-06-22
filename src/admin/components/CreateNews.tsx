@@ -115,7 +115,7 @@ export const CreateNews = () => {
         const error = await response.json();
         throw new Error(error.error || 'Failed to delete article');
       }
-      return response.json();
+      return undefined;
     },
     onSuccess: () => {
       toast({ title: 'Success', description: 'Article deleted successfully' });

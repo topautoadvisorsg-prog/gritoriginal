@@ -1,5 +1,5 @@
 import { cn } from '@/shared/lib/utils';
-import { COUNTRIES } from '@/shared/lib/countries';
+import { COUNTRIES, normalizeCountryCode } from '@/shared/lib/countries';
 
 interface CountryFlagProps {
   country?: string | null;
@@ -7,13 +7,8 @@ interface CountryFlagProps {
 }
 
 export function CountryFlag({ country, className }: CountryFlagProps) {
-  const normalized = country?.trim();
-  if (!normalized) return null;
-
-  const match = COUNTRIES.find((item) =>
-    item.code.toLowerCase() === normalized.toLowerCase()
-    || item.name.toLowerCase() === normalized.toLowerCase()
-  );
+  const code = normalizeCountryCode(country);
+  const match = COUNTRIES.find((item) => item.code === code);
 
   if (!match) return null;
 

@@ -22,6 +22,7 @@ import { GamificationTab } from "./settings/GamificationTab";
 import { AccountTab } from "./settings/AccountTab";
 import { TrackerTab } from "./settings/TrackerTab";
 import { MySlipsTab } from "./settings/MySlipsTab";
+import { normalizeCountryCode } from '@/shared/lib/countries';
 
 function isChallenger(user: any) {
   return user?.tier === 'premium' || user?.subscriptionStatus === 'active';
@@ -96,7 +97,7 @@ export default function Settings() {
         showSocialLinks: profile.privacySettings?.showSocialLinks ?? true,
         showUsername: profile.privacySettings?.showUsername ?? true,
       });
-      setCountry(profile.country || "");
+      setCountry(normalizeCountryCode(profile.country) || "");
     }
   }, [profile]);
 
@@ -462,7 +463,7 @@ export default function Settings() {
               Delete Account
             </DialogTitle>
             <DialogDescription className="text-foreground pt-2">
-              <span className="text-destructive font-bold">This action is permanent and cannot be undone.</span> All your data, picks, and identity will be permanently deleted.
+              <span className="text-destructive font-bold">This action is permanent and cannot be undone.</span> GRIT will delete your active account and picks. Records that must be retained for security, legal, or financial reconciliation may be preserved under the applicable retention policy.
             </DialogDescription>
           </DialogHeader>
 

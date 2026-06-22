@@ -99,7 +99,7 @@ export const tabTitles: Record<string, { title: string; subtitle: string }> = {
     'admin-tags': { title: 'Tag Manager', subtitle: 'Admin - Manage fighter scouting tags' },
     'admin-news-tags': { title: 'News Tag Manager', subtitle: 'Admin - Manage tags for news & signals' },
     'admin-badges': { title: 'Badge Manager', subtitle: 'Admin - Assign user badges' },
-    'admin-raffle': { title: 'Raffle Manager', subtitle: 'Admin - Manage raffle tickets & draws' },
+    'admin-raffle': { title: 'Reward Pool Audit', subtitle: 'Admin - Read-only event reward inspection' },
     'admin-verification': { title: 'User Verification', subtitle: 'Admin - Verify users & feature influencers' },
     'admin-odds': { title: 'Odds Editor', subtitle: 'Admin - Set fight odds per event' },
     'admin-users': { title: 'User Manager', subtitle: 'Admin - Manage platform users' },

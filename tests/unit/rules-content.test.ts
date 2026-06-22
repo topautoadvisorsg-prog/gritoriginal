@@ -2,24 +2,26 @@ import { describe, expect, it } from "vitest";
 import { flagRows, participationRows, rulesSectionTitles, rulesSections } from "../../src/user/pages/rulesContent";
 
 describe("rules reference content", () => {
-  it("covers every blueprint rules tab section", () => {
+  it("shows only rules backed by currently enabled product systems", () => {
     expect(rulesSectionTitles).toEqual(
       expect.arrayContaining([
         "Picks",
         "Odds and Units",
         "Participation",
         "Stars and Badges",
-        "Keys",
-        "Founder Badges",
-        "Monthly Bonus",
-        "Raffle",
-        "Creator Economy",
-        "AI Tokens",
         "Live Fighter Rating",
         "Chat and Slips",
         "Notifications",
       ]),
     );
+    expect(rulesSectionTitles).not.toEqual(expect.arrayContaining([
+      "Keys",
+      "Founder Badges",
+      "Monthly Bonus",
+      "Raffle",
+      "Creator Economy",
+      "AI Tokens",
+    ]));
   });
 
   it("keeps the fixed participation table intact", () => {
@@ -41,4 +43,3 @@ describe("rules reference content", () => {
     expect(rulesSections.every((section) => section.items.length > 0)).toBe(true);
   });
 });
-
