@@ -145,8 +145,9 @@ export const userReports = pgTable("user_reports", {
 // Leaderboard Snapshots - Historical rankings preservation
 export const leaderboardSnapshots = pgTable("leaderboard_snapshots", {
   id: uuid("id").defaultRandom().primaryKey(),
-  snapshotType: varchar("snapshot_type", { length: 20 }).notNull(), // 'event' | 'monthly' | 'weekly'
-  eventId: uuid("event_id"), // null for monthly/weekly snapshots
+  snapshotType: varchar("snapshot_type", { length: 20 }).notNull(), // 'event' | 'monthly' | 'yearly'
+  eventId: uuid("event_id"), // null for monthly/yearly snapshots
+  idempotencyKey: varchar("idempotency_key", { length: 255 }),
   snapshotDate: timestamp("snapshot_date").notNull(),
   rankings: jsonb("rankings").$type<{
     userId: string;
@@ -157,7 +158,9 @@ export const leaderboardSnapshots = pgTable("leaderboard_snapshots", {
     currentStreak?: number;
   }[]>().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  idempotencyKeyUniq: uniqueIndex("leaderboard_snapshots_idempotency_key_idx").on(table.idempotencyKey),
+}));
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, updatedAt: true });
 export const updateUserProfileSchema = z.object({
@@ -178,6 +181,19 @@ export const updateUserProfileSchema = z.object({
 });
 
 export const insertUserPickSchema = createInsertSchema(userPicks).omit({ id: true, createdAt: true, updatedAt: true, pointsAwarded: true, isLocked: true });
+
+// Canonical browser -> API contract for competitive picks. GRIT rankings use a
+// fixed one-unit stake; method and round are non-scoring prediction metadata.
+export const createPickRequestSchema = z.object({
+  fightId: z.string().min(1),
+  pickedFighterId: z.string().min(1),
+  pickedMethod: z.enum(['KO/TKO', 'Submission', 'Decision', 'DQ']).default('Decision'),
+  pickedRound: z.number().int().min(1).max(5).nullable().optional().default(null),
+  units: z.literal(1).optional().default(1),
+  confidenceFlag: z.enum(['none', 'yellow', 'red', 'green']).optional().default('none'),
+});
+
+export type CreatePickRequest = z.infer<typeof createPickRequestSchema>;
 export const insertFightResultSchema = createInsertSchema(fightResults).omit({ id: true, createdAt: true, updatedAt: true });
 
 // Types

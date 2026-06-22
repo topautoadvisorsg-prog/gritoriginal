@@ -1,5 +1,7 @@
 # GRIT — Developer Handoff
 
+> **Historical handoff (May 2026).** Claims below about auth, remotes, tests, phases, and deployed capabilities are obsolete. Start with [`README.md`](README.md) and [`docs/system-audit/SYSTEM_STATUS_REPORT.md`](docs/system-audit/SYSTEM_STATUS_REPORT.md).
+
 **Last updated:** 2026-05-21 (end of Week 0)
 **Status:** Week 0 complete. Production DB synced. Ready for Week 1 (Auth + Stack Provisioning).
 

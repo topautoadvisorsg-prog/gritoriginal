@@ -4,11 +4,13 @@ import { storage } from "../../storage";
 import { syncEventToSupabase } from '../../services/outboundSyncService';
 import { insertEventSchema, CARD_PLACEMENTS, type CardPlacement } from "../../../shared/schema";
 import { v4 as uuidv4 } from "uuid";
-import { createLeaderboardSnapshot } from "../../services/leaderboardService";
 import { logger } from '../../utils/logger';
 import { validate } from '../../middleware/validate';
 import { updateEventSchema, updateEventStatusSchema } from '../../schemas';
+import { allowedEventStatusTransitions, canTransitionEventStatus } from '../../../shared/models/eventLifecycle';
 import { archiveEventFightCaches } from '../../ai/fightQaCache';
+import { closeEventWithSnapshot, EventCloseError, getEventCloseStatus } from '../../services/eventCloseService';
+import { runEventProgression } from '../../services/progressionService';
 import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
@@ -164,7 +166,6 @@ export function registerAdminEventRoutes(app: Express) {
       if (body.organization !== undefined) updateData.organization = body.organization;
       if (body.description !== undefined) updateData.description = body.description;
       if (body.imageUrl !== undefined) updateData.imageUrl = body.imageUrl;
-      if (body.status !== undefined) updateData.status = body.status;
 
       const updatedEvent = await storage.updateEvent(id as string, updateData);
       if (!updatedEvent) {
@@ -189,21 +190,14 @@ export function registerAdminEventRoutes(app: Express) {
       const { id } = req.params;
       const { status } = req.body;
 
-      const VALID_TRANSITIONS: Record<string, string[]> = {
-        'Upcoming': ['Live', 'Cancelled', 'Postponed'],
-        'Live': ['Completed', 'Cancelled'],
-        'Completed': ['Closed'],
-        'Closed': ['Archived'],
-        'Postponed': ['Upcoming', 'Cancelled'],
-      };
-
       const event = await storage.getEvent(id as string);
       if (!event) {
         return res.status(404).json({ error: "Event not found" });
       }
 
-      const allowed = VALID_TRANSITIONS[event.status];
-      if (!allowed || !allowed.includes(status)) {
+      const allowed = allowedEventStatusTransitions(event.status);
+      const isCloseRetry = status === 'Closed' && event.status === 'Closed';
+      if (!canTransitionEventStatus(event.status, status) && !isCloseRetry) {
         return res.status(400).json({
           error: `Invalid transition: ${event.status} → ${status}. Allowed: ${(allowed || []).join(', ') || 'none'}`,
         });
@@ -224,27 +218,66 @@ export function registerAdminEventRoutes(app: Express) {
         archiveEventFightCaches(id as string).catch(() => {}); // non-blocking
       }
 
-      if (status === 'Closed' && event.status !== 'Closed') {
-        await createLeaderboardSnapshot('event', id as string);
-
-        // Trigger raffle draw
-        const { drawRaffleWinner } = await import('../../services/raffleService');
-        const winner = await drawRaffleWinner(id as string);
-        if (winner) {
-          logger.info(`[Event Close] Raffle winner drawn: User ${winner.winnerId}, Pool: $${(winner.poolTotal / 100).toFixed(2)}`);
-        }
-
-        // Trigger user progression calculations
-        const { runEventProgression } = await import('../../services/progressionService');
-        await runEventProgression(id as string);
-        logger.info(`[Event Close] Progression calculations completed for event ${id}`);
+      if (status === 'Closed') {
+        const result = await closeEventWithSnapshot(id as string);
+        return res.json({
+          ...result.event,
+          closeState: result.closeState,
+          progressionState: result.progressionState,
+          snapshotId: result.snapshot?.id ?? null,
+        });
       }
 
       const updated = await storage.updateEvent(id as string, { status });
       res.json(updated);
     } catch (error) {
+      if (error instanceof EventCloseError) {
+        const status = error.code === 'EVENT_NOT_FOUND' ? 404
+          : error.code === 'INVALID_EVENT_CLOSE_STATE' ? 409
+          : 503;
+        return res.status(status).json({ code: error.code, error: error.message, event: error.event });
+      }
       logger.error("Error updating event status:", error);
       res.status(500).json({ error: "Failed to update event status" });
+    }
+  });
+
+  app.post("/api/admin/events/:id/close/retry", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const result = await closeEventWithSnapshot(req.params.id as string);
+      res.json(result);
+    } catch (error) {
+      if (error instanceof EventCloseError) {
+        const status = error.code === 'EVENT_NOT_FOUND' ? 404
+          : error.code === 'INVALID_EVENT_CLOSE_STATE' ? 409
+          : 503;
+        return res.status(status).json({ code: error.code, error: error.message, event: error.event });
+      }
+      logger.error('Error retrying event close:', error);
+      res.status(500).json({ error: 'Failed to retry event close' });
+    }
+  });
+
+  app.get("/api/admin/events/:id/close-status", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const run = await getEventCloseStatus(req.params.id as string);
+      if (!run) return res.status(404).json({ error: 'No close run found for this event' });
+      res.json(run);
+    } catch (error) {
+      logger.error('Error reading event close status:', error);
+      res.status(500).json({ error: 'Failed to read event close status' });
+    }
+  });
+
+  app.post("/api/admin/events/:id/progression/retry", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const results = await runEventProgression(req.params.id as string);
+      res.json({ progressionState: 'completed', processedUsers: results.length });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown progression failure';
+      const status = message === 'EVENT_SNAPSHOT_NOT_COMPLETE' ? 409 : 500;
+      logger.error('Error running event progression:', error);
+      res.status(status).json({ error: message });
     }
   });
 

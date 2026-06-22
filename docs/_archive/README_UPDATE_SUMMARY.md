@@ -1,5 +1,7 @@
 # 📝 README UPDATE SUMMARY
 
+> **Archived historical summary.** This does not describe the current platform. Use [`../../README.md`](../../README.md) and [`../system-audit/SYSTEM_STATUS_REPORT.md`](../system-audit/SYSTEM_STATUS_REPORT.md).
+
 ## ✅ COMPLETED
 
 The [`README.md`](README.md) has been comprehensively updated to reflect the complete GRIT platform as of Week 3 implementation.

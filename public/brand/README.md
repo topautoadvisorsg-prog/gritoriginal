@@ -1,20 +1,21 @@
-# Brand Assets — Drop Zone
+# Brand Assets
 
-Drop final SVG files in this folder using these exact filenames. The `BrandAsset` component will pick them up automatically and replace the grey-box placeholders.
+**Truth date:** June 21, 2026
 
-| Filename | What it is |
+This folder currently contains no production SVG assets. `BrandAsset` requests `/brand/<name>.svg` and renders a labeled gray placeholder when the file fails to load.
+
+Supported filenames are defined by `src/shared/components/ui/BrandAsset.tsx`:
+
+| Filename | Intended asset |
 |---|---|
-| `grit-wordmark.svg` | Full GRIT wordmark logo |
+| `grit-wordmark.svg` | Full GRIT wordmark |
 | `grit-icon.svg` | GRIT icon mark |
-| `founder-1.svg` | Founder I badge (first 10) |
-| `founder-2.svg` | Founder II badge (first 50) |
-| `founder-3.svg` | Founder III badge (first 500) |
-| `founder-4.svg` | Founder IV badge (first 1,000) |
-| `ninja.svg` | Tier 1 badge |
-| `samurai.svg` | Tier 2 badge |
-| `master.svg` | Tier 3 badge |
-| `grandmaster.svg` | Tier 4 badge |
-| `goat.svg` | Tier 5 badge |
-| `gold-key.svg` | Gold Key (5-keys milestone) |
+| `founder-1.svg` through `founder-4.svg` | Founder badges |
+| `ninja.svg` | Ninja progression badge |
+| `samurai.svg` | Samurai progression badge |
+| `master.svg` | Master progression badge |
+| `grandmaster.svg` | Grandmaster progression badge |
+| `goat.svg` | GOAT progression badge |
+| `gold-key.svg` | Gold Key milestone |
 
-No code changes needed when files arrive. Just drop them in.
+Adding a correctly named SVG activates it without code changes. Assets must be original/licensed, optimized, accessible at small sizes, and reviewed against the current gold/red visual system. This folder is unrelated to fighter images; fighters use approved face/headshot or quarter-to-half-body photography.

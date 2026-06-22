@@ -2,10 +2,11 @@
 
 All files in this folder are pre-Phase-1 artifacts kept for historical reference. **Do not trust them for current behavior** — they describe code/features that have since been deleted, rewritten, or never deployed.
 
-The current source of truth is in the project root:
+The current source of truth is the project root README and current subsystem documentation:
 
 - [`/README.md`](../../README.md) — entry point
-- [`/HANDOFF.md`](../../HANDOFF.md) — current state + next steps
+- [`System audit`](../system-audit/SYSTEM_STATUS_REPORT.md) — current state
+- [`Architecture`](../architecture/README.md) — runtime boundaries
 - [`/SPEC.md`](../../SPEC.md) — Phase 1 plan
 - `~/Downloads/grit-blueprint-v6.1.2-production.html` — master product blueprint
 

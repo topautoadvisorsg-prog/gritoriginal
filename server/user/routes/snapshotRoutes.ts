@@ -4,26 +4,35 @@ import { db } from "../../db";
 import { leaderboardSnapshots } from "../../../shared/models/auth";
 import { eq, desc } from "drizzle-orm";
 import { logger } from '../../utils/logger';
+import {
+    eventIdSchema,
+    periodSnapshotTypeSchema,
+    snapshotHistoryQuerySchema,
+} from '../../../shared/models/ranking';
+import { getLatestEventLeaderboardSnapshot } from '../../services/leaderboardSnapshotService';
 
 export function registerSnapshotRoutes(app: Express) {
 
     app.get("/api/leaderboard/history", async (req: Request, res: Response) => {
         try {
-            const { type, limit = 10 } = req.query;
-            const limitNum = Number(limit) || 10;
+            const parsed = snapshotHistoryQuerySchema.safeParse(req.query);
+            if (!parsed.success) {
+                return res.status(400).json({ message: 'Invalid snapshot history query', details: parsed.error.issues });
+            }
+            const { type, limit } = parsed.data;
 
             let snapshots;
-            if (type && typeof type === 'string') {
+            if (type) {
                 snapshots = await db.select()
                     .from(leaderboardSnapshots)
                     .where(eq(leaderboardSnapshots.snapshotType, type))
                     .orderBy(desc(leaderboardSnapshots.snapshotDate))
-                    .limit(limitNum);
+                    .limit(limit);
             } else {
                 snapshots = await db.select()
                     .from(leaderboardSnapshots)
                     .orderBy(desc(leaderboardSnapshots.snapshotDate))
-                    .limit(limitNum);
+                    .limit(limit);
             }
 
             res.json(snapshots);
@@ -35,11 +44,13 @@ export function registerSnapshotRoutes(app: Express) {
 
     app.get("/api/leaderboard/event/:eventId", async (req: Request, res: Response) => {
         try {
-            const eventId = req.params.eventId as string;
+            const parsedEventId = eventIdSchema.safeParse(req.params.eventId);
+            if (!parsedEventId.success) {
+                return res.status(400).json({ message: 'Invalid event ID' });
+            }
+            const eventId = parsedEventId.data;
 
-            const [snapshot] = await db.select()
-                .from(leaderboardSnapshots)
-                .where(eq(leaderboardSnapshots.eventId, eventId));
+            const snapshot = await getLatestEventLeaderboardSnapshot(eventId);
 
             if (!snapshot) {
                 return res.status(404).json({ message: "No snapshot found for this event" });
@@ -53,12 +64,20 @@ export function registerSnapshotRoutes(app: Express) {
     });
 
     app.get("/api/leaderboard/latest/:type", async (req: Request, res: Response) => {
-        const { type } = req.params;
+        const parsedType = periodSnapshotTypeSchema.safeParse(req.params.type);
+        if (!parsedType.success) {
+            return res.status(400).json({ message: 'Snapshot type must be monthly or yearly' });
+        }
+        const type = parsedType.data;
         try {
             const snapshots = await db.select()
                 .from(leaderboardSnapshots)
                 .where(eq(leaderboardSnapshots.snapshotType, (type as string)))
-                .orderBy(desc(leaderboardSnapshots.snapshotDate))
+                .orderBy(
+                    desc(leaderboardSnapshots.snapshotDate),
+                    desc(leaderboardSnapshots.createdAt),
+                    desc(leaderboardSnapshots.id),
+                )
                 .limit(1);
 
             if (snapshots.length === 0) {
@@ -72,4 +91,3 @@ export function registerSnapshotRoutes(app: Express) {
         }
     });
 }
-

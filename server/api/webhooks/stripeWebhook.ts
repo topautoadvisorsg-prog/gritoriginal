@@ -60,7 +60,7 @@ export function registerStripeWebhook(app: Express): void {
 
                             // New subscribers are NOT added to the raffle pool immediately.
                             // They must complete at least 1 full month before qualifying.
-                            // createRafflePoolEntries() in raffleService enforces this at event close.
+                            // Promotional raffle fulfillment is disabled and no longer runs at event close.
                             logger.info(`[Raffle] New subscriber ${userId} — raffle eligibility starts after 1 full month`);
                             logger.info(`Successfully upgraded user ${userId} to premium`);
                         } catch (err) {

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { db } from "../../db";
-import { users, userPicks } from "../../../shared/schema";
-import { desc, sql, eq } from "drizzle-orm";
+import { users } from "../../../shared/schema";
+import { desc, eq } from "drizzle-orm";
 import { logger } from '../../utils/logger';
 import { parsePagination, paginatedResponse } from '../../utils/pagination';
 
@@ -10,6 +10,13 @@ export function registerLeaderboardRoutes(app: Express): void {
   app.get("/api/leaderboard", async (req, res) => {
     try {
       const { country, eventId } = req.query;
+
+      if (eventId !== undefined) {
+        return res.status(400).json({
+          code: 'EVENT_SCOPE_REQUIRES_EXPLICIT_ROUTE',
+          message: 'Use /api/leaderboard/event/:eventId for event rankings.',
+        });
+      }
 
       // Base query
       let query = db
@@ -45,10 +52,6 @@ export function registerLeaderboardRoutes(app: Express): void {
           .where(eq(users.country, country as string))
           .orderBy(desc(users.totalPoints));
       }
-
-      // TODO: Implement Event-Specific Leaderboard Logic (requires 'user_event_points' or similar aggregation)
-      // For now, if eventId is passed, we might need to join with userPicks or a snapshot table.
-      // Keeping it simple for now: Global Points filtered by Country.
 
       const leaderboard = await query;
 

@@ -3,11 +3,12 @@ import type { Express, Request } from "express";
 import { isAuthenticated } from '../../auth/guards';
 import { db } from "../../db";
 import { users, userPicks, events, eventFights, newsArticles, userKeys, userSettings, rafflePool } from "../../../shared/schema";
-import { leaderboardSnapshots, type User } from "../../../shared/models/auth";
+import { type User } from "../../../shared/models/auth";
 import { eq, desc, sql, and, gte, lte, inArray, ne } from "drizzle-orm";
 import { config } from '../../config/env';
 import { logger } from '../../utils/logger';
 import { pointsAwardedToMoney, pointsAwardedToNetUnits } from '../../utils/netUnits';
+import { getLatestEventLeaderboardSnapshot } from '../../services/leaderboardSnapshotService';
 
 export function registerDashboardRoutes(app: Express): void {
     app.get("/api/me/dashboard", isAuthenticated, async (req, res) => {
@@ -22,7 +23,10 @@ export function registerDashboardRoutes(app: Express): void {
 
             // 2. Upcoming Event & Participation
             const [nextEvent] = await db.select().from(events)
-                .where(and(ne(events.status, 'ARCHIVED'), ne(events.status, 'CLOSED')))
+                .where(inArray(events.status, [
+                    'Upcoming', 'Postponed', 'Live',
+                    'OPEN', 'LIVE', 'draft', 'ready',
+                ]))
                 .orderBy(events.date).limit(1);
 
             let upcomingEvent = null;
@@ -44,9 +48,16 @@ export function registerDashboardRoutes(app: Express): void {
                 };
             }
 
-            // 3. Leaderboard Context (Recent Active Event)
+            // 3. Leaderboard Context (Latest Closed Event)
+            const [lastClosedEvent] = await db.select().from(events)
+                .where(inArray(events.status, ['Closed', 'Archived', 'CLOSED', 'ARCHIVED']))
+                .orderBy(desc(events.date))
+                .limit(1);
+
             let leaderboardContext = null;
-            const [lastEventSnapshot] = await db.select().from(leaderboardSnapshots).orderBy(desc(leaderboardSnapshots.createdAt)).limit(1);
+            const lastEventSnapshot = lastClosedEvent
+                ? await getLatestEventLeaderboardSnapshot(lastClosedEvent.id)
+                : null;
             if (lastEventSnapshot) {
                 const rankings = lastEventSnapshot.rankings || [];
                 const userRankIdx = rankings.findIndex(r => r.userId === userId);
@@ -57,6 +68,8 @@ export function registerDashboardRoutes(app: Express): void {
                         netUnits: userRank.netUnits || 0,
                         above: rankings[userRankIdx - 1] || null,
                         below: rankings[userRankIdx + 1] || null,
+                        eventId: lastClosedEvent?.id || null,
+                        eventName: lastClosedEvent?.name || null,
                     };
                 }
             }
@@ -97,15 +110,15 @@ export function registerDashboardRoutes(app: Express): void {
                 .orderBy(desc(newsArticles.publishedAt)).limit(3);
 
             // 7. Recent Activity (Last Closed Event)
-            const [lastClosedEvent] = await db.select().from(events)
-                .where(inArray(events.status, ['Closed', 'Completed', 'ARCHIVED']))
-                .orderBy(desc(events.date))
-                .limit(1);
-
             let recentActivity = null;
             if (lastClosedEvent) {
                 const fights = await db.select().from(eventFights).where(eq(eventFights.eventId, lastClosedEvent.id));
-                const picks = await db.select().from(userPicks).where(and(eq(userPicks.userId, userId), inArray(userPicks.fightId, fights.map(f => f.id))));
+                const picks = await db.select().from(userPicks).where(and(
+                    eq(userPicks.userId, userId),
+                    inArray(userPicks.fightId, fights.map(f => f.id)),
+                    eq(userPicks.status, 'active'),
+                    ne(userPicks.confidenceFlag, 'red'),
+                ));
                 
                 let eventProfit = 0;
                 let correctPicks = 0;

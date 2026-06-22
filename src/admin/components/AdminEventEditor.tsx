@@ -14,6 +14,11 @@ import {
 } from 'lucide-react';
 import { useFighters } from '@/shared/hooks/useFighters';
 import { ComboInput } from '@/shared/components/ui/combo-input';
+import {
+    EVENT_STATUSES,
+    allowedEventStatusTransitions,
+    type EventStatus,
+} from '@shared/models/eventLifecycle';
 
 const PRESET_CITIES = ['Las Vegas', 'Miami', 'Los Angeles', 'Houston', 'New York', 'Abu Dhabi', 'London', 'Singapore', 'Jacksonville', 'Dallas'];
 const PRESET_STATES = ['Nevada', 'Florida', 'California', 'Texas', 'New York', 'Arizona', 'Georgia', 'New Jersey'];
@@ -56,11 +61,16 @@ interface FightData {
     status: string;
 }
 
-const STATUS_FLOW = ['draft', 'ready'] as const;
-
 const STATUS_CONFIG: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
-    'draft': { icon: Edit3, color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/30' },
-    'ready': { icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/20 border-green-500/30' },
+    Upcoming: { icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/30' },
+    Live: { icon: Radio, color: 'text-red-400', bg: 'bg-red-500/20 border-red-500/30' },
+    Completed: { icon: CheckCircle2, color: 'text-green-400', bg: 'bg-green-500/20 border-green-500/30' },
+    Closed: { icon: CheckCircle2, color: 'text-blue-400', bg: 'bg-blue-500/20 border-blue-500/30' },
+    Archived: { icon: Archive, color: 'text-muted-foreground', bg: 'bg-muted border-border' },
+    Postponed: { icon: Clock, color: 'text-orange-400', bg: 'bg-orange-500/20 border-orange-500/30' },
+    Cancelled: { icon: XCircle, color: 'text-destructive', bg: 'bg-destructive/20 border-destructive/30' },
+    draft: { icon: Edit3, color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/30' },
+    ready: { icon: AlertTriangle, color: 'text-amber-400', bg: 'bg-amber-500/20 border-amber-500/30' },
 };
 
 export const AdminEventEditor: React.FC = () => {
@@ -122,7 +132,7 @@ export const AdminEventEditor: React.FC = () => {
 
     // Update event status mutation
     const statusMutation = useMutation({
-        mutationFn: async (status: string) => {
+        mutationFn: async (status: EventStatus) => {
             const res = await fetchWithAuth(`/api/admin/events/${selectedEventId}/status`, {
                 method: 'PUT',
                 body: JSON.stringify({ status }),
@@ -189,7 +199,9 @@ export const AdminEventEditor: React.FC = () => {
         return f ? `${f.firstName} ${f.lastName}` : id.slice(0, 8);
     };
 
-    const currentStatusIndex = eventDetail ? STATUS_FLOW.indexOf(eventDetail.status as typeof STATUS_FLOW[number]) : -1;
+    const allowedStatuses = eventDetail
+        ? allowedEventStatusTransitions(eventDetail.status)
+        : [];
 
     const sortedEvents = [...events].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
@@ -249,28 +261,24 @@ export const AdminEventEditor: React.FC = () => {
                         </CardHeader>
                         <CardContent>
                             <div className="flex items-center gap-2 flex-wrap">
-                                {STATUS_FLOW.map((status, idx) => {
+                                {EVENT_STATUSES.map((status) => {
                                     const config = STATUS_CONFIG[status];
                                     const Icon = config.icon;
                                     const isCurrent = eventDetail.status === status;
-                                    const isPast = idx < currentStatusIndex;
-                                    const isNext = idx === currentStatusIndex + 1;
+                                    const isAllowed = allowedStatuses.includes(status);
 
                                     return (
                                         <React.Fragment key={status}>
-                                            {idx > 0 && (
-                                                <div className={`h-px w-4 ${isPast ? 'bg-primary' : 'bg-border'}`} />
-                                            )}
                                             <Button
                                                 variant={isCurrent ? 'default' : 'outline'}
                                                 size="sm"
-                                                disabled={!isNext || statusMutation.isPending}
+                                                disabled={!isAllowed || statusMutation.isPending}
                                                 onClick={() => statusMutation.mutate(status)}
-                                                className={`gap-1.5 ${isCurrent ? 'ring-2 ring-primary/50' : ''} ${isPast ? 'opacity-50' : ''}`}
+                                                className={`gap-1.5 ${isCurrent ? 'ring-2 ring-primary/50' : ''}`}
                                             >
                                                 <Icon className="h-3.5 w-3.5" />
                                                 {status}
-                                                {statusMutation.isPending && isNext && (
+                                                {statusMutation.isPending && isAllowed && (
                                                     <Loader2 className="h-3 w-3 animate-spin" />
                                                 )}
                                             </Button>
@@ -279,19 +287,23 @@ export const AdminEventEditor: React.FC = () => {
                                 })}
                             </div>
 
-                            {/* Warning when trying to mark as ready without fights */}
-                            {eventDetail.status === 'draft' && (!eventDetail.fights || eventDetail.fights.length === 0) && (
+                            {eventDetail.status === 'draft' && (
                                 <p className="text-xs text-amber-400 mt-3 flex items-center gap-1.5">
                                     <AlertTriangle className="h-3.5 w-3.5" />
-                                    Warning: This event has no fights. Add fights before marking as Ready.
+                                    Legacy draft detected. Move it to Upcoming before continuing.
                                 </p>
                             )}
-                            
-                            {/* Ready status confirmation */}
+
                             {eventDetail.status === 'ready' && (
-                                <p className="text-xs text-green-400 mt-3 flex items-center gap-1.5">
-                                    <CheckCircle2 className="h-3.5 w-3.5" />
-                                    Event is live and visible to users.
+                                <p className="text-xs text-amber-400 mt-3 flex items-center gap-1.5">
+                                    <AlertTriangle className="h-3.5 w-3.5" />
+                                    Legacy ready status requires reviewed database classification; lifecycle actions are disabled.
+                                </p>
+                            )}
+
+                            {statusMutation.error && (
+                                <p className="text-xs text-destructive mt-3">
+                                    {statusMutation.error.message}
                                 </p>
                             )}
                         </CardContent>

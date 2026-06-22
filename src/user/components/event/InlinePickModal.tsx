@@ -45,7 +45,7 @@ export const InlinePickModal: React.FC<InlinePickModalProps> = ({
   );
   const [method, setMethod] = useState<string>(existingPick?.pickedMethod || 'Decision');
   const [round, setRound] = useState<string>(existingPick?.pickedRound || '');
-  const [units, setUnits] = useState<number>(existingPick?.units || 1);
+  const units = 1;
   const [expanded, setExpanded] = useState(false); // Auto-expand after fighter selected
 
   const mutation = useMutation({
@@ -59,7 +59,7 @@ export const InlinePickModal: React.FC<InlinePickModalProps> = ({
           fightId: fight.id,
           pickedFighterId: selectedFighterId,
           pickedMethod: method || undefined,
-          pickedRound: round || undefined,
+          pickedRound: round ? Number(round) : null,
           units,
         }),
       });
@@ -226,26 +226,13 @@ export const InlinePickModal: React.FC<InlinePickModalProps> = ({
               </div>
             )}
 
-            {/* Units Selection */}
+            {/* Competitive picks always use the canonical one-unit stake. */}
             <div>
               <label className="text-[10px] font-black text-white/60 uppercase tracking-widest block mb-2">
                 Units
               </label>
-              <div className="flex gap-2">
-                {[1, 2, 3, 4, 5].map((u) => (
-                  <button
-                    key={u}
-                    onClick={() => setUnits(u)}
-                    className={cn(
-                      "flex-1 py-2.5 rounded-lg border text-xs font-black transition-all",
-                      units === u
-                        ? "border-[#E8A020] bg-[#E8A020]/10 text-[#E8A020]"
-                        : "border-white/10 bg-white/[0.02] text-white/40 hover:border-white/30"
-                    )}
-                  >
-                    {u}u
-                  </button>
-                ))}
+              <div className="rounded-lg border border-[#E8A020]/30 bg-[#E8A020]/10 px-3 py-2.5 text-xs font-black text-[#E8A020]">
+                1 unit fixed stake
               </div>
             </div>
 

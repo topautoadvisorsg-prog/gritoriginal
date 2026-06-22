@@ -20,7 +20,6 @@ interface FantasyPickSectionProps {
   isEditingPick?: boolean;
   totalRounds: number;
   units: number;
-  onSelectUnits: (units: number) => void;
   /** Confidence flag selection */
   confidenceFlag?: 'none' | 'yellow' | 'red' | 'green';
   onSelectConfidenceFlag?: (flag: 'none' | 'yellow' | 'red' | 'green') => void;
@@ -49,7 +48,6 @@ export const FantasyPickSection: React.FC<FantasyPickSectionProps> = ({
   isEditingPick = false,
   totalRounds,
   units,
-  onSelectUnits,
   confidenceFlag = 'none',
   onSelectConfidenceFlag,
   flagBudget = 0,
@@ -395,31 +393,17 @@ export const FantasyPickSection: React.FC<FantasyPickSectionProps> = ({
           </div>
         )}
 
-        {/* Units Selection */}
+        {/* Competitive picks always use the canonical one-unit stake. */}
         {!isLocked && (
           <div className="space-y-4 mt-6">
             <div className="flex items-center gap-2">
               <Coins className="w-4 h-4 text-muted-foreground" />
               <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                How many units?
+                Competitive stake
               </span>
             </div>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((u) => (
-                <button
-                  key={u}
-                  onClick={() => { click(); onSelectUnits(u); }}
-                  className={cn(
-                    "flex-1 py-3 rounded-xl border-2 font-bold text-lg transition-all duration-200",
-                    "hover:scale-[1.02] active:scale-[0.98]",
-                    units === u
-                      ? "border-primary bg-primary/10 text-primary shadow-lg shadow-primary/10"
-                      : "border-border/50 bg-muted/20 text-foreground hover:border-primary/40"
-                  )}
-                >
-                  {u}u
-                </button>
-              ))}
+            <div className="rounded-xl border-2 border-primary/40 bg-primary/10 px-4 py-3 font-bold text-primary">
+              1 unit fixed stake
             </div>
           </div>
         )}

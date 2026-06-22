@@ -1,33 +1,18 @@
-# Sound Files Directory
+# Sound Assets
 
-This directory contains sound effect files for the gamification system.
+**Truth date:** June 21, 2026
 
-## Required Sound Files
+All six sound files referenced by `src/shared/lib/sounds.ts` currently exist:
 
-The following sound files should be added:
+| File | Runtime key | Use |
+|---|---|---|
+| `click.mp3` | `click` | Selection feedback |
+| `impact.mp3` | `impact` | KO/TKO pick feedback |
+| `chime.mp3` | `chime` | Submission pick feedback |
+| `confirm.mp3` | `confirm` | Decision/lock confirmation |
+| `fanfare.mp3` | `fanfare` | Achievement/badge feedback |
+| `ambience.mp3` | `ambience` | Background ambience; declared but no dedicated helper is exported |
 
-| Filename | Purpose | Recommended Duration |
-|----------|---------|---------------------|
-| `click.mp3` | UI interaction feedback | 0.1s |
-| `success.mp3` | Pick locked, correct prediction | 0.5s |
-| `celebrate.mp3` | Badge earned, streak milestone | 1.0s |
-| `error.mp3` | Error or invalid action | 0.3s |
-| `levelup.mp3` | Tier upgrade or major achievement | 1.5s |
+Howler loads files from `/sounds`. Sounds are cached in memory and respect `gamification-settings.enableSounds` in `localStorage`; absence or invalid settings defaults to enabled.
 
-## Recommended Sources (Free & Royalty-Free)
-
-1. **Freesound.org** - Large library of free sounds
-2. **Mixkit.co** - Pre-licensed sound effects
-3. **Zapsplat.com** - Free with attribution
-
-## Audio Format Guidelines
-
-- **Format**: MP3 (best browser support) or OGG (smaller size)
-- **Bitrate**: 128kbps for small file sizes
-- **Sample Rate**: 44.1kHz
-- **Channels**: Mono (saves space, suitable for UI sounds)
-
-## Implementation
-
-Sounds are loaded via `src/lib/sounds.ts` using Howler.js.
-User preferences for sound are stored in GamificationContext and localStorage.
+Asset licensing/provenance is not recorded here and must be verified before commercial release. `ambience.mp3` is about 4.4 MB and should be compressed or removed if it remains unused.

@@ -15,6 +15,34 @@
       "when": 1779549546114,
       "tag": "0001_week2_creator_token_rating_antifraud",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782081065367,
+      "tag": "0002_canonical_event_lifecycle",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1782084620243,
+      "tag": "0003_leaderboard_snapshot_idempotency",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1782085789862,
+      "tag": "0004_durable_event_close_runs",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1782101680925,
+      "tag": "0005_event_progression_applications",
+      "breakpoints": true
     }
   ]
 }

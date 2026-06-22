@@ -128,7 +128,7 @@ const FightDetail: React.FC = () => {
   const [selectedFighter, setSelectedFighter] = useState<string | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [selectedRound, setSelectedRound] = useState<number | null>(null);
-  const [selectedUnits, setSelectedUnits] = useState(1);
+  const selectedUnits = 1;
   const [selectedConfidenceFlag, setSelectedConfidenceFlag] = useState<'none' | 'yellow' | 'red' | 'green'>('none');
   const [isPickLocked, setIsPickLocked] = useState(false);
 
@@ -138,7 +138,6 @@ const FightDetail: React.FC = () => {
       setSelectedFighter(existingPick.pickedFighterId);
       setSelectedMethod(existingPick.pickedMethod);
       setSelectedRound(existingPick.pickedRound);
-      setSelectedUnits(existingPick.units || 1);
       setSelectedConfidenceFlag(existingPick.confidenceFlag || 'none');
       setIsPickLocked(existingPick.isLocked || false);
     }
@@ -179,7 +178,7 @@ const FightDetail: React.FC = () => {
 
   // Save pick mutation
   const savePick = useMutation({
-    mutationFn: async (data: { fightId: string; pickedFighterId: string; pickedMethod: string; pickedRound: number | null; units: number }) => {
+    mutationFn: async (data: { fightId: string; pickedFighterId: string; pickedMethod: string; pickedRound: number | null; units: 1; confidenceFlag: 'none' | 'yellow' | 'red' | 'green' }) => {
       const res = await fetch('/api/picks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -237,7 +236,6 @@ const FightDetail: React.FC = () => {
     setSelectedFighter(null);
     setSelectedMethod(null);
     setSelectedRound(null);
-    setSelectedUnits(1);
     setIsPickLocked(false);
   };
 
@@ -303,7 +301,6 @@ const FightDetail: React.FC = () => {
       const snapFighter = selectedFighter;
       const snapMethod = selectedMethod;
       const snapRound = selectedRound;
-      const snapUnits = selectedUnits;
       const snapConfidenceFlag = selectedConfidenceFlag;
 
       savePick.mutate({
@@ -311,7 +308,7 @@ const FightDetail: React.FC = () => {
         pickedFighterId: snapFighter,
         pickedMethod: snapMethod,
         pickedRound: snapRound,
-        units: snapUnits,
+        units: 1,
         confidenceFlag: snapConfidenceFlag,
       });
       setIsPickLocked(true);
@@ -520,7 +517,6 @@ const FightDetail: React.FC = () => {
             isEditingPick={deletePick.isPending}
             totalRounds={fight.rounds}
             units={selectedUnits}
-            onSelectUnits={setSelectedUnits}
             confidenceFlag={selectedConfidenceFlag}
             onSelectConfidenceFlag={setSelectedConfidenceFlag}
             flagBudget={qualificationStatus?.flagBudget ?? 0}

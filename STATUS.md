@@ -1,5 +1,7 @@
 # GRIT — Live Status
 
+> **Historical planning document.** This file is not the current implementation status. Use [`docs/system-audit/SYSTEM_STATUS_REPORT.md`](docs/system-audit/SYSTEM_STATUS_REPORT.md) and [`docs/system-audit/PRODUCTION_READINESS.md`](docs/system-audit/PRODUCTION_READINESS.md).
+
 > **Latest update 2026-06-19 by Cody:** Second enterprise UI pass completed. Removed the watermarked landing hero locally, tightened first-viewport hierarchy, labeled fallback intelligence/leaderboard/chat as previews, corrected the one-unit pick mock, and repaired the Spanish hero schema. Production health is green but `/api/fighters` returns `[]`, so the populated pick journey remains blocked on staging data. Build and 91/91 tests pass.
 > **The handoff doc.** Whoever opens the repo next picks up from here. Only one dev works at a time. No collision concerns — just a clean "what's done, what's next" baton pass.
 >

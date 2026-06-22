@@ -21,7 +21,9 @@
     "smoke:pipeline": "tsx tests/pipeline_smoke_test.ts",
     "test:load:chat": "tsx tests/chat_load_test.ts",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "staging:check": "tsx scripts/staging/verifyStagingTarget.ts",
+    "rankings:reconcile:staging": "tsx scripts/staging/reconcileRankingTotals.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

@@ -14,7 +14,10 @@
  */
 import { describe, it, expect } from 'vitest';
 import { config } from '../../server/config/env';
-import { applyProgressionRules } from '../../server/services/progressionService';
+import {
+  applyProgressionRules,
+  calculateCanonicalProgressionPerformance,
+} from '../../server/services/progressionService';
 
 /** Mirrors the path-to-next-badge calc in progressionRoutes.ts */
 function computeNextBadge(currentBadge: string, currentStars: number) {
@@ -186,6 +189,28 @@ describe('ROI Star Progression Rules (Blueprint §7)', () => {
 
     expect(grandmaster.newBadge).toBe('grandmaster');
     expect(goat.newBadge).toBe('goat');
+  });
+});
+
+describe('Canonical progression performance', () => {
+  it('uses stored net-unit hundredths with a fixed one-unit denominator', () => {
+    const performance = calculateCanonicalProgressionPerformance([
+      { status: 'active', confidenceFlag: 'none', fightStatus: 'Completed', pointsAwarded: 150 },
+      { status: 'active', confidenceFlag: 'green', fightStatus: 'Completed', pointsAwarded: -100 },
+    ]);
+
+    expect(performance).toEqual({ eligiblePicksCount: 2, netUnits: 0.5, roi: 25 });
+  });
+
+  it('excludes red, voided, and incomplete picks exactly like rankings', () => {
+    const performance = calculateCanonicalProgressionPerformance([
+      { status: 'active', confidenceFlag: 'red', fightStatus: 'Completed', pointsAwarded: 500 },
+      { status: 'voided', confidenceFlag: 'none', fightStatus: 'Completed', pointsAwarded: 500 },
+      { status: 'active', confidenceFlag: 'yellow', fightStatus: 'Live', pointsAwarded: 500 },
+      { status: 'active', confidenceFlag: 'yellow', fightStatus: 'Completed', pointsAwarded: -100 },
+    ]);
+
+    expect(performance).toEqual({ eligiblePicksCount: 1, netUnits: -1, roi: -100 });
   });
 });
 

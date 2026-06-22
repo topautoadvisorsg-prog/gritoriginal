@@ -177,10 +177,38 @@ export const events = pgTable("events", {
   organization: varchar("organization", { length: 50 }).notNull().default('UFC'),
   description: text("description"),
   imageUrl: text("image_url"),
-  status: varchar("status", { length: 20 }).notNull().default('draft'), // draft, ready
+  status: varchar("status", { length: 20 }).notNull().default('Upcoming'),
   lockTime: timestamp("lock_time"), // When picks lock for the event
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+/** Durable orchestration state for retryable event close processing. */
+export const eventCloseRuns = pgTable("event_close_runs", {
+  eventId: uuid("event_id").primaryKey(),
+  state: varchar("state", { length: 30 }).notNull().default('processing'),
+  progressionState: varchar("progression_state", { length: 30 }).notNull().default('deferred'),
+  attempts: integer("attempts").notNull().default(1),
+  snapshotCompletedAt: timestamp("snapshot_completed_at"),
+  lastError: text("last_error"),
+  startedAt: timestamp("started_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+/** Exactly-once progression application ledger for each user and closed event. */
+export const eventProgressionApplications = pgTable("event_progression_applications", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  eventId: uuid("event_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  state: varchar("state", { length: 30 }).notNull().default('processing'),
+  attempts: integer("attempts").notNull().default(1),
+  result: jsonb("result").$type<Record<string, unknown>>(),
+  lastError: text("last_error"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+}, (table) => ({
+  eventUserUniq: uniqueIndex("event_progression_applications_event_user_idx").on(table.eventId, table.userId),
+}));
 
 /**
  * Event Fights table - Stores fights for each event
@@ -682,6 +710,7 @@ export const insertFightHistorySchema = createInsertSchema(fightHistory, {
 
 export const insertEventSchema = createInsertSchema(events, {
   date: z.coerce.date(),
+  status: z.enum(['Upcoming', 'Live', 'Completed', 'Closed', 'Archived', 'Postponed', 'Cancelled']).optional(),
 }).omit({ id: true, createdAt: true });
 
 export const insertEventFightSchema = createInsertSchema(eventFights).omit({ id: true });

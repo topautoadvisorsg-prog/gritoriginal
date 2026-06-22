@@ -16,6 +16,7 @@ import { config } from '../config/env';
 import { v4 as uuidv4 } from "uuid";
 import { sendNotificationToUser } from './notificationService';
 import { calculateProfit, formatProfit } from '../roiCalculator';
+import { canonicalRankingEligibilityConditions } from './rankingEligibility';
 
 // ──────────────────────────────────────
 // Scoring Functions
@@ -199,7 +200,11 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             const userPicksResult = await tx
                 .select({ totalPoints: sql<number>`COALESCE(SUM(${userPicks.pointsAwarded}), 0)` })
                 .from(userPicks)
-                .where(eq(userPicks.userId, userId));
+                .innerJoin(eventFights, sql`${userPicks.fightId} = ${eventFights.id}::text`)
+                .where(and(
+                    eq(userPicks.userId, userId),
+                    ...canonicalRankingEligibilityConditions(),
+                ));
 
             const totalPoints = Number(userPicksResult[0]?.totalPoints || 0);
 

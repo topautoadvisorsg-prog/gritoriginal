@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { createLeaderboardSnapshot } from "../../services/leaderboardService";
 import { logger } from '../../utils/logger';
+import { automaticSnapshotCreationSchema, snapshotCreationSchema } from '../../../shared/models/ranking';
 
 export function registerAdminSnapshotRoutes(app: Express) {
 
@@ -12,7 +13,11 @@ export function registerAdminSnapshotRoutes(app: Express) {
    */
   app.post("/api/admin/leaderboard/snapshot", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
     try {
-      const { type = "monthly", eventId, startDate, endDate } = req.body;
+      const parsed = snapshotCreationSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: 'Invalid snapshot request', details: parsed.error.issues });
+      }
+      const { type, eventId, startDate, endDate } = parsed.data;
 
       const snapshot = await createLeaderboardSnapshot(
         type,
@@ -38,15 +43,11 @@ export function registerAdminSnapshotRoutes(app: Express) {
    */
   app.post("/api/admin/leaderboard/snapshot/auto", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
     try {
-      const { type = "monthly", eventId } = req.body;
-
-      if (!['event', 'monthly', 'yearly'].includes(type)) {
-        return res.status(400).json({ message: `Invalid type '${type}'. Must be 'event', 'monthly', or 'yearly'.` });
+      const parsed = automaticSnapshotCreationSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: 'Invalid automatic snapshot request', details: parsed.error.issues });
       }
-
-      if (type === 'event' && !eventId) {
-        return res.status(400).json({ message: "eventId is required for type 'event'" });
-      }
+      const { type, eventId } = parsed.data;
 
       logger.info(`[AdminSnapshot] Auto-generating ${type} snapshot`);
 

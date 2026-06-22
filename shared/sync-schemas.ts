@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EVENT_STATUSES, normalizeInboundEventStatus } from './models/eventLifecycle';
 
 /**
  * Zod schemas for Data Engine Synchronization (The Bible v2.0)
@@ -132,7 +133,7 @@ export const syncEventSchema = z.object({
   state: z.string().max(100).optional(),
   country: z.string().min(1).max(100),
   organization: z.string().max(50).default('UFC'),
-  status: z.enum(['OPEN', 'LIVE', 'CLOSED', 'ARCHIVED', 'Upcoming', 'Live', 'Completed', 'Closed', 'Archived', 'Cancelled', 'Postponed']).default('Upcoming'),
+  status: z.preprocess(normalizeInboundEventStatus, z.enum(EVENT_STATUSES)).default('Upcoming'),
   imageUrl: z.string().url().optional(),
   // Embedded fights — inserted into event_fights when present
   eventFights: z.array(syncEventFightSchema).optional(),

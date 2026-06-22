@@ -1,5 +1,7 @@
 # GRIT — Fantasy MMA Platform
 
+> **Archived pre-Phase-1 README.** Production-ready claims below are obsolete and must not be used for release decisions. See [`../../README.md`](../../README.md).
+
 **The Ultimate MMA Fantasy League & Analytics System**
 
 ![Status](https://img.shields.io/badge/status-production%20ready-brightgreen)

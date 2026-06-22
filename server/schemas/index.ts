@@ -1,13 +1,6 @@
 import { z } from 'zod';
-
-export const createPickSchema = z.object({
-  fightId: z.string().min(1),
-  predictedWinnerId: z.string().min(1),
-  method: z.enum(['KO/TKO', 'Submission', 'Decision', 'DQ']).optional(),
-  round: z.number().int().min(1).max(5).optional(),
-  confidence: z.number().int().min(1).max(5).optional(), // 1-5 unit confidence (legacy)
-  confidenceFlag: z.enum(['none', 'yellow', 'red', 'green']).optional().default('none'), // Flag for ranking/stars
-});
+import { EVENT_STATUSES } from '../../shared/models/eventLifecycle';
+export { createPickRequestSchema as createPickSchema } from '../../shared/models/auth';
 
 export const updateProfileSchema = z.object({
   username: z.string().min(3).max(50).optional(),
@@ -36,13 +29,18 @@ export const updateProfileSchema = z.object({
 export const updateEventSchema = z.object({
   name: z.string().min(1).max(200).optional(),
   date: z.string().optional(),
-  location: z.string().max(200).optional(),
-  status: z.enum(['draft', 'ready']).optional(),
+  venue: z.string().min(1).max(255).optional(),
+  city: z.string().min(1).max(255).optional(),
+  state: z.string().max(100).nullable().optional(),
+  country: z.string().min(1).max(100).optional(),
+  organization: z.string().min(1).max(50).optional(),
+  description: z.string().nullable().optional(),
+  imageUrl: z.string().nullable().optional(),
   fights: z.array(z.any()).optional(),
-}).passthrough();
+}).strict();
 
 export const updateEventStatusSchema = z.object({
-  status: z.enum(['draft', 'ready']),
+  status: z.enum(EVENT_STATUSES),
 });
 
 export const createNewsSchema = z.object({

@@ -1,17 +1,23 @@
 import { db } from "../db";
-import { users, userPicks, events, eventFights } from "../../shared/schema";
-import { fightResults } from "../../shared/models/auth";
+import {
+    users,
+    userPicks,
+    events,
+    eventFights,
+    eventCloseRuns,
+    eventProgressionApplications,
+} from "../../shared/schema";
 import { eq, and, gte, lte, inArray, ne, sql, desc } from "drizzle-orm";
-import { calculateProfit } from "../roiCalculator";
 import { logger } from "../utils/logger";
 import { config } from '../config/env';
 import { sendNotificationToUser } from './notificationService';
+import { isEligibleScoredPick } from './rankingEligibility';
 
 // Badge tier progression order - centralized in config
 const BADGE_TIERS = config.BADGE_TIERS;
 type BadgeTier = typeof BADGE_TIERS[number];
 
-interface ProgressionResult {
+export interface ProgressionResult {
     userId: string;
     participationPct: number;
     roi: number;
@@ -24,6 +30,9 @@ interface ProgressionResult {
     reason: string;
 }
 
+type ProgressionTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+type ProgressionDatabase = Pick<ProgressionTransaction, 'select' | 'update'>;
+
 type ProgressionRuleInput = {
     oldStars: number;
     oldBadge: BadgeTier;
@@ -33,6 +42,31 @@ type ProgressionRuleInput = {
     validPicksCount: number;
     requiredPicks: number;
 };
+
+type CanonicalProgressionPick = {
+    status: string;
+    confidenceFlag: string;
+    fightStatus: string;
+    pointsAwarded: number | null;
+};
+
+export function calculateCanonicalProgressionPerformance(picks: CanonicalProgressionPick[]) {
+    const eligiblePicks = picks.filter((pick) => isEligibleScoredPick({
+        pickStatus: pick.status,
+        confidenceFlag: pick.confidenceFlag,
+        fightStatus: pick.fightStatus,
+    }));
+    const netUnitsHundredths = eligiblePicks.reduce(
+        (total, pick) => total + (pick.pointsAwarded ?? 0),
+        0,
+    );
+    const netUnits = netUnitsHundredths / 100;
+    const roi = eligiblePicks.length > 0
+        ? Math.round((netUnits / eligiblePicks.length) * 10000) / 100
+        : 0;
+
+    return { eligiblePicksCount: eligiblePicks.length, netUnits, roi };
+}
 
 export function applyProgressionRules(input: ProgressionRuleInput) {
     const {
@@ -82,7 +116,7 @@ export function applyProgressionRules(input: ProgressionRuleInput) {
 
 /**
  * Calculate user's star/badge progression PER EVENT (not monthly).
- * Triggered when an event closes.
+ * Not invoked automatically during event close until per-event progression is replay-safe.
  * 
  * Rules:
  * - Only NONE, GREEN, and YELLOW confidence flag picks count toward ranking/stars
@@ -101,16 +135,17 @@ export function applyProgressionRules(input: ProgressionRuleInput) {
 export async function calculateUserProgressionPerEvent(
     userId: string,
     eventId: string,
+    database: ProgressionDatabase = db as unknown as ProgressionDatabase,
 ): Promise<ProgressionResult> {
     // 1. Get user's current state
-    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    const [user] = await database.select().from(users).where(eq(users.id, userId));
     if (!user) throw new Error(`User ${userId} not found`);
 
     const oldStars = user.starLevel ?? 0;
     const oldBadge = (user.progressBadge ?? 'none') as BadgeTier;
 
     // 2. Get the closed event
-    const [closedEvent] = await db.select().from(events)
+    const [closedEvent] = await database.select().from(events)
         .where(and(
             eq(events.id, eventId),
             eq(events.status, 'Closed'),
@@ -131,7 +166,7 @@ export async function calculateUserProgressionPerEvent(
     }
 
     // 3. Get all fights from this event (excluding cancelled)
-    const allFights = await db.select().from(eventFights)
+    const allFights = await database.select().from(eventFights)
         .where(and(
             eq(eventFights.eventId, eventId),
             ne(eventFights.status, 'Cancelled'),
@@ -154,7 +189,7 @@ export async function calculateUserProgressionPerEvent(
 
     // 4. Get user's active picks for this event - ONLY NONE, GREEN, and YELLOW flags count (RED excluded)
     const fightIds = allFights.map(f => f.id);
-    const userPicksData = await db.select().from(userPicks)
+    const userPicksData = await database.select().from(userPicks)
         .where(and(
             eq(userPicks.userId, userId),
             inArray(userPicks.fightId, fightIds),
@@ -167,42 +202,16 @@ export async function calculateUserProgressionPerEvent(
     const hasMetPickMinimum = validPicksCount >= requiredPicks;
     const participationPct = Math.round((validPicksCount / totalAvailableFights) * 100);
 
-    // 5. Calculate ROI
+    // 5. Use the same stored net-unit score and eligibility policy as rankings.
     const fightMap = new Map(allFights.map(f => [f.id, f]));
-    let totalUnits = 0;
-    let totalProfit = 0;
-
-    // Get fight results for scored fights
-    const resultsData = fightIds.length > 0
-        ? await db.select().from(fightResults).where(inArray(fightResults.fightId, fightIds))
-        : [];
-    const resultMap = new Map(resultsData.map(r => [r.fightId, r]));
-
-    for (const pick of userPicksData) {
-        const units = pick.units || 1;
-        totalUnits += units;
-
-        const result = resultMap.get(pick.fightId);
-        if (!result || !result.winnerId) continue;
-
-        // Draw/NC = refund (0 profit)
-        if (result.winnerId === 'draw' || result.winnerId === 'no_contest') {
-            continue;
-        }
-
-        const isWin = pick.pickedFighterId === result.winnerId;
-        
-        // USE LOCKED ODDS (odds at submission time, not current odds)
-        const lockedOdds = pick.lockedOdds;
-        
-        if (isWin) {
-            totalProfit += lockedOdds ? calculateProfit(lockedOdds, units) : units;
-        } else {
-            totalProfit -= units;
-        }
-    }
-
-    const roi = totalUnits > 0 ? Math.round((totalProfit / totalUnits) * 10000) / 100 : 0;
+    const performance = calculateCanonicalProgressionPerformance(userPicksData.map((pick) => ({
+        status: pick.status,
+        confidenceFlag: pick.confidenceFlag,
+        fightStatus: fightMap.get(pick.fightId)?.status ?? '',
+        pointsAwarded: pick.pointsAwarded,
+    })));
+    const totalProfit = performance.netUnits;
+    const roi = performance.roi;
 
     // 6. Apply progression rules
     let { newStars, newBadge, reason } = applyProgressionRules({
@@ -230,10 +239,10 @@ export async function calculateUserProgressionPerEvent(
     const currentStreak = await calculateUserStreak(userId, eventId, {
         netUnits: totalProfit,
         qualified: hasMetPickMinimum && roi > 0
-    });
+    }, database);
 
     // 8. Persist changes
-    await db.update(users)
+    await database.update(users)
         .set({
             starLevel: newStars,
             progressBadge: newBadge,
@@ -257,61 +266,157 @@ export async function calculateUserProgressionPerEvent(
     };
 }
 
-/**
- * Run progression calculation for ALL users on a specific event.
- * Triggered when an event closes.
- */
-export async function runEventProgression(
-    eventId: string,
-): Promise<ProgressionResult[]> {
-    // Get all users who have made picks in this event
+export async function executeProgressionApplicationWorkflow(
+    application: { state: string; result: Record<string, unknown> | null },
+    calculate: () => Promise<ProgressionResult>,
+    complete: (result: ProgressionResult) => Promise<void>,
+) {
+    if (application.state === 'completed') {
+        if (!application.result) throw new Error('COMPLETED_PROGRESSION_MISSING_RESULT');
+        return { applied: false, result: application.result as unknown as ProgressionResult };
+    }
+
+    const result = await calculate();
+    await complete(result);
+    return { applied: true, result };
+}
+
+export async function applyUserEventProgressionOnce(userId: string, eventId: string) {
+    try {
+        return await db.transaction(async (tx) => {
+            const [inserted] = await tx.insert(eventProgressionApplications)
+                .values({ eventId, userId, state: 'processing', attempts: 1 })
+                .onConflictDoNothing({
+                    target: [eventProgressionApplications.eventId, eventProgressionApplications.userId],
+                })
+                .returning({ id: eventProgressionApplications.id });
+
+            const [application] = await tx.select().from(eventProgressionApplications)
+                .where(and(
+                    eq(eventProgressionApplications.eventId, eventId),
+                    eq(eventProgressionApplications.userId, userId),
+                ))
+                .for('update');
+
+            if (!application) throw new Error('PROGRESSION_APPLICATION_NOT_FOUND');
+
+            if (!inserted && application.state !== 'completed') {
+                await tx.update(eventProgressionApplications)
+                    .set({
+                        state: 'processing',
+                        attempts: sql`${eventProgressionApplications.attempts} + 1`,
+                        lastError: null,
+                        updatedAt: new Date(),
+                    })
+                    .where(eq(eventProgressionApplications.id, application.id));
+            }
+
+            return executeProgressionApplicationWorkflow(
+                application,
+                () => calculateUserProgressionPerEvent(userId, eventId, tx),
+                async (result) => {
+                    await tx.update(eventProgressionApplications)
+                        .set({
+                            state: 'completed',
+                            result: result as unknown as Record<string, unknown>,
+                            lastError: null,
+                            completedAt: new Date(),
+                            updatedAt: new Date(),
+                        })
+                        .where(eq(eventProgressionApplications.id, application.id));
+                },
+            );
+        });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown progression failure';
+        const [failedInserted] = await db.insert(eventProgressionApplications)
+            .values({ eventId, userId, state: 'failed', attempts: 1, lastError: message.slice(0, 2000) })
+            .onConflictDoNothing({
+                target: [eventProgressionApplications.eventId, eventProgressionApplications.userId],
+            })
+            .returning({ id: eventProgressionApplications.id });
+        if (!failedInserted) {
+            await db.update(eventProgressionApplications)
+                .set({
+                    state: 'failed',
+                    attempts: sql`${eventProgressionApplications.attempts} + 1`,
+                    lastError: message.slice(0, 2000),
+                    updatedAt: new Date(),
+                })
+                .where(and(
+                    eq(eventProgressionApplications.eventId, eventId),
+                    eq(eventProgressionApplications.userId, userId),
+                    ne(eventProgressionApplications.state, 'completed'),
+                ));
+        }
+        throw error;
+    }
+}
+
+/** Replay-safe progression runner. Activation remains separate from event close. */
+export async function runEventProgression(eventId: string): Promise<ProgressionResult[]> {
+    const [closeRun] = await db.select().from(eventCloseRuns)
+        .where(eq(eventCloseRuns.eventId, eventId));
+    if (!closeRun?.snapshotCompletedAt) throw new Error('EVENT_SNAPSHOT_NOT_COMPLETE');
+
+    await db.update(eventCloseRuns)
+        .set({ progressionState: 'processing', updatedAt: new Date() })
+        .where(eq(eventCloseRuns.eventId, eventId));
+
     const eventFightsList = await db.select({ id: eventFights.id })
         .from(eventFights)
         .where(eq(eventFights.eventId, eventId));
-    
     const fightIds = eventFightsList.map(f => f.id);
-    
-    const usersWithPicks = await db.selectDistinct({ userId: userPicks.userId })
-        .from(userPicks)
-        .where(and(
-            eq(userPicks.status, 'active'),
-            inArray(userPicks.fightId, fightIds),
-        ));
-    
+    const usersWithPicks = fightIds.length > 0
+        ? await db.selectDistinct({ userId: userPicks.userId })
+            .from(userPicks)
+            .where(and(eq(userPicks.status, 'active'), inArray(userPicks.fightId, fightIds)))
+        : [];
+
     const results: ProgressionResult[] = [];
+    const failures: string[] = [];
 
     for (const userRecord of usersWithPicks) {
         try {
-            const result = await calculateUserProgressionPerEvent(userRecord.userId, eventId);
-            
-            // Send notification if user gained stars or badges
-            if (result.starsGained > 0 || result.badgeGained) {
+            const application = await applyUserEventProgressionOnce(userRecord.userId, eventId);
+            results.push(application.result);
+
+            if (application.applied && (application.result.starsGained > 0 || application.result.badgeGained)) {
                 try {
-                    let title = '🌟 Your Progression Updated!';
-                    let message = `You earned ${result.starsGained} stars from the event`;
-                    
-                    if (result.badgeGained) {
-                        title = '🏆 Badge Unlocked!';
-                        message = `Congratulations! You've earned the ${result.badgeGained} badge`;
-                    }
-                    
+                    const title = application.result.badgeGained ? 'Badge Unlocked!' : 'Your Progression Updated!';
+                    const message = application.result.badgeGained
+                        ? `Congratulations! You've earned the ${application.result.badgeGained} badge`
+                        : `You earned ${application.result.starsGained} stars from the event`;
                     await sendNotificationToUser(userRecord.userId, title, message, {
                         type: 'progression_update',
-                        starsGained: result.starsGained.toString(),
-                        badgeGained: result.badgeGained || '',
-                        eventId: eventId
+                        starsGained: application.result.starsGained.toString(),
+                        badgeGained: application.result.badgeGained || '',
+                        eventId,
                     });
                 } catch (notifError) {
                     logger.warn('Failed to send progression notification:', notifError);
                 }
             }
-            
-            results.push(result);
         } catch (error) {
-            logger.error(`Progression calculation failed for user ${userRecord.userId} on event ${eventId}:`, error);
+            failures.push(userRecord.userId);
+            logger.error(`Progression failed for user ${userRecord.userId} on event ${eventId}:`, error);
         }
     }
 
+    if (failures.length > 0) {
+        await db.update(eventCloseRuns)
+            .set({
+                progressionState: 'failed',
+                lastError: `Progression failed for ${failures.length} user(s)`,
+                updatedAt: new Date(),
+            })
+            .where(eq(eventCloseRuns.eventId, eventId));
+        throw new Error(`EVENT_PROGRESSION_INCOMPLETE:${failures.length}`);
+    }
+
+    await db.update(eventCloseRuns)
+        .set({ progressionState: 'completed', state: 'completed', lastError: null, updatedAt: new Date() })
+        .where(eq(eventCloseRuns.eventId, eventId));
     return results;
 }
 
@@ -395,35 +500,16 @@ export async function calculateUserProgression(
     const hasMetPickMinimum = validPicksCount >= requiredPicks;
     const participationPct = Math.round((validPicksCount / totalAvailableFights) * 100);
 
-    // 5. Calculate ROI using locked odds
-    let totalUnits = 0;
-    let totalProfit = 0;
-
-    const resultsData = fightIds.length > 0
-        ? await db.select().from(fightResults).where(inArray(fightResults.fightId, fightIds))
-        : [];
-    const resultMap = new Map(resultsData.map(r => [r.fightId, r]));
-
-    for (const pick of userPicksData) {
-        const units = pick.units || 1;
-        totalUnits += units;
-
-        const result = resultMap.get(pick.fightId);
-        if (!result || !result.winnerId) continue;
-
-        if (result.winnerId === 'draw' || result.winnerId === 'no_contest') continue;
-
-        const isWin = pick.pickedFighterId === result.winnerId;
-        const lockedOdds = pick.lockedOdds;
-
-        if (isWin) {
-            totalProfit += lockedOdds ? calculateProfit(lockedOdds, units) : units;
-        } else {
-            totalProfit -= units;
-        }
-    }
-
-    const roi = totalUnits > 0 ? Math.round((totalProfit / totalUnits) * 10000) / 100 : 0;
+    // 5. Use canonical stored net units, matching event snapshots and global totals.
+    const fightMap = new Map(allFights.map(f => [f.id, f]));
+    const performance = calculateCanonicalProgressionPerformance(userPicksData.map((pick) => ({
+        status: pick.status,
+        confidenceFlag: pick.confidenceFlag,
+        fightStatus: fightMap.get(pick.fightId)?.status ?? '',
+        pointsAwarded: pick.pointsAwarded,
+    })));
+    const totalProfit = performance.netUnits;
+    const roi = performance.roi;
 
     // 6. Apply progression rules (identical to per-event logic)
     const { newStars, newBadge, reason } = applyProgressionRules({
@@ -494,10 +580,11 @@ export async function runMonthlyProgression(
 export async function calculateUserStreak(
     userId: string, 
     currentEventId?: string,
-    currentEventResult?: { netUnits: number; qualified: boolean }
+    currentEventResult?: { netUnits: number; qualified: boolean },
+    database: ProgressionDatabase = db as unknown as ProgressionDatabase,
 ): Promise<number> {
     // 1. Get all closed events, ordered by date DESC
-    const closedEvents = await db.select()
+    const closedEvents = await database.select()
         .from(events)
         .where(eq(events.status, 'Closed'))
         .orderBy(desc(events.date));
@@ -517,7 +604,7 @@ export async function calculateUserStreak(
         }
 
         // Re-calculate performance for historical events
-        const performance = await getEventPerformance(userId, event.id);
+        const performance = await getEventPerformance(userId, event.id, database);
         if (performance.netUnits > 0 && performance.qualified) {
             streak++;
         } else {
@@ -531,8 +618,8 @@ export async function calculateUserStreak(
 /**
  * Helper to calculate performance for a single event without full progression side-effects.
  */
-async function getEventPerformance(userId: string, eventId: string) {
-    const allFights = await db.select().from(eventFights)
+async function getEventPerformance(userId: string, eventId: string, database: ProgressionDatabase) {
+    const allFights = await database.select().from(eventFights)
         .where(and(
             eq(eventFights.eventId, eventId),
             ne(eventFights.status, 'Cancelled'),
@@ -542,7 +629,7 @@ async function getEventPerformance(userId: string, eventId: string) {
     if (totalAvailableFights === 0) return { netUnits: 0, qualified: false };
 
     const fightIds = allFights.map(f => f.id);
-    const userPicksData = await db.select().from(userPicks)
+    const userPicksData = await database.select().from(userPicks)
         .where(and(
             eq(userPicks.userId, userId),
             inArray(userPicks.fightId, fightIds),
@@ -554,30 +641,16 @@ async function getEventPerformance(userId: string, eventId: string) {
     const requiredPicks = config.getRequiredPicks(totalAvailableFights);
     const hasMetPickMinimum = validPicksCount >= requiredPicks;
 
-    let totalProfit = 0;
-    const resultsData = fightIds.length > 0
-        ? await db.select().from(fightResults).where(inArray(fightResults.fightId, fightIds))
-        : [];
-    const resultMap = new Map(resultsData.map(r => [r.fightId, r]));
-
-    for (const pick of userPicksData) {
-        const units = pick.units || 1;
-        const result = resultMap.get(pick.fightId);
-        if (!result || !result.winnerId) continue;
-        if (result.winnerId === 'draw' || result.winnerId === 'no_contest') continue;
-
-        const isWin = pick.pickedFighterId === result.winnerId;
-        const lockedOdds = pick.lockedOdds;
-        
-        if (isWin) {
-            totalProfit += lockedOdds ? calculateProfit(lockedOdds, units) : units;
-        } else {
-            totalProfit -= units;
-        }
-    }
+    const fightMap = new Map(allFights.map(f => [f.id, f]));
+    const performance = calculateCanonicalProgressionPerformance(userPicksData.map((pick) => ({
+        status: pick.status,
+        confidenceFlag: pick.confidenceFlag,
+        fightStatus: fightMap.get(pick.fightId)?.status ?? '',
+        pointsAwarded: pick.pointsAwarded,
+    })));
 
     return { 
-        netUnits: totalProfit, 
-        qualified: hasMetPickMinimum && totalProfit > 0 
+        netUnits: performance.netUnits,
+        qualified: hasMetPickMinimum && performance.netUnits > 0,
     };
 }

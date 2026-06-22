@@ -1,5 +1,7 @@
 # GRIT — Phase 1 SPEC
 
+> **Product plan, not implementation evidence.** Current code/deployment truth and launch gates are in [`docs/system-audit/SYSTEM_STATUS_REPORT.md`](docs/system-audit/SYSTEM_STATUS_REPORT.md) and [`docs/system-audit/PRODUCTION_READINESS.md`](docs/system-audit/PRODUCTION_READINESS.md).
+
 **Version:** v2.1 · Blueprint-first rewrite + self-audit gap fixes
 **Date:** 2026-05-23
 **Status:** Pending founder review

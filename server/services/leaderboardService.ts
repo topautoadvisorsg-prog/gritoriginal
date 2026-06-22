@@ -1,8 +1,26 @@
 import { db } from "../db";
 import { leaderboardSnapshots, users, userPicks, eventFights, events } from "../../shared/schema";
-import { eq, and, sql, gte, lte, inArray, ne } from "drizzle-orm";
+import { eq, and, sql, gte, lte, inArray } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../utils/logger";
+import { canonicalRankingEligibilityConditions } from './rankingEligibility';
+import type { SnapshotType } from '../../shared/models/ranking';
+
+export function createSnapshotIdempotencyKey(
+    type: SnapshotType,
+    eventId?: string,
+    startDate?: Date,
+    endDate?: Date,
+): string {
+    if (type === 'event') {
+        if (!eventId) throw new Error('eventId is required for an event snapshot');
+        return `event:${eventId}`;
+    }
+    if (!startDate || !endDate) {
+        throw new Error(`${type} snapshots require an exact date range`);
+    }
+    return `${type}:${startDate.toISOString()}:${endDate.toISOString()}`;
+}
 
 /**
  * Create leaderboard snapshot using NET UNITS ONLY formula.
@@ -14,7 +32,7 @@ import { logger } from "../utils/logger";
  * Just pure net units. Highest net units = Rank 1.
  */
 export async function createLeaderboardSnapshot(
-    type: 'event' | 'monthly' | 'yearly' = 'event',
+    type: SnapshotType = 'event',
     eventId?: string,
     startDate?: Date,  // For monthly/yearly
     endDate?: Date     // For monthly/yearly
@@ -34,6 +52,7 @@ export async function createLeaderboardSnapshot(
     }
 
     logger.info(`[Leaderboard] Creating ${type} snapshot: eventId=${eventId || 'N/A'}, dateRange=${startDate?.toISOString()} to ${endDate?.toISOString()}`);
+    const idempotencyKey = createSnapshotIdempotencyKey(type, eventId, startDate, endDate);
 
     // Get all users with picks in the specified period
     let userPicksQuery;
@@ -46,12 +65,10 @@ export async function createLeaderboardSnapshot(
             fightId: userPicks.fightId,
         })
         .from(userPicks)
-        .innerJoin(eventFights, sql`${userPicks.fightId}::uuid = ${eventFights.id}`)
+        .innerJoin(eventFights, sql`${userPicks.fightId} = ${eventFights.id}::text`)
         .where(and(
             eq(eventFights.eventId, eventId),
-            eq(eventFights.status, 'Completed'),
-            eq(userPicks.status, 'active'),
-            ne(userPicks.confidenceFlag, 'red')
+            ...canonicalRankingEligibilityConditions()
         ));
     } else if ((type === 'monthly' || type === 'yearly') && startDate && endDate) {
         // Monthly/Yearly: picks within date range
@@ -61,14 +78,12 @@ export async function createLeaderboardSnapshot(
             fightId: userPicks.fightId,
         })
         .from(userPicks)
-        .innerJoin(eventFights, sql`${userPicks.fightId}::uuid = ${eventFights.id}`)
+        .innerJoin(eventFights, sql`${userPicks.fightId} = ${eventFights.id}::text`)
         .innerJoin(events, eq(eventFights.eventId, events.id))
         .where(and(
-            eq(eventFights.status, 'Completed'),
             gte(events.date, startDate),
             lte(events.date, endDate),
-            eq(userPicks.status, 'active'),
-            ne(userPicks.confidenceFlag, 'red')
+            ...canonicalRankingEligibilityConditions()
         ));
     } else {
         logger.warn('[Leaderboard] Invalid parameters for snapshot creation');
@@ -125,11 +140,23 @@ export async function createLeaderboardSnapshot(
             id: uuidv4(),
             snapshotType: type,
             eventId: eventId || null,
+            idempotencyKey,
             snapshotDate: new Date(),
             rankings: finalRankings,
             createdAt: new Date(),
         })
+        .onConflictDoNothing({ target: leaderboardSnapshots.idempotencyKey })
         .returning();
+
+    if (!snapshot) {
+        const [existing] = await db.select()
+            .from(leaderboardSnapshots)
+            .where(eq(leaderboardSnapshots.idempotencyKey, idempotencyKey))
+            .limit(1);
+        if (!existing) throw new Error(`Snapshot idempotency conflict without existing row: ${idempotencyKey}`);
+        logger.info(`[Leaderboard] Reused existing snapshot for ${idempotencyKey}`);
+        return existing;
+    }
 
     // Fire rank-change notifications (Blueprint §11) by comparing this snapshot
     // against the previous one of the same type+scope. Best-effort: a failure here
@@ -163,7 +190,11 @@ async function notifyRankChangesSinceLastSnapshot(
                 ? eq(leaderboardSnapshots.eventId, eventId)
                 : sql`event_id IS NULL`,
         ))
-        .orderBy(sql`snapshot_date DESC`)
+        .orderBy(
+            sql`snapshot_date DESC`,
+            sql`created_at DESC`,
+            sql`id DESC`,
+        )
         .limit(2);
 
     // The most recent is the one we just inserted; the one BEFORE it is what we compare to.
