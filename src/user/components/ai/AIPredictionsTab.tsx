@@ -73,7 +73,7 @@ export const AIPredictionsTab: React.FC = () => {
             }>;
             const fighterById = new Map(fighters.map((fighter) => [fighter.id, fighter]));
             const selectableEvents = eventSummaries.filter((event) =>
-                event.status === 'Upcoming' || event.status === 'Live'
+                ['upcoming', 'live', 'open', 'draft', 'ready'].includes(event.status.toLowerCase())
             );
 
             return Promise.all(selectableEvents.map(async (event) => {

@@ -41,7 +41,7 @@ const event = {
   id: 'audit-event', name: 'GRIT Championship Night: Rivera vs. Washington', date: '2026-07-18T19:00:00.000Z',
   lockTime: '2026-07-18T18:55:00.000Z', venue: 'T-Mobile Arena', city: 'Las Vegas', state: 'NV', country: 'US',
   organization: 'UFC', description: 'Local visual-audit fixture. No production data.',
-  imageUrl: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1600&q=80', status: 'LIVE', fights,
+  imageUrl: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1600&q=80', status: 'Live', fights,
 };
 
 const chatMessages = [
@@ -75,6 +75,34 @@ const news = Array.from({ length: 6 }, (_, index) => ({
 
 const fixtureUser = { id: 'audit-user-03', email: 'long.audit.address@example.test', username: 'jordan_rivera', firstName: 'Jordan', lastName: 'Rivera', country: 'MX', role: 'admin', tier: 'premium', totalPoints: 785, currentStreak: 5, avatarUrl: null, profileImageUrl: null, privacySettings: { showAvatar: true, showSocialLinks: true, showUsername: true }, socialLinks: {}, permissions: [] };
 
+const fixtureGroups: any[] = [];
+const fixtureGroupMessages: Record<string, any[]> = {};
+
+function buildFixtureGroup(name: string, description: string | undefined, isPrivate: boolean) {
+  const id = `audit-group-${fixtureGroups.length + 1}`;
+  return {
+    id,
+    name,
+    description: description || '',
+    ownerId: fixtureUser.id,
+    isPrivate,
+    maxMembers: 50,
+    memberCount: 1,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    members: [{
+      id: `${id}-member-1`,
+      groupId: id,
+      userId: fixtureUser.id,
+      role: 'owner',
+      joinedAt: new Date().toISOString(),
+      username: fixtureUser.username,
+      avatarUrl: fixtureUser.avatarUrl,
+      netUnits: 7.8,
+    }],
+  };
+}
+
 export function registerUiAuditFixtures(app: Express): void {
   if (process.env.UI_AUDIT_FIXTURES !== '1') return;
 
@@ -97,8 +125,76 @@ export function registerUiAuditFixtures(app: Express): void {
       chatMessages.unshift(created);
       return res.status(201).json(created);
     }
+    if (path === '/picks' && req.method === 'POST') {
+      const fight = fights.find(candidate => candidate.id === req.body?.fightId);
+      if (!fight) return res.status(404).json({ message: 'Fight not found.' });
+      const existingIndex = picks.findIndex(candidate => candidate.fightId === fight.id);
+      if (existingIndex >= 0 && picks[existingIndex].isLocked) {
+        return res.status(409).json({ message: 'This pick is locked.' });
+      }
+      const saved = {
+        ...(existingIndex >= 0 ? picks[existingIndex] : {}),
+        id: existingIndex >= 0 ? picks[existingIndex].id : `audit-pick-${picks.length + 1}`,
+        userId: fixtureUser.id,
+        fightId: fight.id,
+        pickedFighterId: req.body?.pickedFighterId,
+        pickedMethod: req.body?.pickedMethod || 'Decision',
+        pickedRound: req.body?.pickedRound ?? null,
+        units: 1,
+        lockedOdds: req.body?.pickedFighterId === fight.fighter1Id ? fight.odds.fighter1Odds : fight.odds.fighter2Odds,
+        pointsAwarded: 0,
+        isLocked: false,
+        status: 'active',
+        confidenceFlag: 'none',
+      };
+      if (existingIndex >= 0) picks[existingIndex] = saved;
+      else picks.push(saved);
+      return res.status(existingIndex >= 0 ? 200 : 201).json(saved);
+    }
+    if (path.startsWith('/picks/') && req.method === 'DELETE') {
+      const pickIndex = picks.findIndex(candidate => candidate.id === path.split('/')[2]);
+      if (pickIndex < 0) return res.status(404).json({ message: 'Pick not found.' });
+      if (picks[pickIndex].isLocked) return res.status(409).json({ message: 'This pick is locked.' });
+      picks.splice(pickIndex, 1);
+      return res.status(204).end();
+    }
+    if (path === '/groups' && req.method === 'POST') {
+      const name = String(req.body?.name || '').trim();
+      if (!name) return res.status(400).json({ message: 'Group name is required.' });
+      const group = buildFixtureGroup(name, req.body?.description, Boolean(req.body?.isPrivate));
+      fixtureGroups.push(group);
+      fixtureGroupMessages[group.id] = [];
+      return res.status(201).json(group);
+    }
+    const groupJoinMatch = path.match(/^\/groups\/([^/]+)\/join$/);
+    if (groupJoinMatch && req.method === 'POST') {
+      const group = fixtureGroups.find(candidate => candidate.id === groupJoinMatch[1]);
+      if (!group) return res.status(404).json({ message: 'Group not found.' });
+      return res.json({ joined: true, groupId: group.id });
+    }
+    const groupChatMatch = path.match(/^\/groups\/([^/]+)\/chat$/);
+    if (groupChatMatch && req.method === 'POST') {
+      const content = String(req.body?.content || '').trim();
+      if (!content) return res.status(400).json({ message: 'Message is required.' });
+      const message = { id: `audit-group-message-${Date.now()}`, groupId: groupChatMatch[1], userId: fixtureUser.id, username: fixtureUser.username, content, createdAt: new Date().toISOString() };
+      (fixtureGroupMessages[groupChatMatch[1]] ||= []).push(message);
+      return res.status(201).json(message);
+    }
     if (!['GET', 'HEAD'].includes(req.method)) return res.status(405).json({ error: 'UI audit fixtures are read-only except for in-memory chat.' });
     if (path === '/me') return res.json(fixtureUser);
+    if (path === '/me/dashboard') return res.json({
+      upcomingEvent: { id: event.id, name: event.name, date: event.date, status: event.status, picksMade: picks.filter(pick => pick.confidenceFlag !== 'red').length, picksRequired: fights.length, totalFights: fights.length },
+      leaderboardContext: { rank: 3, netUnits: 7.8, eventId: event.id, eventName: event.name },
+      raffleStatus: { eligible: true, message: 'You are entered!' },
+      bettingStats: null,
+      intelligence: news.slice(0, 3),
+      recentActivity: { eventName: 'GRIT Fight Night 01', netUnits: 4.2, picks: 8, correctPicks: 6, totalFights: 8, finalRank: 3 },
+      progression: { starLevel: 4, badge: 'master', keys: 3 },
+      currentStreak: fixtureUser.currentStreak,
+      tier: fixtureUser.tier,
+      lastUpdated: new Date().toISOString(),
+    });
+    if (path === '/me/stats') return res.json({ totalPicks: picks.length, wins: 3, losses: 0, pending: Math.max(0, picks.length - 3), accuracy: 100, totalUnits: picks.length, totalProfit: 4.2, roi: 46.7, currentStreak: fixtureUser.currentStreak, bestStreak: 7, picks, perEventStats: [] });
     if (path === '/me/settings') return res.json({
       enableSounds: true,
       enableCelebrations: true,
@@ -120,6 +216,23 @@ export function registerUiAuditFixtures(app: Express): void {
     if (path === '/news') return res.json(news);
     if (path.startsWith('/news/')) return res.json(news.find((article) => article.id === path.split('/')[2]) || news[0]);
     if (path === '/picks' || path.startsWith('/picks/event/')) return res.json(picks);
+    if (path.startsWith('/picks/distribution/')) {
+      const fightId = path.split('/')[3];
+      const fight = fights.find(candidate => candidate.id === fightId);
+      if (!fight) return res.status(404).json({ message: 'Fight not found.' });
+      return res.json({ totalPicks: 25, distribution: [
+        { fighterId: fight.fighter1Id, fighterName: fighters.find(candidate => candidate.id === fight.fighter1Id)?.lastName, percentage: '56.0' },
+        { fighterId: fight.fighter2Id, fighterName: fighters.find(candidate => candidate.id === fight.fighter2Id)?.lastName, percentage: '44.0' },
+      ] });
+    }
+    if (path === '/groups/my') return res.json(fixtureGroups);
+    if (path === '/groups/browse') return res.json(fixtureGroups.filter(group => !group.isPrivate));
+    if (groupChatMatch) return res.json(fixtureGroupMessages[groupChatMatch[1]] || []);
+    const groupDetailMatch = path.match(/^\/groups\/([^/]+)$/);
+    if (groupDetailMatch) {
+      const group = fixtureGroups.find(candidate => candidate.id === groupDetailMatch[1]);
+      return group ? res.json(group) : res.status(404).json({ message: 'Group not found.' });
+    }
     if (path === '/chat/config') return res.json({ isOpen: true, cooldownMinutes: 0 });
     if (path === '/chat') {
       const chatType = req.query.chat_type === 'country' ? 'country' : 'global';

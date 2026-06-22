@@ -10,6 +10,7 @@ import { BettingTrackerWidget } from './BettingTrackerWidget';
 import { EventCountdown } from './EventCountdown';
 import { FriendsActivityFeed } from './FriendsActivityFeed';
 import { DashboardSkeleton } from './DashboardSkeleton';
+import { ErrorState } from '@/shared/components/ui/error-state';
 
 // Simple animated counter component
 const AnimatedCounter = ({ value, label, suffix = '' }: { value: number, label: string, suffix?: string }) => {
@@ -50,7 +51,7 @@ const AnimatedCounter = ({ value, label, suffix = '' }: { value: number, label: 
 
 export const Dashboard: React.FC = () => {
     const { user } = useAuth();
-    const { data: dashboard, isLoading } = useQuery<any>({
+    const { data: dashboard, isLoading, isError, refetch, isFetching } = useQuery<any>({
         queryKey: ['/api/me/dashboard'],
     });
     // Real career stats (win %, total picks) — sourced from the same endpoint
@@ -63,7 +64,18 @@ export const Dashboard: React.FC = () => {
         return <DashboardSkeleton />;
     }
 
-    if (!dashboard) return null;
+    if (isError || !dashboard) {
+        return (
+            <ErrorState
+                title="Dashboard unavailable"
+                description="We couldn't load your event and performance data. Check your connection and try again."
+                onRetry={() => void refetch()}
+                isRetrying={isFetching}
+                variant="card"
+                className="max-w-2xl mx-auto my-16"
+            />
+        );
+    }
 
     const displayName = user?.username || user?.firstName || 'Fighter';
     // New users have no progression history — normalize to a stable zero-state

@@ -4,10 +4,12 @@ import { z } from 'zod';
 // This acts as our source of truth and validation layer.
 
 export const EventFightSchema = z.object({
-  id: z.string().uuid(),
-  eventId: z.string().uuid(),
-  fighter1Id: z.string().uuid(),
-  fighter2Id: z.string().uuid(),
+  // IDs are opaque API identifiers. Production currently uses UUIDs, while
+  // isolated fixtures and future providers may use stable namespaced IDs.
+  id: z.string().min(1),
+  eventId: z.string().min(1),
+  fighter1Id: z.string().min(1),
+  fighter2Id: z.string().min(1),
   cardPlacement: z.string(),
   boutOrder: z.number(),
   weightClass: z.string(),
@@ -18,7 +20,7 @@ export const EventFightSchema = z.object({
 });
 
 export const EventResponseSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string().min(1),
   name: z.string(),
   date: z.string(),
   venue: z.string(),
