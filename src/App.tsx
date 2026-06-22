@@ -84,13 +84,16 @@ function AppRoutes() {
   // the user is authenticated, causing a flash of the wrong view.
   if (isLoading) {
     return (
-      <div style={{
+      <div role="status" aria-live="polite" style={{
         minHeight: '100vh',
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        gap: 18,
         background: 'hsl(220 25% 6%)',
       }}>
+        <div style={{ color: 'hsl(38 82% 52%)', fontSize: 34, fontWeight: 900, fontStyle: 'italic', letterSpacing: '-0.04em' }}>GRIT</div>
         <div style={{
           width: 40,
           height: 40,
@@ -99,6 +102,9 @@ function AppRoutes() {
           borderRadius: '50%',
           animation: 'spin 0.8s linear infinite',
         }} />
+        <span style={{ color: 'hsl(210 12% 55%)', fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' }}>
+          Loading your arena
+        </span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );

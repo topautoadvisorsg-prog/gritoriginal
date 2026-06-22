@@ -1,5 +1,6 @@
 import { SignUp } from '@clerk/clerk-react';
 import { clerkAppearance, isClerkEnabled } from './clerkConfig';
+import { AuthShell } from './AuthShell';
 
 export function SignUpPage() {
   if (!isClerkEnabled) {
@@ -22,22 +23,13 @@ export function SignUpPage() {
   }
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'hsl(220 25% 6%)',
-        padding: 24,
-      }}
-    >
+    <AuthShell eyebrow="Claim your place in the league">
       <SignUp
         signInUrl="/sign-in"
         fallbackRedirectUrl="/dashboard"
         appearance={clerkAppearance}
       />
-    </div>
+    </AuthShell>
   );
 }
 
