@@ -16,8 +16,18 @@ export const FighterCard: React.FC<FighterCardProps> = ({ fighter, onClick }) =>
   return (
     <Card
       onClick={() => onClick(fighter)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onClick(fighter);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View ${firstName} ${lastName} profile`}
       className={cn(
         'group relative cursor-pointer overflow-hidden transition-all duration-300',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         'hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/20',
         'bg-card/80 backdrop-blur border-border/50',
         'hover:border-primary/50',

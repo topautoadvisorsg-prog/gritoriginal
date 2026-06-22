@@ -105,8 +105,9 @@ const HeroPhoto: React.FC<{ fighter: Fighter | undefined; side: 'left' | 'right'
 
 export const EventHeader: React.FC<EventHeaderProps> = ({ event, mainEvent, fighters }) => {
   const countdown = useCountdown(event.date);
-  const isLive = event.status === 'LIVE';
-  const isClosed = event.status === 'CLOSED' || event.status === 'ARCHIVED' || event.status === 'Completed';
+  const normalizedStatus = String(event.status).toLowerCase();
+  const isLive = normalizedStatus === 'live';
+  const isClosed = ['closed', 'archived', 'completed'].includes(normalizedStatus);
 
   const f1 = mainEvent ? fighters.get(mainEvent.fighter1Id) : undefined;
   const f2 = mainEvent ? fighters.get(mainEvent.fighter2Id) : undefined;

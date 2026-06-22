@@ -46,4 +46,19 @@ describe('UI audit fixture contracts', () => {
       expect(fixtureSource).toContain(endpoint);
     }
   });
+
+  it('normalizes event status and exposes fighter cards to keyboards', () => {
+    const eventHeader = readFileSync(
+      resolve(process.cwd(), 'src/user/components/event/EventHeader.tsx'),
+      'utf8',
+    );
+    const fighterCard = readFileSync(
+      resolve(process.cwd(), 'src/user/components/fighter/FighterCard.tsx'),
+      'utf8',
+    );
+
+    expect(eventHeader).toContain("String(event.status).toLowerCase()");
+    expect(fighterCard).toContain('role="button"');
+    expect(fighterCard).toContain("event.key === 'Enter'");
+  });
 });
