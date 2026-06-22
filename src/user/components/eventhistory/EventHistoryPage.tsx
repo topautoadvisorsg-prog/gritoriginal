@@ -7,6 +7,7 @@ import { cn } from '@/shared/lib/utils';
 import { AlertCircle, Calendar, History, Database, Upload, Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Button } from '@/shared/components/ui/button';
+import { ErrorState } from '@/shared/components/ui/error-state';
 
 interface CompletedEvent {
   id: string;
@@ -62,15 +63,15 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
   const { fighters, fighterMap, isLoaded } = useFighters();
   const [selectedEventId, setSelectedEventId] = useState<string>('');
 
-  const { data: completedEvents = [], isLoading: eventsLoading } = useQuery<CompletedEvent[]>({
+  const { data: completedEvents = [], isLoading: eventsLoading, isError: eventsError, refetch: refetchEvents, isFetching: eventsFetching } = useQuery<CompletedEvent[]>({
     queryKey: ['/api/events/completed'],
   });
 
-  const { data: fightResults = [] } = useQuery<FightResult[]>({
+  const { data: fightResults = [], isError: resultsError, refetch: refetchResults } = useQuery<FightResult[]>({
     queryKey: ['/api/fights/results'],
   });
 
-  const { data: userPicks = [] } = useQuery<UserPick[]>({
+  const { data: userPicks = [], isError: picksError, refetch: refetchPicks } = useQuery<UserPick[]>({
     queryKey: ['/api/picks'],
   });
 
@@ -91,11 +92,11 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
   };
 
   const eventPerformance = useMemo(() => {
-    if (!selectedEvent) return { correct: 0, total: 0, percentage: 0, totalPoints: 0 };
+    if (!selectedEvent) return { correct: 0, total: 0, percentage: 0, netUnits: 0 };
     
     let correct = 0;
     let total = 0;
-    let totalPoints = 0;
+    let netUnits = 0;
     
     selectedEvent.fights.forEach(fight => {
       const result = getResult(fight.id);
@@ -107,7 +108,7 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
           correct++;
         }
         if (pick.pointsAwarded) {
-          totalPoints += pick.pointsAwarded;
+          netUnits += pick.pointsAwarded / 100;
         }
       }
     });
@@ -116,7 +117,7 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
       correct, 
       total, 
       percentage: total > 0 ? Math.round((correct / total) * 100) : 0,
-      totalPoints
+      netUnits: Math.round(netUnits * 100) / 100,
     };
   }, [selectedEvent, fightResults, userPicks]);
 
@@ -124,6 +125,20 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (eventsError || resultsError || picksError) {
+    return (
+      <div className="py-16">
+        <ErrorState
+          title="History unavailable"
+          description="We couldn't load your settled events and picks. Check your connection and try again."
+          onRetry={() => void Promise.all([refetchEvents(), refetchResults(), refetchPicks()])}
+          isRetrying={eventsFetching}
+          variant="card"
+        />
       </div>
     );
   }
@@ -227,9 +242,9 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
               {eventPerformance.correct} / {eventPerformance.total}
               <span className="text-lg ml-2">({eventPerformance.percentage}%)</span>
             </div>
-            {eventPerformance.totalPoints > 0 && (
+            {eventPerformance.netUnits !== 0 && (
               <div className="text-sm text-primary mt-1">
-                {eventPerformance.totalPoints} points earned
+                {eventPerformance.netUnits > 0 ? '+' : ''}{eventPerformance.netUnits.toFixed(2)} Net Units
               </div>
             )}
           </div>

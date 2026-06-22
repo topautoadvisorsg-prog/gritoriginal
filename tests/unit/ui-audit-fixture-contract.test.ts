@@ -38,6 +38,8 @@ describe('UI audit fixture contracts', () => {
 
     for (const endpoint of [
       "path === '/events/audit-event'",
+      "path === '/events/completed'",
+      "path === '/fights/results'",
       "path === '/me/dashboard'",
       "path === '/me/stats'",
       "path === '/picks' && req.method === 'POST'",
@@ -60,5 +62,22 @@ describe('UI audit fixture contracts', () => {
     expect(eventHeader).toContain("String(event.status).toLowerCase()");
     expect(fighterCard).toContain('role="button"');
     expect(fighterCard).toContain("event.key === 'Enter'");
+  });
+
+  it('routes personal history separately from global rankings', () => {
+    const appSource = readFileSync(resolve(process.cwd(), 'src/App.tsx'), 'utf8');
+    const dashboardSource = readFileSync(
+      resolve(process.cwd(), 'src/user/components/dashboard/Dashboard.tsx'),
+      'utf8',
+    );
+    const historySource = readFileSync(
+      resolve(process.cwd(), 'src/user/components/eventhistory/EventHistoryPage.tsx'),
+      'utf8',
+    );
+
+    expect(appSource).toContain('path="history" element={<EventHistoryPage />}');
+    expect(dashboardSource).toContain('<Link to="/history"');
+    expect(historySource).toContain('Net Units');
+    expect(historySource).not.toContain('points earned');
   });
 });

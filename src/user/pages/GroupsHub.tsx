@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Users, Plus, Search, TrendingUp, Lock, Globe, UserPlus, Loader2 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useToast } from '@/shared/hooks/use-toast';
+import { ErrorState } from '@/shared/components/ui/error-state';
 
 interface Group {
     id: string;
@@ -26,7 +27,7 @@ export const GroupsHub: React.FC = () => {
     const [showCreateModal, setShowCreateModal] = useState(false);
 
     // Fetch user's groups
-    const { data: myGroups, isLoading: loadingMyGroups } = useQuery<Group[]>({
+    const { data: myGroups, isLoading: loadingMyGroups, isError: myGroupsError, refetch: refetchMyGroups, isFetching: fetchingMyGroups } = useQuery<Group[]>({
         queryKey: ['/api/groups/my'],
         queryFn: async () => {
             const res = await fetch('/api/groups/my', { credentials: 'include' });
@@ -36,7 +37,7 @@ export const GroupsHub: React.FC = () => {
     });
 
     // Fetch public groups
-    const { data: discoverGroups, isLoading: loadingDiscover } = useQuery<Group[]>({
+    const { data: discoverGroups, isLoading: loadingDiscover, isError: discoverError, refetch: refetchDiscover, isFetching: fetchingDiscover } = useQuery<Group[]>({
         queryKey: ['/api/groups/browse'],
         queryFn: async () => {
             const res = await fetch('/api/groups/browse?limit=20', { credentials: 'include' });
@@ -54,8 +55,9 @@ export const GroupsHub: React.FC = () => {
                 credentials: 'include',
                 body: JSON.stringify(data),
             });
-            if (!res.ok) throw new Error('Failed to create group');
-            return res.json();
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(body.message || body.error || 'Failed to create group');
+            return body;
         },
         onSuccess: (newGroup) => {
             queryClient.invalidateQueries({ queryKey: ['/api/groups/my'] });
@@ -102,9 +104,9 @@ export const GroupsHub: React.FC = () => {
     );
 
     return (
-        <div className="flex flex-col w-full max-w-7xl mx-auto p-8 bg-[#080808] text-white min-h-screen">
+        <div className="flex flex-col w-full max-w-7xl mx-auto p-4 md:p-8 bg-[#080808] text-white min-h-screen">
             {/* Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between mb-8">
                 <div>
                     <h1 className="text-5xl font-black uppercase tracking-tighter text-[#E8A020] display-font italic" style={{ textShadow: '0 0 30px rgba(232, 160, 32, 0.4)' }}>
                         GROUPS
@@ -153,8 +155,17 @@ export const GroupsHub: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {loadingMyGroups ? (
                         <div className="col-span-full flex items-center justify-center py-32">
-                            <div className="h-10 w-10 animate-spin text-[#E8A020]" />
+                            <Loader2 className="h-10 w-10 animate-spin text-[#E8A020]" />
                         </div>
+                    ) : myGroupsError ? (
+                        <ErrorState
+                            title="Groups unavailable"
+                            description="We couldn't load your groups. Check your connection and try again."
+                            onRetry={() => void refetchMyGroups()}
+                            isRetrying={fetchingMyGroups}
+                            variant="card"
+                            className="col-span-full"
+                        />
                     ) : myGroups && myGroups.length > 0 ? (
                         myGroups.map(group => (
                             <GroupCard key={group.id} group={group} onClick={() => navigate(`/groups/${group.id}`)} />
@@ -193,8 +204,17 @@ export const GroupsHub: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {loadingDiscover ? (
                             <div className="col-span-full flex items-center justify-center py-32">
-                                <div className="h-10 w-10 animate-spin text-[#E8A020]" />
+                                <Loader2 className="h-10 w-10 animate-spin text-[#E8A020]" />
                             </div>
+                        ) : discoverError ? (
+                            <ErrorState
+                                title="Discovery unavailable"
+                                description="We couldn't load public groups. Check your connection and try again."
+                                onRetry={() => void refetchDiscover()}
+                                isRetrying={fetchingDiscover}
+                                variant="card"
+                                className="col-span-full"
+                            />
                         ) : filteredDiscover && filteredDiscover.length > 0 ? (
                             filteredDiscover.map(group => {
                                 const isMember = myGroups?.some((candidate) => candidate.id === group.id) ?? false;

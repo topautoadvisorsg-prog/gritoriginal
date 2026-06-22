@@ -321,7 +321,7 @@ export const Dashboard: React.FC = () => {
                     )}
 
                     <div className="px-6 pb-6 w-full mt-auto">
-                        <Link to="/competition" className="block w-full py-3 rounded-xl border border-white/10 text-center text-[10px] font-black uppercase tracking-widest text-white/50 hover:bg-white/5 hover:text-white transition-colors button-press-scale">
+                        <Link to="/history" className="block w-full py-3 rounded-xl border border-white/10 text-center text-[10px] font-black uppercase tracking-widest text-white/50 hover:bg-white/5 hover:text-white transition-colors button-press-scale">
                             View Full History
                         </Link>
                     </div>

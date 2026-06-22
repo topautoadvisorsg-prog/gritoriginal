@@ -17,12 +17,14 @@ const fighters = firstNames.map((generatedFirstName, index) => {
   ...featuredIdentity,
   country: countries[index % countries.length],
   organization: 'UFC',
-  weightClass: ['Lightweight', 'Welterweight', 'Featherweight', 'Bantamweight'][index % 4],
+  weightClass: ['Lightweight', 'Welterweight', 'Featherweight', 'Bantamweight'][Math.floor(index / 2) % 4],
   imageUrl: index === 22 ? 'https://invalid.example.test/image-failure.jpg' : `https://images.unsplash.com/${portraitIds[index % portraitIds.length]}?auto=format&fit=crop&w=700&q=80`,
   profileImageUrl: `https://images.unsplash.com/${portraitIds[index % portraitIds.length]}?auto=format&fit=crop&w=240&h=240&q=80`,
   record: { wins: 8 + index, losses: index % 6, draws: index % 5 === 0 ? 1 : 0 },
   physicalStats: index % 6 === 0 ? {} : { age: 25 + (index % 11), height: `5'${7 + index % 5}\"`, reach: `${68 + index % 10}\"` },
   performance: {}, notes: [], riskSignals: [], isActive: true, status: 'active', isVerified: true,
+  ranking: Math.floor(index / 8) * 2 + (index % 2) + 1,
+  isChampion: index < 8 && index % 2 === 0,
   });
 });
 
@@ -43,6 +45,50 @@ const event = {
   organization: 'UFC', description: 'Local visual-audit fixture. No production data.',
   imageUrl: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1600&q=80', status: 'Live', fights,
 };
+
+const completedFights = fights.slice(0, 4).map((fight, index) => ({
+  ...fight,
+  id: `audit-history-fight-${index + 1}`,
+  eventId: 'audit-completed-event',
+  status: 'CLOSED',
+  winnerId: index % 2 === 0 ? fight.fighter1Id : fight.fighter2Id,
+}));
+
+const completedEvent = {
+  ...event,
+  id: 'audit-completed-event',
+  name: 'GRIT Fight Night 01: Settled Card',
+  date: '2026-05-30T19:00:00.000Z',
+  status: 'Completed',
+  fights: completedFights,
+  createdAt: '2026-05-01T12:00:00.000Z',
+};
+
+const completedResults = completedFights.map((fight, index) => ({
+  id: `audit-result-${index + 1}`,
+  fightId: fight.id,
+  winnerId: fight.winnerId,
+  method: index % 2 === 0 ? 'Decision' : 'KO/TKO',
+  methodDetail: null,
+  round: index % 2 === 0 ? 3 : 2,
+  time: index % 2 === 0 ? '5:00' : '3:42',
+  referee: 'Audit Official',
+}));
+
+const completedPicks = completedFights.map((fight, index) => ({
+  id: `audit-history-pick-${index + 1}`,
+  userId: 'audit-user-03',
+  fightId: fight.id,
+  pickedFighterId: index === 3 ? fight.fighter1Id : fight.winnerId,
+  pickedMethod: index % 2 === 0 ? 'Decision' : 'KO/TKO',
+  pickedRound: index % 2 === 0 ? 3 : 2,
+  units: 1,
+  lockedOdds: '-110',
+  pointsAwarded: index === 3 ? -100 : 91,
+  isLocked: true,
+  status: 'active',
+  confidenceFlag: 'none',
+}));
 
 const chatMessages = [
   { id: 'audit-chat-01', userId: 'audit-user-01', eventId: 'audit-event', chatType: 'global', countryCode: 'US', message: 'Rivera is finding the body early. That left hook is open.', messageType: 'text', createdAt: '2026-07-18T19:12:00.000Z', user: { username: 'fightiq_01', displayName: 'FightIQ', avatarUrl: null, rank: 'GRANDMASTER', progressBadge: 'master' } },
@@ -208,6 +254,7 @@ export function registerUiAuditFixtures(app: Express): void {
       unitSize: 0,
     });
     if (path === '/events') return res.json([event]);
+    if (path === '/events/completed') return res.json([completedEvent]);
     if (path === '/events/audit-event') return res.json(event);
     if (path === '/fighters') return res.json(fighters);
     if (path.startsWith('/fighters/')) return res.json(fighters.find((fighter) => fighter.id === path.split('/')[2]) || fighters[0]);
@@ -215,7 +262,12 @@ export function registerUiAuditFixtures(app: Express): void {
     if (path.startsWith('/leaderboard/latest/')) return res.json({ rankings: leaderboard.map((entry) => ({ rank: entry.rank, userId: entry.id, username: entry.username, netUnits: entry.totalPoints / 100, currentStreak: entry.rank % 4 })) });
     if (path === '/news') return res.json(news);
     if (path.startsWith('/news/')) return res.json(news.find((article) => article.id === path.split('/')[2]) || news[0]);
-    if (path === '/picks' || path.startsWith('/picks/event/')) return res.json(picks);
+    if (path === '/fights/results') return res.json(completedResults);
+    if (path === '/picks') return res.json([...picks, ...completedPicks]);
+    if (path.startsWith('/picks/event/')) {
+      const requestedEventId = path.split('/')[3];
+      return res.json(requestedEventId === completedEvent.id ? completedPicks : picks);
+    }
     if (path.startsWith('/picks/distribution/')) {
       const fightId = path.split('/')[3];
       const fight = fights.find(candidate => candidate.id === fightId);

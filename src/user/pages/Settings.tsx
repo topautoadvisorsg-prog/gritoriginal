@@ -261,10 +261,10 @@ export default function Settings() {
         </div>
 
         <Card className="mb-6">
-          <CardHeader>
+          <CardHeader className="p-4 sm:p-6">
             <div className="flex items-center gap-4 sm:gap-6">
               <div className="relative group">
-                <Avatar className="w-20 h-20 sm:w-24 sm:h-24 border-2 border-white/10 group-hover:border-[#E8A020]/50 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.4)]">
+                <Avatar className="w-16 h-16 sm:w-24 sm:h-24 border-2 border-white/10 group-hover:border-[#E8A020]/50 transition-all duration-300 shadow-[0_0_20px_rgba(0,0,0,0.4)]">
                   <AvatarImage src={avatarUrl || undefined} alt={displayName} className="object-cover" />
                   <AvatarFallback className="text-3xl font-black bg-[#0a0a0a] text-[#E8A020] border border-[#E8A020]/20 display-font italic">
                     {displayName.charAt(0).toUpperCase()}
@@ -302,10 +302,10 @@ export default function Settings() {
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <CardTitle className="min-w-0 truncate text-xl sm:text-2xl display-font italic tracking-tight">{displayName}</CardTitle>
-                  <CountryFlag country={profile.country} className="text-xl" />
+                  <CardTitle className="min-w-0 break-all text-base leading-tight sm:text-2xl display-font italic tracking-tight">{displayName}</CardTitle>
+                  <CountryFlag country={profile.country} className="shrink-0 text-xl" />
                 </div>
-                <CardDescription className="truncate text-white/40 font-medium" title={profile.email}>{profile.email}</CardDescription>
+                <CardDescription className="break-all text-sm leading-relaxed text-white/40 font-medium">{profile.email}</CardDescription>
                 <div className="flex items-center gap-4 mt-3">
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
                     <Trophy className="w-3.5 h-3.5 text-[#E8A020]" />

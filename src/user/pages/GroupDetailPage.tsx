@@ -7,6 +7,7 @@ import { DataFreshnessIndicator } from '@/shared/components/DataFreshnessIndicat
 import { GroupChat } from './GroupChat';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useAuth } from '@/shared/hooks/use-auth-clerk';
+import { ErrorState } from '@/shared/components/ui/error-state';
 
 interface GroupMember {
     id: string;
@@ -88,10 +89,19 @@ export const GroupDetailPage: React.FC = () => {
 
     if (error || !group) {
         return (
-            <div className="flex flex-col items-center justify-center py-32 text-center">
-                <Lock className="w-16 h-16 text-white/20 mb-4" />
-                <h3 className="text-xl font-bold text-white/60 mb-2">Access Denied</h3>
-                <p className="text-sm text-white/40">This group is private or doesn't exist</p>
+            <div className="py-20 px-4">
+                <ErrorState
+                    title="Group unavailable"
+                    description="This group may be private, removed, or temporarily unavailable. Try again or return to Groups."
+                    onRetry={() => void refetch()}
+                    variant="card"
+                />
+                <button
+                    onClick={() => navigate('/groups')}
+                    className="mx-auto mt-4 block text-xs font-black uppercase tracking-widest text-[#E8A020] hover:underline"
+                >
+                    Back to Groups
+                </button>
             </div>
         );
     }

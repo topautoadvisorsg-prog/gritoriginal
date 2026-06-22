@@ -39,6 +39,7 @@ import Rules from "./user/pages/Rules";
 import { MobileBottomNav } from "@/user/components/layout/MobileBottomNav";
 import { GroupsHub } from "./user/pages/GroupsHub";
 import { GroupDetailPage } from "./user/pages/GroupDetailPage";
+import { EventHistoryPage } from "@/user/components/eventhistory/EventHistoryPage";
 import { useRequestNotificationPermission } from "@/shared/hooks/use-request-notification-permission";
 
 const queryClient = new QueryClient({
@@ -136,6 +137,7 @@ function AppRoutes() {
           <Route path="fighter/index" element={<FighterIndex onFighterSelect={(f) => navigate(`/fighter/${f.id}`)} />} />
           <Route path="fighter/:id" element={<FighterProfilePage />} />
           <Route path="competition" element={<MMAMetricsRankings />} />
+          <Route path="history" element={<EventHistoryPage />} />
           <Route path="ai" element={<AIPredictionsTab />} />
           <Route path="chat" element={<ChatHub />} />
           <Route path="settings" element={<Settings />} />
