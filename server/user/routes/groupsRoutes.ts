@@ -79,6 +79,32 @@ router.get('/browse', async (req: Request, res) => {
 });
 
 /**
+ * POST /api/groups/:id/join - Join a public group as the current user
+ */
+router.post('/:id/join', isAuthenticated, async (req: Request, res) => {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: 'Unauthorized' });
+
+    try {
+        const result = await groupService.joinPublicGroup(req.params.id as string, userId);
+        res.status(result.joined ? 201 : 200).json(result);
+    } catch (error: unknown) {
+        const code = error instanceof Error ? error.message : '';
+        if (code === groupService.GROUP_JOIN_ERRORS.notFound) {
+            return res.status(404).json({ message: 'Group not found' });
+        }
+        if (code === groupService.GROUP_JOIN_ERRORS.private) {
+            return res.status(403).json({ message: 'Private groups require an invitation' });
+        }
+        if (code === groupService.GROUP_JOIN_ERRORS.full) {
+            return res.status(409).json({ message: 'Group is full' });
+        }
+        logger.error('[Groups API] Error joining public group', error);
+        res.status(500).json({ message: 'Failed to join group' });
+    }
+});
+
+/**
  * GET /api/groups/:id - Get group by ID
  */
 router.get('/:id', isAuthenticated, async (req: Request, res) => {

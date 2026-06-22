@@ -1,10 +1,10 @@
 # Community, Groups, and Chat Plan
 
-**Current state:** global/event/country chat and groups are functional but need production verification. Group join, rankings, identity, and persistence errors are incomplete.
+**Current state:** global/event/country chat and groups are functional but need production verification. Public self-join, canonical group rankings, authenticated identity, honest persistence errors, and message limits are implemented; private membership workflows and realtime/moderation hardening remain.
 
 ## Decisions required
 
-- Public join versus request/approval/invite rules.
+- Private request/approval/invite rules.
 - Group ranking metric and season scope.
 - Message retention/deletion/edit policy and moderation escalation.
 - Realtime expectations and maximum group/member/message limits.
@@ -13,10 +13,10 @@
 
 1. Define shared schemas for group creation, membership transitions, roles, and messages.
 2. Add membership states: invited, requested, active, banned, left.
-3. Implement public join/private request/invite acceptance and owner/admin controls.
-4. Replace `window.currentUser` with authenticated context/API identity.
-5. Remove every mock/silent DB fallback outside explicit fixture mode.
-6. Source group rankings from the canonical ranking service.
+3. Implement private request/invite acceptance and owner/admin controls. Public self-join is implemented.
+4. Authenticated context/API identity is implemented.
+5. Mock/silent DB fallbacks are removed from group chat.
+6. Group member rankings use canonical stored net units.
 7. Add cursor pagination, length limits, per-user/group rate limits, report/block/mute enforcement.
 8. Move group chat to authenticated Socket.IO rooms with REST history as durable authority.
 9. Add moderation audit, retention cleanup, and abuse/support operations.

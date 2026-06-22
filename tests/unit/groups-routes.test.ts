@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const isGroupMember = vi.fn();
 const findMany = vi.fn();
 const insertValues = vi.fn();
+const joinPublicGroup = vi.fn();
+const GROUP_JOIN_ERRORS = { notFound: "GROUP_NOT_FOUND", private: "GROUP_PRIVATE", full: "GROUP_FULL" };
 
 vi.mock("../../server/auth/guards", () => ({
   isAuthenticated: (req: any, _res: any, next: any) => {
@@ -15,6 +17,8 @@ vi.mock("../../server/auth/guards", () => ({
 
 vi.mock("../../server/services/groupService", () => ({
   isGroupMember,
+  joinPublicGroup,
+  GROUP_JOIN_ERRORS,
 }));
 
 vi.mock("../../server/db", () => ({
@@ -65,6 +69,10 @@ describe("groups routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     isGroupMember.mockResolvedValue(true);
+    joinPublicGroup.mockResolvedValue({
+      joined: true,
+      membership: { id: "membership-1", groupId: "group-1", userId: "user-1", role: "member" },
+    });
     insertValues.mockReturnValue({
       returning: () => Promise.resolve([{
         id: "message-1",
@@ -167,5 +175,31 @@ describe("groups routes", () => {
 
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({ message: "Failed to send message" });
+  });
+
+  it("lets an authenticated user join a public group", async () => {
+    const server = await startGroupsTestServer();
+    closeServer = server.close;
+
+    const response = await fetch(`${server.baseUrl}/api/groups/group-1/join`, { method: "POST" });
+    const body = await response.json();
+
+    expect(response.status).toBe(201);
+    expect(joinPublicGroup).toHaveBeenCalledWith("group-1", "user-1");
+    expect(body).toMatchObject({ joined: true, membership: { id: "membership-1" } });
+  });
+
+  it.each([
+    [GROUP_JOIN_ERRORS.notFound, 404, "Group not found"],
+    [GROUP_JOIN_ERRORS.private, 403, "Private groups require an invitation"],
+    [GROUP_JOIN_ERRORS.full, 409, "Group is full"],
+  ])("maps %s join failures", async (errorCode, status, message) => {
+    joinPublicGroup.mockRejectedValue(new Error(errorCode));
+    const server = await startGroupsTestServer();
+    closeServer = server.close;
+
+    const response = await fetch(`${server.baseUrl}/api/groups/group-1/join`, { method: "POST" });
+    expect(response.status).toBe(status);
+    await expect(response.json()).resolves.toEqual({ message });
   });
 });

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Users, Plus, Search, Trophy, Flame, TrendingUp, Lock, Globe, Crown } from 'lucide-react';
+import { Users, Plus, Search, TrendingUp, Lock, Globe, UserPlus, Loader2 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useToast } from '@/shared/hooks/use-toast';
 
@@ -72,6 +72,27 @@ export const GroupsHub: React.FC = () => {
                 description: error.message,
                 variant: 'destructive',
             });
+        },
+    });
+
+    const joinGroupMutation = useMutation({
+        mutationFn: async (group: Group) => {
+            const res = await fetch(`/api/groups/${group.id}/join`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(body.message || 'Failed to join group');
+            return group;
+        },
+        onSuccess: (group) => {
+            queryClient.invalidateQueries({ queryKey: ['/api/groups/my'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/groups/browse'] });
+            toast({ title: 'Group Joined', description: `You joined ${group.name}` });
+            navigate(`/groups/${group.id}`);
+        },
+        onError: (error: Error) => {
+            toast({ title: 'Unable to Join', description: error.message, variant: 'destructive' });
         },
     });
 
@@ -175,9 +196,23 @@ export const GroupsHub: React.FC = () => {
                                 <div className="h-10 w-10 animate-spin text-[#E8A020]" />
                             </div>
                         ) : filteredDiscover && filteredDiscover.length > 0 ? (
-                            filteredDiscover.map(group => (
-                                <GroupCard key={group.id} group={group} onClick={() => navigate(`/groups/${group.id}`)} />
-                            ))
+                            filteredDiscover.map(group => {
+                                const isMember = myGroups?.some((candidate) => candidate.id === group.id) ?? false;
+                                const isFull = (group.memberCount ?? 0) >= group.maxMembers;
+                                return (
+                                    <GroupCard
+                                        key={group.id}
+                                        group={group}
+                                        onClick={() => navigate(`/groups/${group.id}`)}
+                                        actionLabel={isMember ? 'OPEN' : isFull ? 'FULL' : 'JOIN'}
+                                        actionDisabled={isFull || joinGroupMutation.isPending}
+                                        actionPending={joinGroupMutation.isPending && joinGroupMutation.variables?.id === group.id}
+                                        onAction={isMember
+                                            ? () => navigate(`/groups/${group.id}`)
+                                            : () => joinGroupMutation.mutate(group)}
+                                    />
+                                );
+                            })
                         ) : (
                             <div className="col-span-full flex flex-col items-center justify-center py-32 text-center">
                                 <Globe className="w-16 h-16 text-white/20 mb-4" />
@@ -286,7 +321,14 @@ export const GroupsHub: React.FC = () => {
 };
 
 // Group Card Component
-const GroupCard: React.FC<{ group: Group; onClick: () => void }> = ({ group, onClick }) => {
+const GroupCard: React.FC<{
+    group: Group;
+    onClick: () => void;
+    actionLabel?: string;
+    actionDisabled?: boolean;
+    actionPending?: boolean;
+    onAction?: () => void;
+}> = ({ group, onClick, actionLabel, actionDisabled, actionPending, onAction }) => {
     return (
         <div
             onClick={onClick}
@@ -327,13 +369,29 @@ const GroupCard: React.FC<{ group: Group; onClick: () => void }> = ({ group, onC
                             {group.memberCount || 1} / {group.maxMembers} MEMBERS
                         </span>
                     </div>
+                    {onAction && actionLabel && (
+                        <button
+                            type="button"
+                            disabled={actionDisabled}
+                            onClick={(event) => {
+                                event.stopPropagation();
+                                onAction();
+                            }}
+                            className="ml-auto inline-flex items-center gap-2 rounded-lg border border-[#E8A020]/40 px-3 py-2 text-[10px] font-black tracking-widest text-[#E8A020] hover:bg-[#E8A020]/10 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                            {actionPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <UserPlus className="h-3.5 w-3.5" />}
+                            {actionPending ? 'JOINING' : actionLabel}
+                        </button>
+                    )}
                 </div>
 
                 {/* Hover Arrow */}
-                <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute bottom-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity empty:hidden">
+                    {!onAction && (
                     <div className="w-10 h-10 rounded-full bg-[#E8A020] flex items-center justify-center">
                         <TrendingUp className="w-5 h-5 text-black" />
                     </div>
+                    )}
                 </div>
             </div>
         </div>

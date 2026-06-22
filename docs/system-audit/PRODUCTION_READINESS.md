@@ -33,7 +33,7 @@ The core React/Express/PostgreSQL architecture is viable; the no-go is caused by
 ### P2 - required for commercial quality
 
 - mount a real notes/history journal;
-- add public group join plus realtime/paginated, moderated group chat;
+- add private group invitation/request workflows plus realtime/paginated, moderated group chat;
 - fix dashboard event/snapshot association and query-error UX;
 - code-split the 3.43 MB main JS bundle and reduce 660 KB CSS;
 - replace stale historical status/handoff documents or clearly archive them;

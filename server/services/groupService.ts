@@ -26,6 +26,12 @@ export interface GroupWithMembers extends Group {
     memberCount: number;
 }
 
+export const GROUP_JOIN_ERRORS = {
+    notFound: 'GROUP_NOT_FOUND',
+    private: 'GROUP_PRIVATE',
+    full: 'GROUP_FULL',
+} as const;
+
 /**
  * Create a new group
  */
@@ -125,13 +131,61 @@ export async function getUserGroups(userId: string): Promise<GroupWithMembers[]>
 /**
  * Browse public groups (for discovery)
  */
-export async function browsePublicGroups(limit: number = 20, offset: number = 0): Promise<Group[]> {
-    return db.select()
+export async function browsePublicGroups(limit: number = 20, offset: number = 0) {
+    return db.select({
+        id: groups.id,
+        name: groups.name,
+        description: groups.description,
+        ownerId: groups.ownerId,
+        isPrivate: groups.isPrivate,
+        maxMembers: groups.maxMembers,
+        avatarUrl: groups.avatarUrl,
+        createdAt: groups.createdAt,
+        updatedAt: groups.updatedAt,
+        memberCount: sql<number>`count(${groupMembers.id})::int`,
+    })
         .from(groups)
+        .leftJoin(groupMembers, eq(groupMembers.groupId, groups.id))
         .where(eq(groups.isPrivate, false))
+        .groupBy(groups.id)
         .limit(limit)
         .offset(offset)
         .orderBy(desc(groups.createdAt));
+}
+
+/** Public self-join with serialized capacity enforcement. */
+export async function joinPublicGroup(groupId: string, userId: string) {
+    return db.transaction(async (tx) => {
+        const [group] = await tx.select().from(groups)
+            .where(eq(groups.id, groupId))
+            .for('update');
+
+        if (!group) throw new Error(GROUP_JOIN_ERRORS.notFound);
+        if (group.isPrivate) throw new Error(GROUP_JOIN_ERRORS.private);
+
+        const [existing] = await tx.select().from(groupMembers)
+            .where(and(
+                eq(groupMembers.groupId, groupId),
+                eq(groupMembers.userId, userId),
+            ));
+        if (existing) return { membership: existing, joined: false };
+
+        const [{ count: memberCount = 0 } = { count: 0 }] = await tx.select({
+            count: sql<number>`count(*)::int`,
+        }).from(groupMembers).where(eq(groupMembers.groupId, groupId));
+        if (Number(memberCount) >= group.maxMembers) throw new Error(GROUP_JOIN_ERRORS.full);
+
+        const [membership] = await tx.insert(groupMembers).values({
+            id: uuidv4(),
+            groupId,
+            userId,
+            role: 'member',
+            joinedAt: new Date(),
+        }).returning();
+
+        logger.info(`[GroupService] User ${userId} joined public group ${groupId}`);
+        return { membership, joined: true };
+    });
 }
 
 /**
