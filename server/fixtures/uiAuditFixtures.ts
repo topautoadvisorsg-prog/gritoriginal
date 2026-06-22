@@ -33,18 +33,50 @@ const fights = Array.from({ length: 12 }, (_, index) => ({
   eventId: 'audit-event', fighter1Id: fighters[index * 2].id, fighter2Id: fighters[index * 2 + 1].id,
   cardPlacement: index === 0 ? 'Main Event' : index < 5 ? 'Main Card' : index < 9 ? 'Prelim' : 'Early Prelim', boutOrder: index + 1,
   weightClass: fighters[index * 2].weightClass, isTitleFight: index === 0, rounds: index === 0 ? 5 : 3,
-  status: index === 0 ? 'LIVE' : index < 3 ? 'CLOSED' : 'OPEN', scheduledTime: `${18 + Math.floor(index / 2)}:${index % 2 ? '30' : '00'}`,
+  status: 'OPEN', scheduledTime: `${18 + Math.floor(index / 2)}:${index % 2 ? '30' : '00'}`,
   odds: { fighter1Odds: index % 2 ? '+135' : '-165', fighter2Odds: index % 2 ? '-155' : '+145', source: 'Audit fixture' },
-  winnerId: index < 3 ? fighters[index * 2].id : null,
-  fighter1Result: index < 3 ? 'WIN' : null, fighter2Result: index < 3 ? 'LOSS' : null,
+  winnerId: null,
+  fighter1Result: null, fighter2Result: null,
 }));
 
 const event = {
   id: 'audit-event', name: 'GRIT Championship Night: Rivera vs. Washington', date: '2026-07-18T19:00:00.000Z',
   lockTime: '2026-07-18T18:55:00.000Z', venue: 'T-Mobile Arena', city: 'Las Vegas', state: 'NV', country: 'US',
   organization: 'UFC', description: 'Local visual-audit fixture. No production data.',
-  imageUrl: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1600&q=80', status: 'Live', fights,
+  imageUrl: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?auto=format&fit=crop&w=1600&q=80', status: 'Upcoming', fights,
 };
+
+function buildUpcomingEvent(id: string, name: string, date: string, fighterOffset: number, venue: string, city: string) {
+  const eventFights = fights.map((fight, index) => ({
+    ...fight,
+    id: `${id}-fight-${String(index + 1).padStart(2, '0')}`,
+    eventId: id,
+    fighter1Id: fighters[(index * 2 + fighterOffset) % fighters.length].id,
+    fighter2Id: fighters[(index * 2 + fighterOffset + 1) % fighters.length].id,
+    status: 'OPEN',
+    winnerId: null,
+    fighter1Result: null,
+    fighter2Result: null,
+  }));
+
+  return {
+    ...event,
+    id,
+    name,
+    date,
+    lockTime: date,
+    venue,
+    city,
+    status: 'Upcoming',
+    fights: eventFights,
+  };
+}
+
+const upcomingEvents = [
+  event,
+  buildUpcomingEvent('audit-event-02', 'GRIT Fight Night: Nascimento vs. Washington-Jones', '2026-08-01T19:00:00.000Z', 2, 'Madison Square Garden', 'New York'),
+  buildUpcomingEvent('audit-event-03', 'GRIT International: Tanaka vs. Haddad', '2026-08-15T10:00:00.000Z', 4, 'Saitama Super Arena', 'Saitama'),
+];
 
 const completedFights = fights.slice(0, 4).map((fight, index) => ({
   ...fight,
@@ -108,8 +140,8 @@ const leaderboard = Array.from({ length: 25 }, (_, index) => ({
 const picks = fights.slice(0, 9).map((fight, index) => ({
   id: `audit-pick-${index + 1}`, userId: 'audit-user-03', fightId: fight.id,
   pickedFighterId: index % 2 ? fight.fighter2Id : fight.fighter1Id, pickedMethod: index % 3 ? 'Decision' : 'KO/TKO',
-  pickedRound: index % 3 + 1, units: 1, lockedOdds: index % 2 ? '+135' : '-165', pointsAwarded: index < 3 ? 65 : 0,
-  isLocked: index < 3, status: 'active', confidenceFlag: index === 4 ? 'red' : index === 5 ? 'yellow' : 'none',
+  pickedRound: index % 3 + 1, units: 1, lockedOdds: index % 2 ? '+135' : '-165', pointsAwarded: 0,
+  isLocked: false, status: 'active', confidenceFlag: index === 4 ? 'red' : index === 5 ? 'yellow' : 'none',
 }));
 
 const news = Array.from({ length: 6 }, (_, index) => ({
@@ -253,14 +285,19 @@ export function registerUiAuditFixtures(app: Express): void {
       showBettingTracker: false,
       unitSize: 0,
     });
-    if (path === '/events') return res.json([event]);
+    if (path === '/events') return res.json(upcomingEvents);
     if (path === '/events/completed') return res.json([completedEvent]);
-    if (path === '/events/audit-event') return res.json(event);
+    if (path.startsWith('/events/')) {
+      const requestedEvent = upcomingEvents.find(candidate => candidate.id === path.split('/')[2]);
+      if (requestedEvent) return res.json(requestedEvent);
+    }
     if (path === '/fighters') return res.json(fighters);
+    if (/^\/fighters\/[^/]+\/tags$/.test(path)) return res.json([]);
     if (path.startsWith('/fighters/')) return res.json(fighters.find((fighter) => fighter.id === path.split('/')[2]) || fighters[0]);
     if (path === '/leaderboard') return res.json({ leaderboard, maxPoints: leaderboard[0].totalPoints });
     if (path.startsWith('/leaderboard/latest/')) return res.json({ rankings: leaderboard.map((entry) => ({ rank: entry.rank, userId: entry.id, username: entry.username, netUnits: entry.totalPoints / 100, currentStreak: entry.rank % 4 })) });
     if (path === '/news') return res.json(news);
+    if (path.startsWith('/news/fighter/')) return res.json([]);
     if (path.startsWith('/news/')) return res.json(news.find((article) => article.id === path.split('/')[2]) || news[0]);
     if (path === '/fights/results') return res.json(completedResults);
     if (path === '/picks') return res.json([...picks, ...completedPicks]);

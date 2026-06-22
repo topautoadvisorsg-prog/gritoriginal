@@ -21,11 +21,11 @@ interface FighterTagsSectionProps {
 }
 
 const CATEGORY_CONFIG: Record<string, { label: string; color: string; order: number }> = {
-    'Striking': { label: '🥊 Striking', color: '#ef4444', order: 0 },
-    'Grappling': { label: '🤼 Grappling', color: '#3b82f6', order: 1 },
-    'Athleticism': { label: '⚡ Athleticism', color: '#22c55e', order: 2 },
-    'Fight IQ': { label: '🧠 Fight IQ', color: '#a855f7', order: 3 },
-    'Intangibles': { label: '🔥 Intangibles', color: '#f97316', order: 4 },
+    'Striking': { label: 'Striking', color: '#ef4444', order: 0 },
+    'Grappling': { label: 'Grappling', color: '#3b82f6', order: 1 },
+    'Athleticism': { label: 'Athleticism', color: '#22c55e', order: 2 },
+    'Fight IQ': { label: 'Fight IQ', color: '#a855f7', order: 3 },
+    'Intangibles': { label: 'Intangibles', color: '#f97316', order: 4 },
 };
 
 /**

@@ -147,11 +147,14 @@ const CarouselCard: React.FC<{
   const hasMatchup = f1 || f2;
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
+      aria-label={`Open ${event.name}`}
       className={cn(
-        'group relative overflow-hidden rounded-2xl border select-none',
+        'group relative overflow-hidden rounded-2xl border select-none text-left',
         'transition-all duration-300',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#E8A020] focus-visible:ring-offset-4 focus-visible:ring-offset-black',
         isCenter
           ? 'border-yellow-500/30 shadow-[0_8px_50px_rgba(0,0,0,0.9),0_0_0_1px_rgba(201,168,76,0.12)]'
           : 'border-white/5',
@@ -176,9 +179,9 @@ const CarouselCard: React.FC<{
       <div className="absolute bottom-6 left-0 right-0 z-30 text-center px-4">
         {hasMatchup ? (
           <h3
-            className="font-black uppercase tracking-tight text-white leading-none whitespace-nowrap"
+            className="font-black uppercase tracking-tight text-white leading-[0.95] text-center text-balance"
             style={{
-              fontSize: "clamp(1.2rem, 3.5vw, 1.8rem)",
+              fontSize: "clamp(1rem, 2.2vw, 1.55rem)",
               textShadow: "0 2px 20px rgba(0,0,0,0.95), 0 0 60px rgba(0,0,0,0.7)",
             }}
           >
@@ -199,7 +202,7 @@ const CarouselCard: React.FC<{
           style={{ boxShadow: 'inset 0 0 0 1px rgba(232,160,32,0.18)' }}
         />
       )}
-    </div>
+    </button>
   );
 };
 
@@ -219,14 +222,30 @@ export const EventListPage = () => {
   });
 
   const sortedEvents = useMemo(() => {
-    const upcoming = events.filter(e => e.status === 'Upcoming' || e.status === 'Live');
-    const past = events.filter(e => !['Upcoming', 'Live'].includes(e.status));
+    const isActive = (status: string) => ['upcoming', 'live', 'open', 'ready'].includes(status.toLowerCase());
+    const upcoming = events
+      .filter(event => isActive(event.status))
+      .sort((a, b) => parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime());
+    const past = events
+      .filter(event => !isActive(event.status))
+      .sort((a, b) => parseLocalDate(b.date).getTime() - parseLocalDate(a.date).getTime());
+
+    if (upcoming.length >= 2) {
+      // Put the nearest active card at index 1 so it opens centered with a
+      // neighboring event visible on both sides when three cards are present.
+      return [upcoming[1], upcoming[0], ...upcoming.slice(2), ...past];
+    }
     return [...upcoming, ...past];
   }, [events]);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const eventOrderKey = sortedEvents.map(event => event.id).join('|');
+
+  useEffect(() => {
+    setCurrentIndex(sortedEvents.length >= 2 ? 1 : 0);
+  }, [eventOrderKey, sortedEvents.length]);
 
   const prefetchIds = useMemo(() => {
     const ids: string[] = [];
@@ -390,7 +409,6 @@ export const EventListPage = () => {
                     filter: isCenter ? 'none' : 'brightness(0.4) saturate(0.5)',
                     pointerEvents: isVisible ? 'auto' : 'none',
                   }}
-                  onClick={() => isCenter ? navigate(`/event/${event.id}`) : goTo(i)}
                 >
                   <CarouselCard
                     event={event}

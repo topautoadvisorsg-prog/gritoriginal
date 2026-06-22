@@ -37,9 +37,10 @@ describe('UI audit fixture contracts', () => {
     );
 
     for (const endpoint of [
-      "path === '/events/audit-event'",
+      "path.startsWith('/events/')",
       "path === '/events/completed'",
       "path === '/fights/results'",
+      "path.startsWith('/news/fighter/')",
       "path === '/me/dashboard'",
       "path === '/me/stats'",
       "path === '/picks' && req.method === 'POST'",
@@ -47,6 +48,11 @@ describe('UI audit fixture contracts', () => {
     ]) {
       expect(fixtureSource).toContain(endpoint);
     }
+
+    expect(fixtureSource).toContain('const upcomingEvents = [');
+    expect(fixtureSource).toContain("buildUpcomingEvent('audit-event-02'");
+    expect(fixtureSource).toContain("buildUpcomingEvent('audit-event-03'");
+    expect(fixtureSource).toContain('/^\\/fighters\\/[^/]+\\/tags$/.test(path)');
   });
 
   it('normalizes event status and exposes fighter cards to keyboards', () => {
@@ -79,5 +85,29 @@ describe('UI audit fixture contracts', () => {
     expect(dashboardSource).toContain('<Link to="/history"');
     expect(historySource).toContain('Net Units');
     expect(historySource).not.toContain('points earned');
+  });
+
+  it('centers the nearest event and makes cards native controls', () => {
+    const eventList = readFileSync(
+      resolve(process.cwd(), 'src/user/components/event/EventListPage.tsx'),
+      'utf8',
+    );
+    const userServer = readFileSync(resolve(process.cwd(), 'server/user-server.ts'), 'utf8');
+
+    expect(eventList).toContain('return [upcoming[1], upcoming[0], ...upcoming.slice(2), ...past]');
+    expect(eventList).toContain('type="button"');
+    expect(eventList).toContain('aria-label={`Open ${event.name}`}');
+    expect(userServer).toContain('UI audit fixture mode: database seeds, cron tasks, and job queue disabled');
+  });
+
+  it('normalizes sparse fighter metrics before rendering profiles', () => {
+    const fighterContext = readFileSync(
+      resolve(process.cwd(), 'src/shared/context/FighterDataContext.tsx'),
+      'utf8',
+    );
+
+    expect(fighterContext).toContain('const EMPTY_PERFORMANCE = {');
+    expect(fighterContext).toContain('performance: { ...EMPTY_PERFORMANCE, ...(dbRecord.performance || {}) }');
+    expect(fighterContext).toContain('noContests: dbRecord.record?.noContests ?? 0');
   });
 });

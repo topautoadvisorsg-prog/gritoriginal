@@ -83,6 +83,7 @@ import { registerUiAuditFixtures } from './fixtures/uiAuditFixtures';
 
 async function startUserServer() {
     const app = express();
+    const fixtureMode = process.env.UI_AUDIT_FIXTURES === '1';
 
     // Register Stripe webhook BEFORE global JSON middleware
     registerStripeWebhook(app);
@@ -179,12 +180,15 @@ async function startUserServer() {
     registerAdminJobsRoutes(app);
     registerModerationRoutes(app);
 
-    seedSuggestedQuestions().catch(() => {});
+    if (!fixtureMode) {
+      seedSuggestedQuestions().catch(() => {});
+      initCrons();
 
-    initCrons();
-    
-    // Start background job queue for durable outbox syncing
-    initJobService().catch(err => logger.error('Failed to initialize job queue', err));
+      // Start background job queue for durable outbox syncing.
+      initJobService().catch(err => logger.error('Failed to initialize job queue', err));
+    } else {
+      logger.info('UI audit fixture mode: database seeds, cron tasks, and job queue disabled');
+    }
 
     // Serve the Vite frontend build if it exists (production deployment)
     const distPublic = path.join(process.cwd(), 'dist/public');

@@ -17,6 +17,32 @@ interface FighterDataContextType {
 
 const FighterDataContext = createContext<FighterDataContextType | undefined>(undefined);
 
+const EMPTY_PERFORMANCE = {
+  ko_wins: 0,
+  tko_wins: 0,
+  submission_wins: 0,
+  decision_wins: 0,
+  losses_by_ko: 0,
+  losses_by_submission: 0,
+  losses_by_decision: 0,
+  finish_rate: 0,
+  avg_fight_time_minutes: 0,
+  strike_accuracy: 0,
+  strike_defense: 0,
+  takedown_avg: 0,
+  takedown_accuracy: 0,
+  strikes_landed_per_min: 0,
+  strikes_absorbed_per_min: 0,
+  takedown_defense: 0,
+  submission_defense: 0,
+  submission_avg: 0,
+  win_streak: 0,
+  loss_streak: 0,
+  longest_win_streak: 0,
+  ko_streak: 0,
+  sub_streak: 0,
+};
+
 // Transform database record (snake_case) to frontend Fighter type (camelCase)
 function transformDbToFighter(dbRecord: any): Fighter {
   return {
@@ -42,8 +68,13 @@ function transformDbToFighter(dbRecord: any): Fighter {
       ...(dbRecord.physicalStats || {}),
       weight: dbRecord.weight ?? dbRecord.physicalStats?.weight ?? 0,
     },
-    record: dbRecord.record,
-    performance: dbRecord.performance,
+    record: {
+      wins: dbRecord.record?.wins ?? 0,
+      losses: dbRecord.record?.losses ?? 0,
+      draws: dbRecord.record?.draws ?? 0,
+      noContests: dbRecord.record?.noContests ?? 0,
+    },
+    performance: { ...EMPTY_PERFORMANCE, ...(dbRecord.performance || {}) },
     history: [],
     notes: dbRecord.notes || [],
     riskSignals: dbRecord.riskSignals || [],

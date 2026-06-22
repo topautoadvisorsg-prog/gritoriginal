@@ -37,7 +37,9 @@ export const FighterArticles: React.FC<FighterArticlesProps> = ({ fighterId, fig
         );
     }
 
-    if (!articles || articles.length === 0) return null;
+    const articleList = Array.isArray(articles) ? articles : [];
+
+    if (articleList.length === 0) return null;
 
     return (
         <Card className="mt-4">
@@ -48,7 +50,7 @@ export const FighterArticles: React.FC<FighterArticlesProps> = ({ fighterId, fig
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-                {articles.slice(0, 5).map(article => (
+                {articleList.slice(0, 5).map(article => (
                     <Link
                         key={article.id}
                         to={`/news/${article.id}`}
