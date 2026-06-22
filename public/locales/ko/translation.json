@@ -43,7 +43,8 @@
     },
     "common": {
         "login": "로그인",
-        "loading": "로딩 중..."
+        "loading": "로딩 중...",
+        "copyright": "© {{year}} GRIT. All rights reserved."
     },
     "nav": {
         "features": "기능",
@@ -80,7 +81,7 @@
         "title": "지배까지 네 단계",
         "subtitle": "가입부터 리더보드 정상까지 — 이것이 그 길입니다.",
         "step1_title": "프로필 생성",
-        "step1_desc": "Google로 몇 초 만에 가입하세요. 국가를 설정하고, 닉네임을 선택하고, 리그에 입장하세요.",
+        "step1_desc": "이메일로 가입하고 국가와 닉네임을 설정한 뒤 리그에 참여하세요.",
         "step2_title": "픽 선택",
         "step2_desc": "다가오는 이벤트를 둘러보고, 배당률을 연구하고, 벨이 울리기 전에 예측을 확정하세요.",
         "step3_title": "퍼포먼스 추적",

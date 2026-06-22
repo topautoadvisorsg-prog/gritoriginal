@@ -43,7 +43,8 @@
     },
     "common": {
         "login": "Connexion",
-        "loading": "Chargement..."
+        "loading": "Chargement...",
+        "copyright": "© {{year}} GRIT. Tous droits réservés."
     },
     "nav": {
         "features": "Fonctionnalités",
@@ -80,7 +81,7 @@
         "title": "Quatre Étapes vers la Domination",
         "subtitle": "De l'inscription au sommet du classement — voici le chemin.",
         "step1_title": "Créez Votre Profil",
-        "step1_desc": "Inscrivez-vous avec Google en quelques secondes. Définissez votre pays, choisissez votre pseudo et entrez dans la ligue.",
+        "step1_desc": "Inscrivez-vous avec votre adresse e-mail. Définissez votre pays, choisissez votre pseudo et entrez dans la ligue.",
         "step2_title": "Faites Vos Picks",
         "step2_desc": "Parcourez les événements à venir, étudiez les cotes et validez vos pronostics avant que la cloche ne sonne.",
         "step3_title": "Suivez Vos Performances",

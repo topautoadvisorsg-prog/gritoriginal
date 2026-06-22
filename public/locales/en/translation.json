@@ -43,7 +43,8 @@
     },
     "common": {
         "login": "Log in",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "copyright": "© {{year}} GRIT. All rights reserved."
     },
     "nav": {
         "features": "Features",
@@ -247,6 +248,10 @@
         "preview_sub": "Examples of operator-curated signals available in GRIT",
         "live_badge": "INTEL",
         "preview_badge": "EXAMPLE",
+        "example_camp": "Camp update example - pace and conditioning trend noted",
+        "example_card": "Card update example - bout order confirmed by the operator",
+        "example_odds": "Odds example - meaningful line movement flagged for review",
+        "example_model": "Model example - matchup confidence changed after new data",
         "sub": "Injuries, weight cuts, camp changes, sharp money, line moves — admin-curated signals"
     }
 }

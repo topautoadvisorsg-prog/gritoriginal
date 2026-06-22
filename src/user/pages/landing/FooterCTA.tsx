@@ -45,7 +45,9 @@ export function FooterCTA({ onSignIn }: { onSignIn: () => void }) {
                         <div className="lp-footer__logo"><Swords size={14} color="white" /></div>
                         <span className="lp-footer__name">GRIT</span>
                     </div>
-                    <span className="lp-footer__copy">© {new Date().getFullYear()} GRIT. All rights reserved.</span>
+                    <span className="lp-footer__copy">
+                        {t('common.copyright', { year: new Date().getFullYear(), defaultValue: '© {{year}} GRIT. All rights reserved.' })}
+                    </span>
                 </div>
             </footer>
         </>

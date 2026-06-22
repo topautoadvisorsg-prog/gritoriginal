@@ -43,7 +43,8 @@
     },
     "common": {
         "login": "Iniciar Sesión",
-        "loading": "Cargando..."
+        "loading": "Cargando...",
+        "copyright": "© {{year}} GRIT. Todos los derechos reservados."
     },
     "nav": {
         "features": "Características",
@@ -60,7 +61,7 @@
         "title_accent_red2": "RANGO REAL.",
         "subtitle": "Sin apuestas. Sin suerte. Tu conocimiento contra el mundo.",
         "desc": "GRIT es una arena competitiva de análisis para fans de MMA. Haz picks con cuotas reales, construye un historial verificable y escala la clasificación global.",
-        "cta": "Ãšnete gratis",
+        "cta": "Únete gratis",
         "cta_secondary": "Cómo Funciona",
         "trust": "Competición de habilidad — sin apuestas con dinero real."
     },
@@ -85,7 +86,7 @@
         "title": "Cuatro Pasos hacia la Dominación",
         "subtitle": "Desde el registro hasta lo más alto del ranking — este es el camino.",
         "step1_title": "Crea Tu Perfil",
-        "step1_desc": "Regístrate con Google en segundos. Establece tu país, elige tu nombre de usuario y entra en la liga.",
+        "step1_desc": "Regístrate con tu correo electrónico. Establece tu país, elige tu nombre de usuario y entra en la liga.",
         "step2_title": "Haz Tus Picks",
         "step2_desc": "Explora los próximos eventos, estudia las cuotas y confirma tus predicciones antes de que suene la campana.",
         "step3_title": "Sigue Tu Rendimiento",
@@ -222,6 +223,10 @@
         "preview_sub": "Ejemplos de senales seleccionadas por el equipo de GRIT",
         "live_badge": "INTEL",
         "preview_badge": "EJEMPLO",
+        "example_camp": "Ejemplo de campamento - tendencia de ritmo y condición física",
+        "example_card": "Ejemplo de cartelera - orden de combates confirmado por el operador",
+        "example_odds": "Ejemplo de cuotas - movimiento relevante marcado para revisión",
+        "example_model": "Ejemplo de modelo - la confianza cambió tras recibir nuevos datos",
         "sub": "Señales en tiempo real — campamentos, movimiento de cuotas, lesiones"
     }
 }

@@ -43,7 +43,8 @@
     },
     "common": {
         "login": "Entrar",
-        "loading": "Carregando..."
+        "loading": "Carregando...",
+        "copyright": "© {{year}} GRIT. Todos os direitos reservados."
     },
     "nav": {
         "features": "Funcionalidades",
@@ -80,7 +81,7 @@
         "title": "Quatro Passos para a Dominação",
         "subtitle": "Do cadastro ao topo do ranking — este é o caminho.",
         "step1_title": "Crie Seu Perfil",
-        "step1_desc": "Cadastre-se com o Google em segundos. Defina seu país, escolha seu nome de exibição e entre na liga.",
+        "step1_desc": "Cadastre-se com seu e-mail. Defina seu país, escolha seu nome de exibição e entre na liga.",
         "step2_title": "Faça Seus Picks",
         "step2_desc": "Navegue pelos próximos eventos, estude as odds e confirme suas previsões antes do gongo tocar.",
         "step3_title": "Acompanhe Seu Desempenho",

@@ -43,7 +43,8 @@
     },
     "common": {
         "login": "Log in",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "copyright": "© {{year}} GRIT. All rights reserved."
     },
     "nav": {
         "features": "Features",

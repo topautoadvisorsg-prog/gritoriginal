@@ -3,22 +3,28 @@ import { useTranslation } from 'react-i18next';
 import { useScrollAnimation } from './hooks';
 
 const FALLBACK_ITEMS = [
-    { emoji: '⚡', content: 'Camp update example - pace and conditioning trend noted' },
-    { emoji: '📊', content: 'Card update example - bout order confirmed by the operator' },
-    { emoji: '📉', content: 'Odds example - meaningful line movement flagged for review' },
-    { emoji: '🧠', content: 'Model example - matchup confidence changed after new data' },
+    { marker: 'CAMP', key: 'intel_section.example_camp', fallback: 'Camp update example - pace and conditioning trend noted' },
+    { marker: 'CARD', key: 'intel_section.example_card', fallback: 'Card update example - bout order confirmed by the operator' },
+    { marker: 'ODDS', key: 'intel_section.example_odds', fallback: 'Odds example - meaningful line movement flagged for review' },
+    { marker: 'MODEL', key: 'intel_section.example_model', fallback: 'Model example - matchup confidence changed after new data' },
 ];
 
 interface FeedItem {
     id: string;
-    emoji: string;
     content: string;
+}
+
+interface DisplayItem {
+    marker: string;
+    key?: string;
+    fallback?: string;
+    content?: string;
 }
 
 export function SocialProofStrip() {
     const { t } = useTranslation();
     const ref = useScrollAnimation();
-    const [items, setItems] = useState(FALLBACK_ITEMS);
+    const [items, setItems] = useState<DisplayItem[]>(FALLBACK_ITEMS);
     const [isLiveFeed, setIsLiveFeed] = useState(false);
 
     useEffect(() => {
@@ -26,7 +32,7 @@ export function SocialProofStrip() {
             .then((r) => r.json())
             .then((data: FeedItem[]) => {
                 if (Array.isArray(data) && data.length > 0) {
-                    setItems(data.map((d) => ({ emoji: d.emoji, content: d.content })));
+                    setItems(data.map((d) => ({ marker: 'GRIT', content: d.content })));
                     setIsLiveFeed(true);
                 }
             })
@@ -53,7 +59,8 @@ export function SocialProofStrip() {
                     <div className="lp-ticker__inner">
                         {doubled.map((item, i) => (
                             <span key={i} className="lp-ticker__item">
-                                {item.emoji} {item.content}
+                                <strong>{item.marker}</strong>{' '}
+                                {item.key ? t(item.key, { defaultValue: item.fallback }) : item.content}
                             </span>
                         ))}
                     </div>
