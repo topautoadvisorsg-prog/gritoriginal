@@ -9,6 +9,11 @@
 - `26-admin-create-event-remediated.png` - grouped admin navigation and GRIT gold/red event workflow.
 - `27-landing-mobile-remediated.png` - 390px logged-out landing with one compact primary header CTA.
 
+## Fighter Image System Verification (2026-06-22)
+
+- `fighter-image-system-event-desktop-1440.png` - event carousel at 1440px; dedicated body artwork selected for the featured matchup.
+- `fighter-image-system-event-mobile-390.png` - same event at 390px; headshots selected, with no horizontal overflow.
+
 Date: 2026-06-18
 
 Desktop viewport: 1440x1000

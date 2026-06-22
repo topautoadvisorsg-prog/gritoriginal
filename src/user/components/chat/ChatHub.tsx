@@ -9,6 +9,7 @@ import { SlipPicker } from './SlipPicker';
 import { SlipWall } from './SlipWall';
 import { useFighters } from '@/shared/hooks/useFighters';
 import type { Event, EventFight, Fighter } from '@/shared/types/fighter';
+import { FighterImage } from '@/shared/components/FighterImage';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -323,22 +324,20 @@ const RecentDonationRow: React.FC<{ donor: DonorEntry; index: number }> = ({ don
 );
 
 const FighterStage: React.FC<{ fighter?: Fighter; side: 'left' | 'right' }> = ({ fighter, side }) => {
-    const [imageFailed, setImageFailed] = useState(false);
     const record = fighter?.record;
 
     return (
         <div className={cn('relative flex-1 min-w-0 h-44 md:h-52 overflow-hidden', side === 'right' && 'text-right')}>
-            {fighter?.bodyImageUrl && !imageFailed && (
-                <img
-                    src={fighter.bodyImageUrl}
-                    alt={`${fighter.firstName} ${fighter.lastName}`}
-                    onError={() => setImageFailed(true)}
+            <div className="absolute inset-0">
+                <FighterImage
+                    fighter={fighter}
+                    variant="hero"
                     className={cn(
-                        'absolute inset-0 w-full h-full object-contain object-bottom drop-shadow-[0_14px_20px_rgba(0,0,0,0.8)]',
+                        'object-contain object-bottom drop-shadow-[0_14px_20px_rgba(0,0,0,0.8)]',
                         side === 'right' && 'scale-x-[-1]'
                     )}
                 />
-            )}
+            </div>
             <div className={cn(
                 'absolute inset-0',
                 side === 'left'

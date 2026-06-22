@@ -8,6 +8,8 @@ import { EmptyState } from '@/shared/components/ui/empty-state';
 import { ErrorState } from '@/shared/components/ui/error-state';
 import { cn } from '@/shared/lib/utils';
 import SEO from '@/shared/components/SEO';
+import { FighterImage } from '@/shared/components/FighterImage';
+import type { Fighter } from '@/shared/types/fighter';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -42,8 +44,6 @@ interface DbEventWithFights extends DbEvent {
 const CARD_W = 300;
 const CARD_H = 380;
 const GOLD = '#E8A020';
-const SILHOUETTE =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 150'%3E%3Cellipse cx='50' cy='28' rx='22' ry='25' fill='%23333'/%3E%3Cpath d='M12 150 Q12 72 50 65 Q88 72 88 150Z' fill='%23333'/%3E%3C/svg%3E";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -81,37 +81,18 @@ const useCountdown = (dateStr: string) => {
 // ─── FighterHalf ──────────────────────────────────────────────────────────────
 
 const FighterHalf: React.FC<{
-  imageUrl?: string | null;
-  name: string;
+  fighter?: Fighter;
   side: 'left' | 'right';
-}> = ({ imageUrl, name, side }) => {
-  const [err, setErr] = useState(false);
+}> = ({ fighter, side }) => {
   return (
     <div className="relative flex-1 overflow-hidden h-full">
-      {imageUrl && !err ? (
-        <div className="w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.05]">
-          <img
-            src={imageUrl}
-            alt={name}
-            onError={() => setErr(true)}
-            className={cn(
-              'w-full h-full object-cover object-top',
-              side === 'right' && 'scale-x-[-1]',
-            )}
-          />
-        </div>
-      ) : (
-        <div
-          className="w-full h-full flex items-end justify-center"
-          style={{
-            background: side === 'left'
-              ? 'linear-gradient(135deg, rgba(20,15,5,0.9), rgba(10,8,3,0.95))'
-              : 'linear-gradient(225deg, rgba(5,10,20,0.9), rgba(3,6,15,0.95))',
-          }}
-        >
-          <img src={SILHOUETTE} alt="Fighter" className="h-full w-full object-contain opacity-20" />
-        </div>
-      )}
+      <div className="w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.05]">
+        <FighterImage
+          fighter={fighter}
+          variant="hero"
+          className={cn(side === 'right' && 'scale-x-[-1]')}
+        />
+      </div>
       {/* Inner edge gradient toward center */}
       <div className={cn(
         'absolute inset-0 pointer-events-none',
@@ -171,8 +152,8 @@ const CarouselCard: React.FC<{
 
       {/* Fighter photos - Adjusted to take full height */}
       <div className="absolute inset-0 flex">
-        <FighterHalf imageUrl={f1?.imageUrl} name={f1 ? `${f1.firstName} ${f1.lastName}` : 'TBD'} side="left" />
-        <FighterHalf imageUrl={f2?.imageUrl} name={f2 ? `${f2.firstName} ${f2.lastName}` : 'TBD'} side="right" />
+        <FighterHalf fighter={f1} side="left" />
+        <FighterHalf fighter={f2} side="right" />
       </div>
 
       {/* Overlaid Matchup Text */}

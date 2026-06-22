@@ -1,5 +1,6 @@
 import React from 'react';
 import { Fighter } from '@/shared/types/fighter';
+import { FighterImage } from '@/shared/components/FighterImage';
 import { cn } from '@/shared/lib/utils';
 import { Crown, TrendingUp, TrendingDown, CheckCircle2, Target } from 'lucide-react';
 
@@ -62,14 +63,7 @@ export const FighterComparisonCard: React.FC<FighterComparisonCardProps> = ({
             "relative w-32 h-40 md:w-40 md:h-52 mb-4 rounded-xl overflow-hidden",
             "bg-gradient-to-b from-muted/50 to-muted/20"
           )}>
-            <img
-              src={fighter.bodyImageUrl || fighter.imageUrl}
-              alt={`${fighter.firstName} ${fighter.lastName}`}
-              className="w-full h-full object-cover object-top"
-              onError={(e) => {
-                e.currentTarget.src = `https://via.placeholder.com/160x200/1a1a2e/00d4ff?text=${fighter.firstName[0]}${fighter.lastName[0]}`;
-              }}
-            />
+            <FighterImage fighter={fighter} variant="hero" />
             {fighter.isChampion && (
               <div className="absolute top-2 left-2 w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg">
                 <Crown className="w-4 h-4 text-yellow-900" />

@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, Trophy, Flame } from 'lucide-react';
 import { Event, Fighter, EventFight } from '@/shared/types/fighter';
 import { cn } from '@/shared/lib/utils';
+import { FighterImage } from '@/shared/components/FighterImage';
 
 // Constants
 const GOLD = '#E8A020';
-const SILHOUETTE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 150'%3E%3Cellipse cx='50' cy='30' rx='22' ry='24' fill='%23444'/%3E%3Cpath d='M15 150 Q15 75 50 68 Q85 75 85 150Z' fill='%23444'/%3E%3C/svg%3E";
 
 interface EventHeaderProps {
   event: Event;
@@ -70,7 +70,6 @@ const FlipCard: React.FC<{ value: string | number; label: string; color?: string
 };
 
 const HeroPhoto: React.FC<{ fighter: Fighter | undefined; side: 'left' | 'right' }> = ({ fighter, side }) => {
-  const [err, setErr] = useState(false);
   return (
     <div className={cn('relative flex-1 h-[40vh] md:h-[50vh] overflow-hidden', side === 'left' ? 'rounded-tl-xl' : 'rounded-tr-xl')}>
       {/* Bottom fade */}
@@ -80,18 +79,11 @@ const HeroPhoto: React.FC<{ fighter: Fighter | undefined; side: 'left' | 'right'
         ? <div className="absolute inset-0 bg-gradient-to-r from-transparent to-black/70 z-10" />
         : <div className="absolute inset-0 bg-gradient-to-l from-transparent to-black/70 z-10" />
       }
-      {fighter?.imageUrl && !err ? (
-        <img
-          src={fighter.imageUrl}
-          alt={fighter.firstName}
-          onError={() => setErr(true)}
-          className={cn('w-full h-full object-cover object-top filter brightness-110 contrast-125 saturate-[1.1]', side === 'right' && 'scale-x-[-1]')}
-        />
-      ) : (
-        <div className="w-full h-full flex items-end justify-center pb-4" style={{ background: 'linear-gradient(to top, rgba(25,18,3,0.9), rgba(8,8,8,0.3))' }}>
-          <img src={SILHOUETTE} alt="Fighter" className="h-full w-full object-cover opacity-20" />
-        </div>
-      )}
+      <FighterImage
+        fighter={fighter}
+        variant="hero"
+        className={cn('filter brightness-110 contrast-125 saturate-[1.1]', side === 'right' && 'scale-x-[-1]')}
+      />
       {/* Fighter Name Overlay */}
       <div className={cn("absolute bottom-6 z-20 flex flex-col", side === 'left' ? "left-4 items-start" : "right-4 items-end")}>
         <span className="text-white/80 font-bold uppercase text-xs md:text-sm tracking-widest">{fighter?.firstName || 'TBD'}</span>
