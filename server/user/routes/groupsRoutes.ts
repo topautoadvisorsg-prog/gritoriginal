@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../../utils/logger';
 
 const router = Router();
+const GROUP_CHAT_MESSAGE_MAX_LENGTH = 2000;
 
 /**
  * POST /api/groups - Create a new group
@@ -280,12 +281,15 @@ router.get('/:id/chat', isAuthenticated, async (req: Request, res) => {
             with: {
                 user: true,
             },
-        }).catch(() => []); // Return empty array if table doesn't exist yet
+        });
 
-        res.json(messages.reverse());
-    } catch (error: any) {
+        res.json(messages.reverse().map(({ user, ...message }) => ({
+            ...message,
+            username: user?.username ?? 'Unknown',
+        })));
+    } catch (error: unknown) {
         logger.error('[Groups API] Error fetching chat messages', error);
-        res.status(500).json({ message: error.message || 'Failed to fetch chat' });
+        res.status(500).json({ message: 'Failed to fetch chat' });
     }
 });
 
@@ -302,8 +306,11 @@ router.post('/:id/chat', isAuthenticated, async (req: Request, res) => {
             return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        if (!content || content.trim().length === 0) {
+        if (typeof content !== 'string' || content.trim().length === 0) {
             return res.status(400).json({ message: 'Message content required' });
+        }
+        if (content.trim().length > GROUP_CHAT_MESSAGE_MAX_LENGTH) {
+            return res.status(400).json({ message: `Message must be ${GROUP_CHAT_MESSAGE_MAX_LENGTH} characters or fewer` });
         }
 
         // Verify membership
@@ -319,22 +326,12 @@ router.post('/:id/chat', isAuthenticated, async (req: Request, res) => {
             userId,
             content: content.trim(),
             createdAt: new Date(),
-        }).returning().catch(() => {
-            // If table doesn't exist, return mock message for development
-            return [{
-                id: uuidv4(),
-                groupId,
-                userId,
-                content: content.trim(),
-                createdAt: new Date(),
-                username: req.user?.username || 'User',
-            }];
-        });
+        }).returning();
 
-        res.status(201).json(message);
-    } catch (error: any) {
+        res.status(201).json({ ...message, username: req.user?.username ?? 'Unknown' });
+    } catch (error: unknown) {
         logger.error('[Groups API] Error sending chat message', error);
-        res.status(500).json({ message: error.message || 'Failed to send message' });
+        res.status(500).json({ message: 'Failed to send message' });
     }
 });
 

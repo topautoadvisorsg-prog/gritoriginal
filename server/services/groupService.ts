@@ -4,6 +4,7 @@ import type { Group, GroupMember } from '../../shared/schema';
 import { and, desc, eq, inArray, or, sql } from 'drizzle-orm';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger';
+import { pointsAwardedToNetUnits } from '../utils/netUnits';
 
 export interface CreateGroupParams {
     name: string;
@@ -17,6 +18,7 @@ export interface CreateGroupParams {
 export interface GroupMemberWithUser extends GroupMember {
     username: string;
     avatarUrl?: string;
+    netUnits: number;
 }
 
 export interface GroupWithMembers extends Group {
@@ -73,6 +75,7 @@ export async function getGroupById(groupId: string): Promise<GroupWithMembers | 
         ...groupMember,
         username: user?.username || 'Unknown',
         avatarUrl: user?.avatarUrl,
+        netUnits: pointsAwardedToNetUnits(user?.totalPoints),
     }));
 
     return {

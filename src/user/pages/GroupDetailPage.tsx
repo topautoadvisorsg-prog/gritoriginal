@@ -6,6 +6,7 @@ import { cn } from '@/shared/lib/utils';
 import { DataFreshnessIndicator } from '@/shared/components/DataFreshnessIndicator';
 import { GroupChat } from './GroupChat';
 import { useToast } from '@/shared/hooks/use-toast';
+import { useAuth } from '@/shared/hooks/use-auth-clerk';
 
 interface GroupMember {
     id: string;
@@ -15,7 +16,7 @@ interface GroupMember {
     joinedAt: string;
     username: string;
     avatarUrl?: string;
-    intelligencePoints?: number;
+    netUnits: number;
 }
 
 interface Group {
@@ -35,6 +36,7 @@ export const GroupDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const { toast } = useToast();
+    const { user } = useAuth();
     const [activeTab, setActiveTab] = useState<'leaderboard' | 'chat'>('leaderboard');
 
     // Fetch group details - no polling, use manual refresh via button
@@ -51,8 +53,8 @@ export const GroupDetailPage: React.FC = () => {
     // Leave group mutation
     const leaveGroupMutation = useMutation({
         mutationFn: async () => {
-            const currentUserId = (await fetch('/api/me', { credentials: 'include' }).then(r => r.json())).id;
-            const res = await fetch(`/api/groups/${groupId}/members/${currentUserId}`, {
+            if (!user?.id) throw new Error('User identity is unavailable');
+            const res = await fetch(`/api/groups/${groupId}/members/${user.id}`, {
                 method: 'DELETE',
                 credentials: 'include',
             });
@@ -94,12 +96,11 @@ export const GroupDetailPage: React.FC = () => {
         );
     }
 
-    const currentUser = group.members.find(m => m.userId === (window as any).currentUser?.id);
-    const isOwner = group.ownerId === (window as any).currentUser?.id;
+    const isOwner = group.ownerId === user?.id;
 
     // Sort members by intelligence points for leaderboard
     const sortedMembers = [...group.members].sort((a, b) => 
-        (b.intelligencePoints || 0) - (a.intelligencePoints || 0)
+        b.netUnits - a.netUnits
     );
 
     return (
@@ -212,10 +213,10 @@ export const GroupDetailPage: React.FC = () => {
             {/* Content */}
             <div className="transition-opacity duration-200">
                 {activeTab === 'leaderboard' && (
-                    <GroupLeaderboard members={sortedMembers} currentUserId={(window as any).currentUser?.id} />
+                    <GroupLeaderboard members={sortedMembers} currentUserId={user?.id} />
                 )}
                 {activeTab === 'chat' && (
-                    <GroupChat groupId={groupId!} members={group.members} />
+                    <GroupChat groupId={groupId!} />
                 )}
             </div>
         </div>
@@ -230,7 +231,7 @@ const GroupLeaderboard: React.FC<{ members: GroupMember[]; currentUserId?: strin
             <div className="flex items-center gap-6 px-6 py-4 border-b border-white/5 text-[9px] uppercase font-black tracking-[0.2em] text-white/30">
                 <div className="w-12 text-center">RANK</div>
                 <div className="flex-1">MEMBER</div>
-                <div className="w-[120px] text-center">INTELLIGENCE PTS</div>
+                <div className="w-[120px] text-center">NET UNITS</div>
             </div>
 
             {/* Members */}
@@ -293,7 +294,7 @@ const GroupLeaderboard: React.FC<{ members: GroupMember[]; currentUserId?: strin
                         <div className="w-[120px] text-center">
                             <div className="flex items-center justify-center gap-1">
                                 <span className="text-lg font-bold text-white">
-                                    {(member.intelligencePoints || 0).toLocaleString()}
+                                    {member.netUnits > 0 ? '+' : ''}{member.netUnits.toFixed(2)}u
                                 </span>
                             </div>
                         </div>

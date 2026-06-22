@@ -3,13 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Send, MessageSquare, Loader2 } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useToast } from '@/shared/hooks/use-toast';
-
-interface GroupMember {
-    id: string;
-    userId: string;
-    username: string;
-    avatarUrl?: string;
-}
+import { useAuth } from '@/shared/hooks/use-auth-clerk';
 
 interface ChatMessage {
     id: string;
@@ -20,25 +14,21 @@ interface ChatMessage {
     username?: string;
 }
 
-export const GroupChat: React.FC<{ groupId: string; members: GroupMember[] }> = ({ groupId, members }) => {
+export const GroupChat: React.FC<{ groupId: string }> = ({ groupId }) => {
     const queryClient = useQueryClient();
     const { toast } = useToast();
+    const { user } = useAuth();
     const [newMessage, setNewMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // Fetch chat messages with auto-refresh (polling every 3 seconds)
-    const { data: messages = [], isLoading: isMessagesLoading } = useQuery({
+    const { data: messages = [], isLoading: isMessagesLoading, error: messagesError } = useQuery<ChatMessage[]>({
         queryKey: ['/api/groups', groupId, 'chat'],
         queryFn: async () => {
-            try {
-                const res = await fetch(`/api/groups/${groupId}/chat`, { credentials: 'include' });
-                if (!res.ok) throw new Error('Failed to fetch chat');
-                return res.json();
-            } catch (error) {
-                console.error('Failed to fetch chat messages:', error);
-                return [];
-            }
+            const res = await fetch(`/api/groups/${groupId}/chat`, { credentials: 'include' });
+            if (!res.ok) throw new Error('Failed to fetch chat');
+            return res.json();
         },
         refetchInterval: 3000, // Poll every 3 seconds
         retry: 2,
@@ -61,7 +51,7 @@ export const GroupChat: React.FC<{ groupId: string; members: GroupMember[] }> = 
             queryClient.invalidateQueries({ queryKey: ['/api/groups', groupId, 'chat'] });
             setNewMessage('');
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
             toast({
                 title: 'Failed to Send',
                 description: error.message,
@@ -81,8 +71,13 @@ export const GroupChat: React.FC<{ groupId: string; members: GroupMember[] }> = 
         if (!newMessage.trim() || isLoading || sendMessageMutation.isPending) return;
 
         setIsLoading(true);
-        await sendMessageMutation.mutateAsync(newMessage);
-        setIsLoading(false);
+        try {
+            await sendMessageMutation.mutateAsync(newMessage);
+        } catch {
+            // The mutation's onError handler presents the failure to the user.
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -91,6 +86,12 @@ export const GroupChat: React.FC<{ groupId: string; members: GroupMember[] }> = 
             {isMessagesLoading ? (
                 <div className="flex-1 flex items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin text-[#E8A020]" />
+                </div>
+            ) : messagesError ? (
+                <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+                    <MessageSquare className="w-12 h-12 text-red-400/40 mb-3" />
+                    <p className="text-sm text-white/70">Chat is temporarily unavailable</p>
+                    <p className="text-[10px] text-white/40 mt-1">Your messages were not lost or replaced with demo data.</p>
                 </div>
             ) : (
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -102,7 +103,7 @@ export const GroupChat: React.FC<{ groupId: string; members: GroupMember[] }> = 
                         </div>
                     ) : (
                         messages.map((message) => {
-                            const isOwn = message.userId === (window as any).currentUser?.id;
+                            const isOwn = message.userId === user?.id;
                             return (
                                 <div
                                     key={message.id}
@@ -148,6 +149,7 @@ export const GroupChat: React.FC<{ groupId: string; members: GroupMember[] }> = 
                         placeholder="Share your picks or fight thoughts..."
                         className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:border-[#E8A020]/50 placeholder:text-white/30"
                         disabled={isLoading}
+                        maxLength={2000}
                     />
                     <button
                         type="submit"

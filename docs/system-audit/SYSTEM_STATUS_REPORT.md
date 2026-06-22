@@ -16,7 +16,7 @@ GRIT has a substantial working application shell: Clerk authentication, event/fi
 | Rankings | Blocked | Global totals include picks that snapshots exclude; event query is ignored; ties and snapshot selection are inconsistent. |
 | Dashboard | Partial | Zero-state crash was guarded, but status casing and snapshot association can show the wrong event/rank. |
 | Chat | Partial | Global/event/country chat and sockets exist. Group chat silently claims success on persistence failures. |
-| Groups | Partial | Creation/membership/chat routes exist; public self-join is absent and the leaderboard lacks its ranking field. |
+| Groups | Partial | Creation/membership/chat routes exist; public self-join and production moderation/realtime controls remain absent. |
 | Notes/journal | Partial | Post-fight notes exist per fight, but there is no mounted journal/history view, search, or reliable autosave. |
 | AI | Partial | Premium gates, moderation, caching, streaming, and metering exist. No enforceable per-user spend quota or token deduction exists. |
 | Platform subscriptions | Blocked | Stripe checkout is one-time payment mode, while fulfillment grants recurring premium semantics. |
@@ -56,7 +56,7 @@ At audit time, event close ran snapshot, raffle, and progression before updating
 
 ### Social groups
 
-Groups can be created and owners can add members. Discovery has no public self-join operation. `GroupDetailPage` and `GroupChat` rely on `window.currentUser`, which is not established by the app. Group leaderboards sort `intelligencePoints`, but `groupService` does not return that property. Chat persistence errors are converted to empty history or mock success, hiding data loss.
+Groups can be created and owners can add members. Discovery has no public self-join operation. Authenticated identity, canonical net-unit member rankings, message limits, and honest chat persistence errors are implemented; realtime group rooms, pagination, and production moderation controls remain.
 
 ### Notes and user history
 

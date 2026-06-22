@@ -29,18 +29,18 @@ Group, group-member, and group-chat models exist in the active schema/database s
 - owner/admin-controlled member addition/removal;
 - owner role assignment and ownership transfer;
 - member-only chat authorization;
+- durable chat failures surface as errors instead of empty/mock success states;
+- authenticated user identity drives owner/current-message behavior;
+- group member rankings use canonical stored net units;
+- chat messages enforce a 2,000-character maximum;
 - frontend hub/detail/chat surfaces.
 
 ## Broken or missing behavior
 
 - No public self-join or request/invitation acceptance flow.
 - Discovery copy implies joining, but only an owner/admin can add a known user ID.
-- Group leaderboard sorts `intelligencePoints`, but the group service does not supply that field.
-- UI uses `window.currentUser`, which the application does not establish, for owner/current-message behavior.
-- Group chat GET converts database errors to an empty list.
-- Group chat POST converts insert failure to mock success, so the UI can claim a lost message was saved.
 - Chat polls every three seconds instead of using the existing Socket.IO infrastructure.
-- Message body has no shared schema, maximum length, pagination cursor, or group-specific rate limit.
+- Message body has no shared schema, pagination cursor, or group-specific rate limit.
 - Role-management UI is incomplete despite backend endpoints.
 - Group ranking has no documented relationship to canonical GRIT net-unit rankings.
 
@@ -57,4 +57,4 @@ Group, group-member, and group-chat models exist in the active schema/database s
 
 ## What can ship today
 
-Internal QA of group CRUD and UI. Public community launch is blocked by missing join flow, false-success chat persistence, broken leaderboard data, identity handling, and moderation/abuse controls.
+Internal QA of group CRUD and UI. Public community launch is blocked by missing join/invite flows, realtime pagination, and moderation/abuse controls.

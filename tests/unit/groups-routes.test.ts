@@ -85,8 +85,8 @@ describe("groups routes", () => {
 
   it("loads group chat messages for group members", async () => {
     findMany.mockResolvedValue([
-      { id: "newer", content: "second" },
-      { id: "older", content: "first" },
+      { id: "newer", content: "second", user: { username: "Cody" } },
+      { id: "older", content: "first", user: { username: "Jordan" } },
     ]);
 
     const server = await startGroupsTestServer();
@@ -99,6 +99,7 @@ describe("groups routes", () => {
     expect(isGroupMember).toHaveBeenCalledWith("group-1", "user-1");
     expect(findMany).toHaveBeenCalledOnce();
     expect(body.map((message: { id: string }) => message.id)).toEqual(["older", "newer"]);
+    expect(body.map((message: { username: string }) => message.username)).toEqual(["Jordan", "Cody"]);
   });
 
   it("saves trimmed group chat messages for group members", async () => {
@@ -139,5 +140,32 @@ describe("groups routes", () => {
     expect(response.status).toBe(403);
     expect(body).toEqual({ message: "Access denied" });
     expect(findMany).not.toHaveBeenCalled();
+  });
+
+  it("returns an error when chat history cannot be loaded", async () => {
+    findMany.mockRejectedValue(new Error("database unavailable"));
+
+    const server = await startGroupsTestServer();
+    closeServer = server.close;
+
+    const response = await fetch(`${server.baseUrl}/api/groups/group-1/chat`);
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ message: "Failed to fetch chat" });
+  });
+
+  it("returns an error instead of fabricating a message when persistence fails", async () => {
+    insertValues.mockReturnValue({ returning: () => Promise.reject(new Error("write failed")) });
+
+    const server = await startGroupsTestServer();
+    closeServer = server.close;
+
+    const response = await fetch(`${server.baseUrl}/api/groups/group-1/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: "This must persist" }),
+    });
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({ message: "Failed to send message" });
   });
 });
