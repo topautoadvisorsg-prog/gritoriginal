@@ -6,6 +6,7 @@ import { db } from '../../db';
 import { users, events, rafflePool } from '../../../shared/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { config } from '../../config/env';
+import type Stripe from 'stripe';
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
@@ -26,7 +27,7 @@ export function registerStripeWebhook(app: Express): void {
                 return res.status(400).json({ error: 'No signature provided' });
             }
 
-            let event;
+            let event: Stripe.Event;
 
             try {
                 event = stripeService.constructEvent(req.body, signature, webhookSecret);
@@ -41,7 +42,7 @@ export function registerStripeWebhook(app: Express): void {
 
                 // ─── Checkout completed ─────────────────────────────────────────────
                 case 'checkout.session.completed': {
-                    const session = event.data.object as any;
+                    const session = event.data.object as Stripe.Checkout.Session;
                     const userId = session.metadata?.userId;
 
                     if (userId) {
@@ -75,7 +76,7 @@ export function registerStripeWebhook(app: Express): void {
                 // ─── New subscription created ───────────────────────────────────────
                 // Canonical source of subscriptionStartDate for first-time subscribers.
                 case 'customer.subscription.created': {
-                    const subscription = event.data.object as any;
+                    const subscription = event.data.object as Stripe.Subscription;
                     const userId = subscription.metadata?.userId;
 
                     if (userId) {
@@ -101,8 +102,8 @@ export function registerStripeWebhook(app: Express): void {
                 // start date — the user must wait one full month before qualifying for
                 // the raffle again.
                 case 'customer.subscription.updated': {
-                    const subscription = event.data.object as any;
-                    const previousAttributes = event.data.previous_attributes as any;
+                    const subscription = event.data.object as Stripe.Subscription;
+                    const previousAttributes = event.data.previous_attributes as Partial<Stripe.Subscription> | undefined;
                     const userId = subscription.metadata?.userId;
 
                     if (userId) {
@@ -141,7 +142,7 @@ export function registerStripeWebhook(app: Express): void {
 
                 // ─── Subscription deleted (canceled / expired) ──────────────────────
                 case 'customer.subscription.deleted': {
-                    const subscription = event.data.object as any;
+                    const subscription = event.data.object as Stripe.Subscription;
                     const userId = subscription.metadata?.userId;
 
                     if (userId) {
@@ -161,7 +162,7 @@ export function registerStripeWebhook(app: Express): void {
                 }
 
                 case 'payment_intent.succeeded': {
-                    const intent = event.data.object as any;
+                    const intent = event.data.object as Stripe.PaymentIntent;
                     logger.info(`Payment intent succeeded: ${intent.id}`);
                     break;
                 }

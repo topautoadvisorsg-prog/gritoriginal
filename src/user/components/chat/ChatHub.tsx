@@ -35,6 +35,7 @@ interface ChatMessage {
         displayName?: string;
         avatarUrl?: string;
         rank?: Rank;
+        progressBadge?: string | null;
     };
     superChat?: {
         tier: 'blue' | 'green' | 'gold' | 'magenta';
@@ -100,6 +101,32 @@ interface DonorEntry {
     initials: string;
 }
 
+interface SendMessageInput {
+    message: string;
+    messageType?: ChatMessage['messageType'];
+    slipId?: string;
+}
+
+interface SendMessageBody extends SendMessageInput {
+    chatType: ChatType;
+    countryCode?: string | null;
+}
+
+interface ChatErrorResponse {
+    error?: string;
+    remainingMinutes?: number;
+}
+
+class ChatSendError extends Error {
+    remainingMinutes?: number;
+
+    constructor(message: string, remainingMinutes?: number) {
+        super(message);
+        this.name = 'ChatSendError';
+        this.remainingMinutes = remainingMinutes;
+    }
+}
+
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
 
@@ -163,13 +190,13 @@ const ProgressBadge: React.FC<{ badge: string }> = ({ badge }) => {
 };
 
 const ChatMessageRow: React.FC<{ msg: ChatMessage; isOwn: boolean }> = ({ msg, isOwn }) => {
-    const rank = (msg.user as any)?.rank as Rank | undefined;
+    const rank = msg.user?.rank;
     const cfg = rank ? RANK_CONFIG[rank] : null;
     const isHighlighted = rank && rank !== 'ROOKIE' && rank !== 'SAMURAI';
     const initials = (msg.user?.displayName || msg.user?.username || 'U').substring(0, 2).toUpperCase();
     const name = msg.user?.displayName || msg.user?.username || 'Anonymous';
     const time = new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const progressBadge = (msg.user as any)?.progressBadge;
+    const progressBadge = msg.user?.progressBadge;
     const isSlip = msg.messageType === 'slip';
 
     if (msg.isAdmin) {
@@ -407,7 +434,7 @@ export const ChatHub: React.FC = () => {
     const [slipCooldownMsg, setSlipCooldownMsg] = useState<string | undefined>();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const userCountry = (user as any)?.country;
+    const userCountry = user?.country;
 
     const { data: events = [] } = useQuery<Event[]>({
         queryKey: ['/api/events'],
@@ -439,7 +466,7 @@ export const ChatHub: React.FC = () => {
     );
 
     // Tier check: Challenger = premium tier or active subscription
-    const isChallenger = (user as any)?.tier === 'premium' || (user as any)?.subscriptionStatus === 'active';
+    const isChallenger = user?.tier === 'premium' || user?.subscriptionStatus === 'active';
 
     // Chat config: open/closed state and cooldown minutes
     const { data: chatConfig } = useQuery({
@@ -502,17 +529,15 @@ export const ChatHub: React.FC = () => {
     }, [socket, activeChatType, userCountry, queryClient, queryKey]);
 
     const sendMutation = useMutation({
-        mutationFn: async ({ message, messageType, slipId }: { message: string; messageType?: string; slipId?: string }) => {
-            const body: any = { message, chatType: activeChatType };
+        mutationFn: async ({ message, messageType, slipId }: SendMessageInput) => {
+            const body: SendMessageBody = { message, chatType: activeChatType };
             if (activeChatType === 'country') body.countryCode = userCountry;
             if (messageType) body.messageType = messageType;
             if (slipId) body.slipId = slipId;
             const response = await fetchWithAuth('/api/chat', { method: 'POST', body: JSON.stringify(body) });
             if (!response.ok) {
-                const err = await response.json();
-                const error: any = new Error(err.error || 'Failed to send message');
-                error.remainingMinutes = err.remainingMinutes;
-                throw error;
+                const err = await response.json() as ChatErrorResponse;
+                throw new ChatSendError(err.error || 'Failed to send message', err.remainingMinutes);
             }
             return response.json();
         },
@@ -522,8 +547,8 @@ export const ChatHub: React.FC = () => {
             setSlipCooldownMsg(undefined);
             queryClient.invalidateQueries({ queryKey });
         },
-        onError: (err: any) => {
-            if (err.remainingMinutes) {
+        onError: (err: Error) => {
+            if (err instanceof ChatSendError && err.remainingMinutes) {
                 const mins = err.remainingMinutes;
                 setSlipCooldownMsg(`You can share another slip in ${mins} minute${mins > 1 ? 's' : ''}`);
                 setShowSlipPicker(true);
@@ -679,11 +704,11 @@ export const ChatHub: React.FC = () => {
                                     </div>
                                 ) : (
                                     <>
-                                        {messages.filter(m => m.isAdmin || (m as any).isAdmin).map(msg => (
-                                            <ChatMessageRow key={msg.id} msg={msg} isOwn={msg.userId === (user as any)?.id} />
+                                        {messages.filter(m => m.isAdmin).map(msg => (
+                                            <ChatMessageRow key={msg.id} msg={msg} isOwn={msg.userId === user?.id} />
                                         ))}
-                                        {[...messages].filter(m => !m.isAdmin && !(m as any).isAdmin).reverse().map(msg => (
-                                            <ChatMessageRow key={msg.id} msg={msg} isOwn={msg.userId === (user as any)?.id} />
+                                        {[...messages].filter(m => !m.isAdmin).reverse().map(msg => (
+                                            <ChatMessageRow key={msg.id} msg={msg} isOwn={msg.userId === user?.id} />
                                         ))}
                                     </>
                                 )}

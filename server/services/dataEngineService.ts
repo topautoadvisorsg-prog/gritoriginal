@@ -16,15 +16,62 @@ export type DataPipelineStatus = 'pending' | 'approved' | 'rejected' | 'applied'
 export type SourceType = 'fighter' | 'fight' | 'news' | 'odds' | 'event';
 export type ActionType = 'create' | 'update' | 'delete';
 
+type JsonRecord = Record<string, unknown>;
+type PipelineEntry = typeof dataPipeline.$inferSelect;
+type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
 interface PipelineData {
   sourceType: SourceType;
   sourceId?: string;
   actionType: ActionType;
   dataType: string;
-  data: any;
+  data: JsonRecord;
   submittedBy?: string;
   isPotentialDuplicate?: boolean;
   errorLog?: string;
+}
+
+interface FighterPipelineData extends JsonRecord {
+  firstName?: string;
+  lastName?: string;
+  weightClass?: string;
+  dateOfBirth?: string | Date | null;
+  imageUrl?: string | null;
+}
+
+interface FightLocationPayload {
+  city?: string;
+  state?: string;
+  country?: string;
+  venue?: string;
+}
+
+interface FightPipelineData extends JsonRecord {
+  location?: FightLocationPayload | null;
+}
+
+interface EventFightPipelineData extends JsonRecord {
+  fighter1Id: string;
+  fighter2Id: string;
+}
+
+interface EventPipelineData extends JsonRecord {
+  date?: string | Date | null;
+  lockTime?: string | Date | null;
+  eventFights?: EventFightPipelineData[];
+  name?: string;
+}
+
+interface OddsPipelineData extends JsonRecord {
+  fightId: string;
+}
+
+function asRecord(value: unknown): JsonRecord {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonRecord : {};
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 /** Normalize a name string: lowercase + trim for comparison only. */
@@ -41,7 +88,10 @@ export async function submitToPipeline(payload: PipelineData): Promise<string> {
 
     // Duplicate Detection for Fighters (normalized name + optional weight class secondary check)
     if (payload.sourceType === 'fighter' && payload.actionType === 'create' && !payload.sourceId) {
-      const { firstName, lastName, weightClass } = payload.data;
+      const fighterData = payload.data as FighterPipelineData;
+      const firstName = typeof fighterData.firstName === 'string' ? fighterData.firstName : '';
+      const lastName = typeof fighterData.lastName === 'string' ? fighterData.lastName : '';
+      const weightClass = typeof fighterData.weightClass === 'string' ? fighterData.weightClass : undefined;
       const normFirst = normalizeName(firstName);
       const normLast = normalizeName(lastName);
 
@@ -108,7 +158,7 @@ export async function submitToPipeline(payload: PipelineData): Promise<string> {
 /**
  * Get all pending pipeline entries for admin review.
  */
-export async function getPendingPipelineEntries(): Promise<any[]> {
+export async function getPendingPipelineEntries(): Promise<PipelineEntry[]> {
   try {
     const entries = await db.select()
       .from(dataPipeline)
@@ -125,7 +175,7 @@ export async function getPendingPipelineEntries(): Promise<any[]> {
 /**
  * Get pipeline entries by status.
  */
-export async function getPipelineEntriesByStatus(status: DataPipelineStatus): Promise<any[]> {
+export async function getPipelineEntriesByStatus(status: DataPipelineStatus): Promise<PipelineEntry[]> {
   try {
     const entries = await db.select()
       .from(dataPipeline)
@@ -143,7 +193,7 @@ export async function getPipelineEntriesByStatus(status: DataPipelineStatus): Pr
 /**
  * Update the data payload of a pipeline entry (Edit by Admin).
  */
-export async function updatePipelineEntryData(entryId: string, data: any): Promise<void> {
+export async function updatePipelineEntryData(entryId: string, data: JsonRecord): Promise<void> {
   try {
     await db.update(dataPipeline)
       .set({ 
@@ -206,7 +256,7 @@ export async function rejectEntry(entryId: string, adminUserId: string, reason: 
  */
 export async function applyEntry(entryId: string): Promise<void> {
   // Capture entry before transaction for post-commit outbound sync
-  let appliedEntry: any = null;
+  let appliedEntry: PipelineEntry | (PipelineEntry & { data: JsonRecord }) | null = null;
 
   await db.transaction(async (tx) => {
     try {
@@ -254,7 +304,7 @@ export async function applyEntry(entryId: string): Promise<void> {
 
       // Inject resolved ID into data so outbound sync has access to it
       appliedEntry = resolvedId
-        ? { ...entry, data: { ...entry.data, id: resolvedId } }
+        ? { ...entry, data: { ...asRecord(entry.data), id: resolvedId } }
         : entry;
       logger.info(`[Data Pipeline] Entry ${entryId} applied successfully`);
     } catch (error) {
@@ -275,8 +325,8 @@ export async function applyEntry(entryId: string): Promise<void> {
  * Fire outbound sync to Supabase for a just-applied pipeline entry.
  * Runs outside the DB transaction so failures don't roll back the apply.
  */
-async function _outboundSyncEntry(entry: any): Promise<void> {
-  const data = entry.data as Record<string, unknown>;
+async function _outboundSyncEntry(entry: PipelineEntry): Promise<void> {
+  const data = asRecord(entry.data);
   const action = entry.actionType === 'create' ? 'create' : 'update';
   switch (entry.sourceType) {
     case 'fighter':
@@ -302,14 +352,14 @@ async function _outboundSyncEntry(entry: any): Promise<void> {
  * If the payload includes an `eventFights` array, each fight is upserted
  * into the event_fights table and synced to Supabase after commit.
  */
-async function applyEventData(tx: any, entry: any): Promise<string | undefined> {
-  const eventData = entry.data;
+async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<string | undefined> {
+  const eventData = asRecord(entry.data) as EventPipelineData;
   const { eventFights: fights, ...metadata } = eventData;
 
   let resolvedEventId: string;
 
   // Convert ISO date strings to Date objects for timestamp columns
-  const normalizeEventMeta = (m: any) => ({
+  const normalizeEventMeta = (m: EventPipelineData) => ({
     ...m,
     date: m.date ? new Date(m.date) : undefined,
     lockTime: m.lockTime ? new Date(m.lockTime) : undefined,
@@ -336,7 +386,7 @@ async function applyEventData(tx: any, entry: any): Promise<string | undefined> 
   // Insert or update embedded fight matchups if provided
   if (Array.isArray(fights) && fights.length > 0) {
     logger.info(`[Data Pipeline] Processing ${fights.length} embedded event fights for event ${resolvedEventId}`);
-    const fightRows: any[] = [];
+    const fightRows: Array<EventFightPipelineData & { id: string; eventId: string; status?: string }> = [];
 
     for (const fight of fights) {
       const existing = await tx
@@ -389,8 +439,8 @@ async function applyEventData(tx: any, entry: any): Promise<string | undefined> 
  * Normalize fighter data: convert ISO date strings to Date objects for timestamp columns.
  * JSONB payloads store dates as strings; Drizzle timestamp columns require Date objects.
  */
-function normalizeFighterData(data: any): any {
-  const out = { ...data };
+function normalizeFighterData(data: unknown): FighterPipelineData {
+  const out = { ...(asRecord(data) as FighterPipelineData) };
   if (out.dateOfBirth && typeof out.dateOfBirth === 'string') {
     const d = new Date(out.dateOfBirth);
     out.dateOfBirth = isNaN(d.getTime()) ? undefined : d;
@@ -405,7 +455,7 @@ function normalizeFighterData(data: any): any {
 /**
  * Apply fighter data updates.
  */
-async function applyFighterData(tx: any, entry: any): Promise<void> {
+async function applyFighterData(tx: DbTransaction, entry: PipelineEntry): Promise<void> {
   const fighterData = normalizeFighterData(entry.data);
   
   if (entry.actionType === 'create') {
@@ -461,9 +511,9 @@ async function applyFighterData(tx: any, entry: any): Promise<void> {
  * falls back to extracting from the nested `location` JSONB object when present.
  * The `location` JSONB column is retained as-is for snapshot/backward compat.
  */
-function normalizeFightData(data: any): any {
-  const out = { ...data };
-  const loc: Record<string, string | undefined> = (out.location && typeof out.location === 'object') ? out.location : {};
+function normalizeFightData(data: unknown): FightPipelineData {
+  const out = { ...(asRecord(data) as FightPipelineData) };
+  const loc = out.location && typeof out.location === 'object' ? out.location : {};
   out.eventCity    = out.eventCity    ?? loc.city    ?? undefined;
   out.eventState   = out.eventState   ?? loc.state   ?? undefined;
   out.eventCountry = out.eventCountry ?? loc.country ?? undefined;
@@ -480,7 +530,7 @@ function normalizeFightData(data: any): any {
  * populated by normalizeFightData from either flat payload fields or the nested
  * location object.
  */
-async function applyFightData(tx: any, entry: any): Promise<void> {
+async function applyFightData(tx: DbTransaction, entry: PipelineEntry): Promise<void> {
   const fightData = normalizeFightData(entry.data);
   
   if (entry.actionType === 'create') {
@@ -501,8 +551,8 @@ async function applyFightData(tx: any, entry: any): Promise<void> {
 /**
  * Apply news article data.
  */
-async function applyNewsData(tx: any, entry: any): Promise<void> {
-  const newsData = entry.data;
+async function applyNewsData(tx: DbTransaction, entry: PipelineEntry): Promise<void> {
+  const newsData = asRecord(entry.data);
   
   if (entry.actionType === 'create') {
     await tx.insert(newsArticles).values({
@@ -522,8 +572,8 @@ async function applyNewsData(tx: any, entry: any): Promise<void> {
 /**
  * Apply odds data.
  */
-async function applyOddsData(tx: any, entry: any): Promise<void> {
-  const oddsData = entry.data;
+async function applyOddsData(tx: DbTransaction, entry: PipelineEntry): Promise<void> {
+  const oddsData = asRecord(entry.data) as OddsPipelineData;
   const { fightId, ...oddsFields } = oddsData;
 
   // 1. Update live odds on the fight
@@ -598,15 +648,15 @@ export async function retryFailedEntries(): Promise<{ attempted: number; succeed
         await applyEntry(entry.id);
         succeeded++;
         logger.info(`[Data Pipeline] Retry succeeded for entry ${entry.id} (attempt ${(entry.retryCount ?? 0) + 1})`);
-      } catch (err: any) {
+      } catch (err: unknown) {
         failed++;
         await db.update(dataPipeline)
           .set({
             status: 'failed',
-            errorLog: err.message,
+            errorLog: errorMessage(err),
           })
           .where(eq(dataPipeline.id, entry.id));
-        logger.warn(`[Data Pipeline] Retry failed for entry ${entry.id}: ${err.message}`);
+        logger.warn(`[Data Pipeline] Retry failed for entry ${entry.id}: ${errorMessage(err)}`);
       }
     }
   } catch (err) {

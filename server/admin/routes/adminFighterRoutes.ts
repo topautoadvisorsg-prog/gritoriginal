@@ -7,6 +7,17 @@ import { validate } from '../../middleware/validate';
 import { bulkFightersSchema, bulkFightsSchema } from '../../schemas';
 import { syncFighterToSupabase } from '../../services/outboundSyncService';
 
+type CreatedFighter = Awaited<ReturnType<typeof storage.createFighter>>;
+type UpdatedFighter = NonNullable<Awaited<ReturnType<typeof storage.updateFighter>>>;
+type CreatedFightHistory = Awaited<ReturnType<typeof storage.createFightHistory>>;
+type UpdatedFightHistory = NonNullable<Awaited<ReturnType<typeof storage.updateFightHistory>>>;
+
+interface BulkImportError {
+  fighter?: string;
+  fight?: string;
+  error: unknown;
+}
+
 /**
  * Admin-only fighter and fight history management.
  * Protected by isAuthenticated + requireAdmin.
@@ -89,9 +100,9 @@ export function registerAdminFighterRoutes(app: Express) {
         return res.status(400).json({ error: "Expected array of fighters" });
       }
 
-      const created: any[] = [];
-      const updated: any[] = [];
-      const errors: any[] = [];
+      const created: CreatedFighter[] = [];
+      const updated: UpdatedFighter[] = [];
+      const errors: BulkImportError[] = [];
 
       for (const fighterData of fightersData) {
         try {
@@ -184,9 +195,9 @@ export function registerAdminFighterRoutes(app: Express) {
         return res.status(400).json({ error: "Expected array of fight records" });
       }
 
-      const created: any[] = [];
-      const updated: any[] = [];
-      const errors: any[] = [];
+      const created: CreatedFightHistory[] = [];
+      const updated: UpdatedFightHistory[] = [];
+      const errors: BulkImportError[] = [];
 
       for (const fightData of fightsData) {
         try {

@@ -10,6 +10,10 @@ import { logger } from '../../utils/logger';
 const router = Router();
 const GROUP_CHAT_MESSAGE_MAX_LENGTH = 2000;
 
+function errorMessage(error: unknown, fallback: string): string {
+    return error instanceof Error && error.message ? error.message : fallback;
+}
+
 /**
  * POST /api/groups - Create a new group
  */
@@ -37,9 +41,9 @@ router.post('/', isAuthenticated, async (req: Request, res) => {
 
         logger.info(`[Groups API] User ${userId} created group ${group.id}`);
         res.status(201).json(group);
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error creating group', error);
-        res.status(500).json({ message: error.message || 'Failed to create group' });
+        res.status(500).json({ message: errorMessage(error, 'Failed to create group') });
     }
 });
 
@@ -56,9 +60,9 @@ router.get('/my', isAuthenticated, async (req: Request, res) => {
 
         const groups = await groupService.getUserGroups(userId);
         res.json(groups);
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error fetching user groups', error);
-        res.status(500).json({ message: error.message || 'Failed to fetch groups' });
+        res.status(500).json({ message: errorMessage(error, 'Failed to fetch groups') });
     }
 });
 
@@ -72,9 +76,9 @@ router.get('/browse', async (req: Request, res) => {
 
         const groups = await groupService.browsePublicGroups(limit, offset);
         res.json(groups);
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error browsing public groups', error);
-        res.status(500).json({ message: error.message || 'Failed to fetch public groups' });
+        res.status(500).json({ message: errorMessage(error, 'Failed to fetch public groups') });
     }
 });
 
@@ -131,9 +135,9 @@ router.get('/:id', isAuthenticated, async (req: Request, res) => {
         }
 
         res.json(group);
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error fetching group', error);
-        res.status(500).json({ message: error.message || 'Failed to fetch group' });
+        res.status(500).json({ message: errorMessage(error, 'Failed to fetch group') });
     }
 });
 
@@ -158,9 +162,9 @@ router.post('/:id/members', isAuthenticated, async (req: Request, res) => {
 
         await groupService.addMemberToGroup(groupId, userId as string, role || 'member');
         res.status(204).send();
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error adding member', error);
-        res.status(400).json({ message: error.message || 'Failed to add member' });
+        res.status(400).json({ message: errorMessage(error, 'Failed to add member') });
     }
 });
 
@@ -191,9 +195,9 @@ router.delete('/:id/members/:userId', isAuthenticated, async (req: Request, res)
 
         await groupService.removeMemberFromGroup(groupId, targetUserId);
         res.status(204).send();
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error removing member', error);
-        res.status(400).json({ message: error.message || 'Failed to remove member' });
+        res.status(400).json({ message: errorMessage(error, 'Failed to remove member') });
     }
 });
 
@@ -223,9 +227,9 @@ router.patch('/:id/members/:userId/role', isAuthenticated, async (req: Request, 
 
         await groupService.updateMemberRole(groupId, targetUserId, role);
         res.status(204).send();
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error updating member role', error);
-        res.status(400).json({ message: error.message || 'Failed to update member role' });
+        res.status(400).json({ message: errorMessage(error, 'Failed to update member role') });
     }
 });
 
@@ -250,9 +254,9 @@ router.post('/:id/transfer', isAuthenticated, async (req: Request, res) => {
 
         await groupService.transferOwnership(groupId, newOwnerId as string);
         res.status(204).send();
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error transferring ownership', error);
-        res.status(400).json({ message: error.message || 'Failed to transfer ownership' });
+        res.status(400).json({ message: errorMessage(error, 'Failed to transfer ownership') });
     }
 });
 
@@ -275,9 +279,9 @@ router.delete('/:id', isAuthenticated, async (req: Request, res) => {
 
         await groupService.deleteGroup(groupId);
         res.status(204).send();
-    } catch (error: any) {
+    } catch (error: unknown) {
         logger.error('[Groups API] Error deleting group', error);
-        res.status(400).json({ message: error.message || 'Failed to delete group' });
+        res.status(400).json({ message: errorMessage(error, 'Failed to delete group') });
     }
 });
 

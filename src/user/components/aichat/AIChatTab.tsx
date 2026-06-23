@@ -12,8 +12,18 @@ interface AiChatMessage {
     userId: string;
     role: 'user' | 'assistant';
     message: string;
-    context: any;
+    context: Record<string, unknown> | null;
     createdAt: string;
+}
+
+interface StreamChunk {
+    content?: string;
+    error?: string;
+}
+
+function parseStreamChunk(data: string): StreamChunk {
+    const parsed = JSON.parse(data) as unknown;
+    return parsed && typeof parsed === 'object' ? parsed as StreamChunk : {};
 }
 
 const TypewriterText = ({ text }: { text: string }) => {
@@ -58,7 +68,7 @@ export const AIChatTab: React.FC<AIChatTabProps> = ({ fighterIds, fightContext }
     const queryClient = useQueryClient();
     const [input, setInput] = useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const isPremium = (user as any)?.tier === 'premium' || (user as any)?.role === 'admin';
+    const isPremium = user?.tier === 'premium' || user?.role === 'admin';
 
     const isFightContext = !!fightContext;
 
@@ -103,7 +113,7 @@ export const AIChatTab: React.FC<AIChatTabProps> = ({ fighterIds, fightContext }
         setInput('');
         setIsStreaming(true);
 
-        const userId = (user as any).id;
+        const userId = user.id;
 
         const newUserMessage: AiChatMessage = {
             id: `temp-user-${Date.now()}`,
@@ -165,7 +175,7 @@ export const AIChatTab: React.FC<AIChatTabProps> = ({ fighterIds, fightContext }
                             if (data === '[DONE]') continue;
 
                             try {
-                                const parsed = JSON.parse(data);
+                                const parsed = parseStreamChunk(data);
                                 if (parsed.content) {
                                     accumulatedResponse += parsed.content;
 
@@ -202,7 +212,7 @@ export const AIChatTab: React.FC<AIChatTabProps> = ({ fighterIds, fightContext }
             if (!isFightContext) {
                 queryClient.invalidateQueries({ queryKey: ['/api/ai/chat/history'] });
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Streaming error:', error);
         } finally {
             setIsStreaming(false);

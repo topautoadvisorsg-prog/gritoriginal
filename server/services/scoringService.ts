@@ -18,6 +18,55 @@ import { sendNotificationToUser } from './notificationService';
 import { calculateProfit, formatProfit } from '../roiCalculator';
 import { canonicalRankingEligibilityConditions } from './rankingEligibility';
 
+type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+interface FightResultPayload {
+    winnerId: string | null;
+    method?: string | null;
+    methodDetail?: string | null;
+    round?: number | null;
+    time?: string | null;
+    referee?: string | null;
+    stats?: {
+        fighter1Stats?: Record<string, unknown> | null;
+        fighter2Stats?: Record<string, unknown> | null;
+    } | null;
+}
+
+interface FighterRecord {
+    wins: number;
+    losses: number;
+    draws: number;
+    noContests: number;
+}
+
+type FighterPerformance = Record<string, number>;
+
+function asRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function asNumber(value: unknown): number {
+    return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+}
+
+function fighterRecord(value: unknown): FighterRecord {
+    const record = asRecord(value);
+    return {
+        wins: asNumber(record.wins),
+        losses: asNumber(record.losses),
+        draws: asNumber(record.draws),
+        noContests: asNumber(record.noContests),
+    };
+}
+
+function fighterPerformance(value: unknown): FighterPerformance {
+    const source = asRecord(value);
+    return Object.fromEntries(
+        Object.entries(source).filter((entry): entry is [string, number] => typeof entry[1] === 'number')
+    );
+}
+
 // ──────────────────────────────────────
 // Scoring Functions
 // ──────────────────────────────────────
@@ -79,7 +128,7 @@ export function normalizeMethod(method: string): string {
  *
  * Should only be called from admin-protected routes.
  */
-export async function finalizeFightResult(fightId: string, resultData: any) {
+export async function finalizeFightResult(fightId: string, resultData: FightResultPayload) {
     return db.transaction(async (tx) => {
         // Validate the fight exists
         const [fight] = await tx
@@ -191,11 +240,11 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             const [user] = await tx.select().from(users).where(eq(users.id, userId));
             if (!user) continue;
 
-            const currentStreak = (user as any).currentStreak || 0;
-            const maxStreak = (user as any).maxStreak || 0;
+            const currentStreak = user.currentStreak || 0;
+            const maxStreak = user.maxStreak || 0;
             
-            let newStreak = isCorrect ? currentStreak + 1 : 0;
-            let newMaxStreak = Math.max(maxStreak, newStreak);
+            const newStreak = isCorrect ? currentStreak + 1 : 0;
+            const newMaxStreak = Math.max(maxStreak, newStreak);
 
             const userPicksResult = await tx
                 .select({ totalPoints: sql<number>`COALESCE(SUM(${userPicks.pointsAwarded}), 0)` })
@@ -276,7 +325,7 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             titleFight: fight.isTitleFight || false,
             referee: fightResult.referee || '',
             isLocked: true,
-            stats: (fightResult as any).stats?.fighter1Stats || null,
+            stats: fightResult.stats?.fighter1Stats || null,
         };
 
         // Fighter 1 fight history
@@ -294,7 +343,7 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
                 opponentNickname: fighter2Data?.nickname || '',
                 result: fighter1Result,
                 ...baseFightData,
-                stats: (fightResult as any).stats?.fighter1Stats || null,
+                stats: fightResult.stats?.fighter1Stats || null,
             });
         }
 
@@ -312,7 +361,7 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
                 opponentNickname: fighter1Data?.nickname || '',
                 result: fighter2Result,
                 ...baseFightData,
-                stats: (fightResult as any).stats?.fighter2Stats || null,
+                stats: fightResult.stats?.fighter2Stats || null,
             });
         }
 
@@ -326,10 +375,10 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             logger.debug(`[Fight Result] Updating fighter records: winner=${fightResult.winnerId}, loser=${loserId}`);
 
             if (winner) {
-                const winnerRecord = { ...(winner.record as any || { wins: 0, losses: 0, draws: 0, noContests: 0 }) };
+                const winnerRecord = fighterRecord(winner.record);
                 winnerRecord.wins = (winnerRecord.wins || 0) + 1;
 
-                const winnerPerf = { ...(winner.performance as any || {}) };
+                const winnerPerf = fighterPerformance(winner.performance);
                 if (method === 'ko/tko') {
                     winnerPerf.ko_wins = (winnerPerf.ko_wins || 0) + 1;
                 } else if (method === 'submission') {
@@ -352,10 +401,10 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             }
 
             if (loser && loserId) {
-                const loserRecord = { ...(loser.record as any || { wins: 0, losses: 0, draws: 0, noContests: 0 }) };
+                const loserRecord = fighterRecord(loser.record);
                 loserRecord.losses = (loserRecord.losses || 0) + 1;
 
-                const loserPerf = { ...(loser.performance as any || {}) };
+                const loserPerf = fighterPerformance(loser.performance);
                 if (method === 'ko/tko') {
                     loserPerf.losses_by_ko = (loserPerf.losses_by_ko || 0) + 1;
                 } else if (method === 'submission') {
@@ -377,7 +426,7 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             logger.debug(`[Fight Result] Draw - updating both fighters with draw record`);
 
             if (fighter1Data) {
-                const record = { ...(fighter1Data.record as any || { wins: 0, losses: 0, draws: 0, noContests: 0 }) };
+                const record = fighterRecord(fighter1Data.record);
                 record.draws = (record.draws || 0) + 1;
                 await tx.update(fighters).set({
                     record,
@@ -387,7 +436,7 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
             }
 
             if (fighter2Data) {
-                const record = { ...(fighter2Data.record as any || { wins: 0, losses: 0, draws: 0, noContests: 0 }) };
+                const record = fighterRecord(fighter2Data.record);
                 record.draws = (record.draws || 0) + 1;
                 await tx.update(fighters).set({
                     record,
@@ -406,7 +455,7 @@ export async function finalizeFightResult(fightId: string, resultData: any) {
  * Award a Key if 100% accuracy achieved.
  * Unlock "Ultra Badge" if 5 Keys collected.
  */
-async function checkEventCleanSweep(tx: any, eventId: string, userId: string) {
+async function checkEventCleanSweep(tx: DbTransaction, eventId: string, userId: string) {
     logger.debug(`[Clean Sweep] Checking sweep for user ${userId} on event ${eventId}`);
 
     // 1. Get total non-cancelled fights in event

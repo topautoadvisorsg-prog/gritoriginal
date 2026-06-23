@@ -60,12 +60,12 @@ export function UserMenu() {
     );
   }
 
-  const avatarUrl = (user as any)?.avatarUrl || (user as any)?.profileImageUrl;
-  const displayName = (user as any)?.username ||
-    `${(user as any)?.firstName || ''} ${(user as any)?.lastName || ''}`.trim() ||
+  const avatarUrl = user?.avatarUrl || user?.profileImageUrl;
+  const displayName = user?.username ||
+    `${user?.firstName || ''} ${user?.lastName || ''}`.trim() ||
     'User';
-  const isAdmin = (user as any)?.role === "admin";
-  const totalPoints = (user as any)?.totalPoints || 0;
+  const isAdmin = user?.role === "admin";
+  const totalPoints = user?.totalPoints || 0;
 
   return (
     <DropdownMenu>
@@ -89,10 +89,10 @@ export function UserMenu() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-black leading-none display-font italic uppercase tracking-tight truncate">{displayName}</p>
-                  <CountryFlag country={(user as any)?.country} className="text-sm" />
+                  <CountryFlag country={user?.country} className="text-sm" />
                 </div>
                 <p className="text-[10px] leading-none text-muted-foreground uppercase font-medium truncate mt-1">
-                  {(user as any)?.email}
+                  {user?.email}
                 </p>
               </div>
             </div>

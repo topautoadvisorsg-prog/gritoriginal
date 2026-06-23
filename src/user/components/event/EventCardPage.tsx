@@ -15,8 +15,23 @@ import { useSocket } from '@/shared/hooks/use-socket';
 
 interface EventCardPageProps {
   event?: Event;
-  picks?: any[];
+  picks?: EventPick[];
   onViewFightDetails?: (fightId: string) => void;
+}
+
+interface EventPick {
+  fightId: string;
+  pickedFighterId: string;
+  pickedMethod?: string | null;
+}
+
+interface CrowdData {
+  percentages?: Record<string, number>;
+  counts?: Record<string, number>;
+}
+
+interface PickUpdatePayload extends CrowdData {
+  fightId: string;
 }
 
 const GOLD = '#E8A020';
@@ -46,8 +61,8 @@ const FightRow: React.FC<{
   label?: string;
   onNavigate: () => void;
   onInlinePick?: (fight: EventFight, e?: React.MouseEvent) => void;
-  pick?: any;
-  crowdData?: { percentages?: Record<string, number>, counts?: Record<string, number> } | null;
+  pick?: EventPick;
+  crowdData?: CrowdData | null;
 }> = ({ fight, fighters, label, onNavigate, onInlinePick, pick, crowdData }) => {
   const f1 = fighters.get(fight.fighter1Id);
   const f2 = fighters.get(fight.fighter2Id);
@@ -150,19 +165,19 @@ export const EventCardPage: React.FC<EventCardPageProps> = ({ event, picks = [],
   const navigate = useNavigate();
   const { fighterMap } = useFighters();
   const [activeTab, setActiveTab] = useState<TabView>('card');
-  const [crowdDataMap, setCrowdDataMap] = useState<Record<string, any>>({});
+  const [crowdDataMap, setCrowdDataMap] = useState<Record<string, CrowdData>>({});
   const socket = useSocket();
   
   // Inline pick modal state
   const [selectedFightForPick, setSelectedFightForPick] = useState<EventFight | null>(null);
-  const [existingPickForSelectedFight, setExistingPickForSelectedFight] = useState<any | undefined>(undefined);
+  const [existingPickForSelectedFight, setExistingPickForSelectedFight] = useState<EventPick | undefined>(undefined);
   
   // Pick board view mode (regular vs quick)
   const [pickBoardMode, setPickBoardMode] = useState<'regular' | 'quick'>('quick');
 
   useEffect(() => {
     if (!socket) return;
-    const handleUpdate = (data: any) => {
+    const handleUpdate = (data: PickUpdatePayload) => {
       setCrowdDataMap(prev => ({
         ...prev,
         [data.fightId]: {
