@@ -6,6 +6,10 @@ import { reportUserSchema, muteUserSchema } from '../../schemas';
 import { logger } from '../../utils/logger';
 import * as moderationService from '../../services/moderationService';
 
+function errorMessage(error: unknown): string {
+    return error instanceof Error ? error.message : '';
+}
+
 /**
  * Moderation routes — split into user-facing and admin sections.
  * All business logic delegated to moderationService.
@@ -25,8 +29,8 @@ export function registerModerationRoutes(app: Express) {
 
             const block = await moderationService.blockUser(blockerId, blockedId);
             res.status(201).json(block);
-        } catch (error: any) {
-            if (error.message === 'ALREADY_BLOCKED') {
+        } catch (error: unknown) {
+            if (errorMessage(error) === 'ALREADY_BLOCKED') {
                 return res.status(400).json({ message: "User already blocked" });
             }
             logger.error("Error blocking user:", error);
@@ -68,8 +72,8 @@ export function registerModerationRoutes(app: Express) {
 
             const mute = await moderationService.muteUser(muterId, mutedId, duration);
             res.status(201).json(mute);
-        } catch (error: any) {
-            if (error.message === 'ALREADY_MUTED') {
+        } catch (error: unknown) {
+            if (errorMessage(error) === 'ALREADY_MUTED') {
                 return res.status(400).json({ message: "User already muted" });
             }
             logger.error("Error muting user:", error);

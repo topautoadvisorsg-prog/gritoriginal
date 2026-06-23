@@ -109,12 +109,14 @@ async function logUnmatchedOpponent(importedName: string, candidates: Fighter[])
 
 // ========== MAIN IMPORT FUNCTION ==========
 
+type FightHistoryCsvRow = Record<string, string | undefined>;
+
 export async function handleFighterHistoryImport(fighterId: string, csvData: string) {
     const records = parse(csvData, {
         columns: true,
         skip_empty_lines: true,
         trim: true,
-    }) as any[];
+    }) as FightHistoryCsvRow[];
 
     const results = {
         processed: 0,

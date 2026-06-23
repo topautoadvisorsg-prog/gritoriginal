@@ -15,6 +15,10 @@ import { env } from '../../config/env';
 const router = Router();
 router.use('/data-engine/webhook', strictApiLimiter);
 
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 /**
  * Webhook endpoint for external data engine to push data.
  *
@@ -108,15 +112,15 @@ router.post('/data-engine/webhook', async (req: Request, res: Response) => {
           entryId,
           applied: true,
         });
-      } catch (applyErr: any) {
+      } catch (applyErr: unknown) {
         logger.error('[Data Engine Webhook] Auto-apply failed for entry %s: %s',
-          entryId, applyErr.message);
+          entryId, errorMessage(applyErr));
         // Fall through — entry is queued in pending state, admin can apply manually
         return res.status(202).json({
           message: 'Data received and queued (auto-apply failed — entry pending admin review)',
           entryId,
           applied: false,
-          applyError: applyErr.message,
+          applyError: errorMessage(applyErr),
         });
       }
     }

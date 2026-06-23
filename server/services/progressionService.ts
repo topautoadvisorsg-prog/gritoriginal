@@ -214,7 +214,7 @@ export async function calculateUserProgressionPerEvent(
     const roi = performance.roi;
 
     // 6. Apply progression rules
-    let { newStars, newBadge, reason } = applyProgressionRules({
+    const { newStars, newBadge, reason } = applyProgressionRules({
         oldStars,
         oldBadge,
         roi,

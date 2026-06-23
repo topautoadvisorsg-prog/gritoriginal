@@ -135,7 +135,7 @@ export function registerDashboardRoutes(app: Express): void {
                 }
 
                 let isNearTop = false;
-                let finalRank = leaderboardContext?.rank || 0;
+                const finalRank = leaderboardContext?.rank || 0;
                 let top10pct = 0;
                 
                 if (lastEventSnapshot && lastEventSnapshot.rankings) {

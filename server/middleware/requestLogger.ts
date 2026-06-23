@@ -4,12 +4,9 @@ import { logger } from '../utils/logger';
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
   const start = Date.now();
   
-  // Capture original end/json methods to intercept response body and status
-  const originalEnd = res.end;
-  
   res.on('finish', () => {
     const duration = Date.now() - start;
-    const userId = (req as any).user?.id || null;
+    const userId = req.user?.id || null;
     
     // Only log API routes
     if (req.path.startsWith('/api')) {

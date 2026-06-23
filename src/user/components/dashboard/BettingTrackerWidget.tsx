@@ -3,8 +3,23 @@ import { useQuery } from '@tanstack/react-query';
 import { LineChart, TrendingUp, TrendingDown, Loader2, DollarSign, Activity } from 'lucide-react';
 import { Spinner } from '@/shared/components/ui/spinner';
 
-export const BettingTrackerWidget: React.FC<{ stats?: any }> = ({ stats: propStats }) => {
-    const { data: queryStats, isLoading: queryLoading } = useQuery<any>({
+interface BettingTrackerStats {
+    bettingTracker?: {
+        enabled: boolean;
+        unitSize: number;
+        totalProfit: number;
+        roi: number;
+        bestEventProfit: number;
+        worstEventProfit: number;
+    };
+    perEventStats?: Array<{
+        picks: number;
+        profit: number;
+    }>;
+}
+
+export const BettingTrackerWidget: React.FC<{ stats?: BettingTrackerStats }> = ({ stats: propStats }) => {
+    const { data: queryStats, isLoading: queryLoading } = useQuery<BettingTrackerStats>({
         queryKey: ['/api/me/stats'],
         enabled: !propStats,
     });

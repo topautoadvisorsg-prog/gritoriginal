@@ -6,7 +6,7 @@ import { z } from "zod";
 // Sessions table removed (Supabase Auth handles sessions)
 
 // User storage table.
-// (IMPORTANT) This table is mandatory for Replit Auth, don't drop it.
+// Mandatory domain profile table for Clerk identities, roles, picks, moderation, and billing state.
 export const users = pgTable("users", {
   id: varchar("id").primaryKey(),
   email: varchar("email").unique(),
@@ -99,8 +99,8 @@ export const fightResults = pgTable("fight_results", {
   time: varchar("time", { length: 20 }),
   referee: varchar("referee", { length: 255 }),
   stats: jsonb("stats").$type<{
-    fighter1Stats?: Record<string, any>;
-    fighter2Stats?: Record<string, any>;
+    fighter1Stats?: Record<string, unknown>;
+    fighter2Stats?: Record<string, unknown>;
   }>(),
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),

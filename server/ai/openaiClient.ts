@@ -57,6 +57,17 @@ export interface FightContext {
     isTitleFight: boolean;
 }
 
+interface ParsedPrediction {
+    fighter1WinProb?: number;
+    fighter1Method?: string;
+    fighter2WinProb?: number;
+    fighter2Method?: string;
+    predictedWinner?: string;
+    confidence?: 'low' | 'medium' | 'high';
+    keyFactors?: string[];
+    analysis?: string;
+}
+
 /**
  * Generate AI prediction for a fight
  */
@@ -92,7 +103,8 @@ export async function generatePrediction(
 
         try {
             const anthropicResponse = await anthropicService.generateMessage(systemPrompt, prompt);
-            const content = (anthropicResponse.content[0] as any).text;
+            const firstBlock = anthropicResponse.content[0];
+            const content = firstBlock && 'text' in firstBlock ? firstBlock.text : '';
             if (!content) throw new Error('No response from Anthropic');
 
             // Anthropic doesn't support response_format: 'json_object' natively in the same way,
@@ -108,7 +120,7 @@ export async function generatePrediction(
     }
 }
 
-function formatPrediction(fightId: string, context: FightContext, parsed: any, model: string): AIPrediction {
+function formatPrediction(fightId: string, context: FightContext, parsed: ParsedPrediction, model: string): AIPrediction {
     return {
         fightId,
         fighter1: {

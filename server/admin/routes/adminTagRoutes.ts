@@ -7,6 +7,20 @@ import { eq, asc } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from '../../utils/logger';
 
+interface DatabaseError extends Error {
+    code?: string;
+}
+
+interface FighterTagPayload {
+    tagDefinitionId: string;
+    value?: number;
+    color?: string;
+}
+
+function isDatabaseError(error: unknown): error is DatabaseError {
+    return error instanceof Error;
+}
+
 /**
  * Admin-only tag management routes.
  * Protected by isAuthenticated + requireAdmin middleware.
@@ -34,8 +48,8 @@ export function registerAdminTagRoutes(app: Express) {
                 .returning();
 
             res.status(201).json(newDef);
-        } catch (error: any) {
-            if (error.code === "23505") {
+        } catch (error: unknown) {
+            if (isDatabaseError(error) && error.code === "23505") {
                 return res.status(400).json({ error: "Tag with this name already exists" });
             }
             logger.error("Error creating tag definition:", error);
@@ -78,7 +92,7 @@ export function registerAdminTagRoutes(app: Express) {
             // Insert new tags
             if (tags.length > 0) {
                 const now = new Date();
-                const values = tags.map((tag: any) => ({
+                const values = (tags as FighterTagPayload[]).map((tag) => ({
                     id: uuidv4(),
                     fighterId,
                     tagDefinitionId: tag.tagDefinitionId,

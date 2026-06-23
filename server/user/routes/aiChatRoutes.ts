@@ -222,7 +222,7 @@ export function registerAIChatRoutes(app: Express) {
                     const f1 = referencedFighters[0];
                     const f2 = referencedFighters[1];
 
-                    const formatAge = (dob: any) => {
+                    const formatAge = (dob: string | Date | null | undefined) => {
                         if (!dob) return 'Unknown';
                         const birth = new Date(dob);
                         const age = Math.floor((Date.now() - birth.getTime()) / (365.25 * 24 * 60 * 60 * 1000));

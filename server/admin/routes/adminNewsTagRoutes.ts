@@ -1,11 +1,26 @@
-import { Express, Request, Response } from "express";
+import { Express, Request, Response, type NextFunction } from "express";
 import { db } from "../../../server/db";
 import { tags } from "../../../shared/schema";
 import { eq } from "drizzle-orm";
 import { isAuthenticated } from "../../auth/guards";
 import { logger } from "../../utils/logger";
 
-function requireAdmin(req: Request, res: Response, next: Function) {
+interface DatabaseError extends Error {
+    code?: string;
+}
+
+type TagUpdateData = Partial<{
+    name: string;
+    color: string;
+    category: 'standard' | 'intelligence';
+    active: boolean;
+}>;
+
+function isDatabaseError(error: unknown): error is DatabaseError {
+    return error instanceof Error;
+}
+
+function requireAdmin(req: Request, res: Response, next: NextFunction) {
     if (req.user?.role !== "admin") {
         return res.status(403).json({ error: "Unauthorized. Admin access required." });
     }
@@ -46,10 +61,10 @@ export function registerAdminNewsTagRoutes(app: Express) {
             }).returning();
 
             res.status(201).json(newTag);
-        } catch (error: any) {
+        } catch (error: unknown) {
             logger.error("Error creating tag:", error);
             // Handle unique constraint violation on name
-            if (error.code === '23505') {
+            if (isDatabaseError(error) && error.code === '23505') {
                 return res.status(409).json({ error: "A tag with this name already exists" });
             }
             res.status(500).json({ error: "Failed to create tag" });
@@ -62,7 +77,7 @@ export function registerAdminNewsTagRoutes(app: Express) {
             const { id } = req.params;
             const { name, color, category, active } = req.body;
 
-            const updateData: any = {};
+            const updateData: TagUpdateData = {};
             
             if (name !== undefined) {
                 updateData.name = name.toLowerCase().trim().replace(/\s+/g, '-');
@@ -91,9 +106,9 @@ export function registerAdminNewsTagRoutes(app: Express) {
             }
 
             res.json(updatedTag);
-        } catch (error: any) {
+        } catch (error: unknown) {
             logger.error("Error updating tag:", error);
-             if (error.code === '23505') {
+             if (isDatabaseError(error) && error.code === '23505') {
                 return res.status(409).json({ error: "A tag with this name already exists" });
             }
             res.status(500).json({ error: "Failed to update tag" });

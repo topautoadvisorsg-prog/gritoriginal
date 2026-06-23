@@ -20,6 +20,22 @@ interface NotificationData {
     [key: string]: string | number | boolean | null;
 }
 
+type CreateNotificationPayload = Parameters<DefaultApi['createNotification']>[0];
+
+function oneSignalNotification(payload: {
+    contents: { en: string };
+    headings: { en: string };
+    include_external_user_ids?: string[];
+    included_segments?: string[];
+    data?: NotificationData;
+}): CreateNotificationPayload {
+    return {
+        app_id: env.ONESIGNAL_APP_ID,
+        ...payload,
+        data: payload.data || {},
+    } as CreateNotificationPayload;
+}
+
 /**
  * Send push notification to a specific user
  */
@@ -31,15 +47,14 @@ export async function sendNotificationToUser(userId: string, title: string, mess
             return;
         }
 
-        const notification = {
-            app_id: env.ONESIGNAL_APP_ID,
+        const notification = oneSignalNotification({
             contents: { en: message },
             headings: { en: title },
             include_external_user_ids: [userId],
             data: data || {},
-        };
+        });
 
-        await oneSignalApi.createNotification(notification as any);
+        await oneSignalApi.createNotification(notification);
         logger.info(`[OneSignal] Notification sent to user ${userId}: ${title}`);
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -58,15 +73,14 @@ export async function sendNotificationToUsers(userIds: string[], title: string, 
             return;
         }
 
-        const notification = {
-            app_id: env.ONESIGNAL_APP_ID,
+        const notification = oneSignalNotification({
             contents: { en: message },
             headings: { en: title },
             include_external_user_ids: userIds,
             data: data || {},
-        };
+        });
 
-        await oneSignalApi.createNotification(notification as any);
+        await oneSignalApi.createNotification(notification);
         logger.info(`[OneSignal] Notification sent to ${userIds.length} users: ${title}`);
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -85,15 +99,14 @@ export async function broadcastNotification(title: string, message: string, data
             return;
         }
 
-        const notification = {
-            app_id: env.ONESIGNAL_APP_ID,
+        const notification = oneSignalNotification({
             contents: { en: message },
             headings: { en: title },
             included_segments: ['All'],
             data: data || {},
-        };
+        });
 
-        await oneSignalApi.createNotification(notification as any);
+        await oneSignalApi.createNotification(notification);
         logger.info(`[OneSignal] Broadcast sent: ${title}`);
     } catch (error: unknown) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';

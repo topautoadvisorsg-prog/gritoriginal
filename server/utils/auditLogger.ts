@@ -7,7 +7,7 @@ export type AuditChangeType = 'edit' | 'stats_update' | 'result_correction' | 'c
 
 interface AuditLogParams {
     fightHistoryId: string;
-    previousData: Record<string, any>;
+    previousData: Record<string, unknown>;
     changedBy: string;
     changeType: AuditChangeType;
     changeReason?: string;
@@ -42,8 +42,8 @@ export async function logAdminAction(params: {
     entityType: 'fighter' | 'event' | 'fight' | 'news';
     entityId: string;
     action: 'create' | 'update' | 'delete';
-    previousData?: Record<string, any>;
-    newData?: Record<string, any>;
+    previousData?: Record<string, unknown>;
+    newData?: Record<string, unknown>;
     adminId: string;
     reason?: string;
 }): Promise<void> {

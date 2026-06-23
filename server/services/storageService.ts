@@ -30,7 +30,7 @@ export class StorageService {
     }
 
     // Returns the File object (No longer needed for Local, but kept for interface compatibility if needed)
-    async getObjectEntityFile(objectPath: string): Promise<any> {
+    async getObjectEntityFile(_objectPath: string): Promise<never> {
         throw new Error("Method not implemented for Local Storage.");
     }
 }

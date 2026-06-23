@@ -44,25 +44,33 @@ async function fetchLocalUser(token: string | null): Promise<AuthUser | null> {
   return res.json();
 }
 
-export function useAuth() {
-  if (import.meta.env.UI_AUDIT_FIXTURES === '1') {
-    return { user: fixtureUser, clerkUser: null, isLoading: false, isAuthenticated: true,
-      needsOnboarding: false, login: () => undefined, logout: () => undefined, isLoggingOut: false };
-  }
+function useFixtureAuth() {
+  return {
+    user: fixtureUser,
+    clerkUser: null,
+    isLoading: false,
+    isAuthenticated: true,
+    needsOnboarding: false,
+    login: () => undefined,
+    logout: () => undefined,
+    isLoggingOut: false,
+  };
+}
 
-  if (!isClerkEnabled) {
-    return {
-      user: null,
-      clerkUser: null,
-      isLoading: false,
-      isAuthenticated: false,
-      needsOnboarding: false,
-      login: () => undefined,
-      logout: () => undefined,
-      isLoggingOut: false,
-    };
-  }
+function useDisabledAuth() {
+  return {
+    user: null,
+    clerkUser: null,
+    isLoading: false,
+    isAuthenticated: false,
+    needsOnboarding: false,
+    login: () => undefined,
+    logout: () => undefined,
+    isLoggingOut: false,
+  };
+}
 
+function useClerkBackedAuth() {
   const { isLoaded: clerkLoaded, isSignedIn, getToken } = useClerkAuth();
   const { user: clerkUser } = useUser();
   const clerk = useClerk();
@@ -129,3 +137,9 @@ export function useAuth() {
     isLoggingOut: false,
   };
 }
+
+export const useAuth = import.meta.env.UI_AUDIT_FIXTURES === '1'
+  ? useFixtureAuth
+  : isClerkEnabled
+    ? useClerkBackedAuth
+    : useDisabledAuth;

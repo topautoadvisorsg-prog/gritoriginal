@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { createPickRequestSchema } from '../../shared/schema';
 import { PickPolicyError, projectedFlagUsage, validatePickForFight } from '../../server/services/pickService';
 
-const fight = {
+const fight: Parameters<typeof validatePickForFight>[1] = {
   id: 'fight-1',
   eventId: 'event-1',
   fighter1Id: 'fighter-1',
   fighter2Id: 'fighter-2',
   rounds: 3,
-} as any;
+};
 
 describe('canonical pick request contract', () => {
   it('accepts the browser field names and supplies safe fixed-unit defaults', () => {

@@ -1,4 +1,5 @@
 import express from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import type { Server } from 'node:http';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -6,7 +7,7 @@ const savePick = vi.fn();
 const selectWhere = vi.fn();
 
 vi.mock('../../server/auth/guards', () => ({
-  isAuthenticated: (req: any, _res: any, next: any) => {
+  isAuthenticated: (req: Request, _res: Response, next: NextFunction) => {
     req.user = { id: 'user-1', role: 'user' };
     next();
   },
@@ -14,7 +15,7 @@ vi.mock('../../server/auth/guards', () => ({
 }));
 
 vi.mock('../../server/middleware/fightState', () => ({
-  verifyFightState: () => (_req: any, _res: any, next: any) => next(),
+  verifyFightState: () => (_req: Request, _res: Response, next: NextFunction) => next(),
 }));
 
 vi.mock('../../server/services/pickService', async (importOriginal) => {

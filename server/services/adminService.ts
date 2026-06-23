@@ -12,7 +12,7 @@ export async function logAdminAction(
     action: string,
     targetType: string,
     targetId: string,
-    details: any,
+    details: unknown,
     ipAddress: string
 ) {
     try {

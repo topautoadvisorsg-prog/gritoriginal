@@ -29,4 +29,4 @@ class EventResponseCache<T> {
   }
 }
 
-export const eventCache = new EventResponseCache<any>(30000);
+export const eventCache = new EventResponseCache<unknown>(30000);

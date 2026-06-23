@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, type Express } from 'express';
 import { db } from '../../db';
 import { sql } from 'drizzle-orm';
 import { getBoss } from '../../services/jobService';
@@ -73,6 +73,6 @@ router.post('/:id/retry', async (req: Request, res: Response) => {
   }
 });
 
-export function registerAdminJobsRoutes(app: any) {
+export function registerAdminJobsRoutes(app: Express) {
   app.use('/api/admin/jobs', router);
 }

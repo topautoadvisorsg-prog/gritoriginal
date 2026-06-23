@@ -25,6 +25,17 @@ function isCardPlacement(value: unknown): value is CardPlacement {
   return typeof value === 'string' && CARD_PLACEMENTS.includes(value as CardPlacement);
 }
 
+interface EventFightInput {
+  fighter1Id: string;
+  fighter2Id: string;
+  cardPlacement: CardPlacement;
+  boutOrder: number;
+  weightClass: string;
+  isTitleFight: boolean;
+  rounds: number;
+  scheduledTime?: string | null;
+}
+
 const eventImageUpload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => {
@@ -117,7 +128,7 @@ export function registerAdminEventRoutes(app: Express) {
         createdAt: new Date(),
       });
 
-      const fightsToCreate = body.fights.map((fight: any) => ({
+      const fightsToCreate = (body.fights as EventFightInput[]).map((fight) => ({
         id: uuidv4(),
         eventId,
         fighter1Id: fight.fighter1Id,
@@ -291,7 +302,7 @@ export function registerAdminEventRoutes(app: Express) {
         return res.status(404).json({ error: "Fight not found for this event" });
       }
 
-      const updateData: Record<string, any> = {};
+      const updateData: Record<string, unknown> = {};
       if (body.status !== undefined) updateData.status = body.status;
       if (body.cardPlacement !== undefined) updateData.cardPlacement = body.cardPlacement;
       if (body.boutOrder !== undefined) updateData.boutOrder = body.boutOrder;

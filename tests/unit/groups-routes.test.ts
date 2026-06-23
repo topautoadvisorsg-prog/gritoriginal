@@ -1,4 +1,5 @@
 import express from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { Server } from "node:http";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -9,7 +10,7 @@ const joinPublicGroup = vi.fn();
 const GROUP_JOIN_ERRORS = { notFound: "GROUP_NOT_FOUND", private: "GROUP_PRIVATE", full: "GROUP_FULL" };
 
 vi.mock("../../server/auth/guards", () => ({
-  isAuthenticated: (req: any, _res: any, next: any) => {
+  isAuthenticated: (req: Request, _res: Response, next: NextFunction) => {
     req.user = { id: "user-1", username: "Cody", role: "user", tier: "free" };
     next();
   },

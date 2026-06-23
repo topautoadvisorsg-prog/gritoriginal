@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-namespace */
 export type UserRole = 'user' | 'admin';
 export type UserTier = 'free' | 'medium' | 'premium';
 

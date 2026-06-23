@@ -27,7 +27,7 @@ function record(name: string, ok: boolean, detail: string) {
   console.log(`[${marker}] ${name}: ${detail}`);
 }
 
-async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+async function query<T = Record<string, unknown>>(sql: string, params: unknown[] = []): Promise<T[]> {
   return (await pool.query(sql, params)).rows as T[];
 }
 

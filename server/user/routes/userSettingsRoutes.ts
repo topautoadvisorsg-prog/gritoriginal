@@ -20,6 +20,8 @@ interface UserSettingsType {
     unitSize: number;
 }
 
+type SettingValue = boolean | number;
+
 const DEFAULT_SETTINGS: UserSettingsType = {
     enableSounds: true,
     enableCelebrations: true,
@@ -71,7 +73,7 @@ router.put('/me/settings', isAuthenticated, async (req: Request, res: Response) 
 
         const updates = req.body as Partial<UserSettingsType>;
 
-        const dbUpdates: Record<string, any> = { updatedAt: new Date() };
+        const dbUpdates: Partial<UserSettingsType> & { updatedAt: Date } = { updatedAt: new Date() };
         if (updates.enableSounds !== undefined) dbUpdates.enableSounds = updates.enableSounds;
         if (updates.enableCelebrations !== undefined) dbUpdates.enableCelebrations = updates.enableCelebrations;
         if (updates.showStreaks !== undefined) dbUpdates.showStreaks = updates.showStreaks;
@@ -104,7 +106,7 @@ router.patch('/me/settings', isAuthenticated, async (req: Request, res: Response
         const userId = req.user?.id;
         if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-        const { key, value } = req.body as { key: keyof UserSettingsType; value: any };
+        const { key, value } = req.body as { key: keyof UserSettingsType; value: SettingValue };
 
         const expectedType = key === 'unitSize' ? 'number' : 'boolean';
         if (typeof value !== expectedType) {

@@ -21,7 +21,7 @@ const fighters = firstNames.map((generatedFirstName, index) => {
   imageUrl: index === 22 ? 'https://invalid.example.test/image-failure.jpg' : `https://images.unsplash.com/${portraitIds[index % portraitIds.length]}?auto=format&fit=crop&w=700&q=80`,
   profileImageUrl: `https://images.unsplash.com/${portraitIds[index % portraitIds.length]}?auto=format&fit=crop&w=240&h=240&q=80`,
   record: { wins: 8 + index, losses: index % 6, draws: index % 5 === 0 ? 1 : 0 },
-  physicalStats: index % 6 === 0 ? {} : { age: 25 + (index % 11), height: `5'${7 + index % 5}\"`, reach: `${68 + index % 10}\"` },
+  physicalStats: index % 6 === 0 ? {} : { age: 25 + (index % 11), height: `5'${7 + index % 5}"`, reach: `${68 + index % 10}"` },
   performance: {}, notes: [], riskSignals: [], isActive: true, status: 'active', isVerified: true,
   ranking: Math.floor(index / 8) * 2 + (index % 2) + 1,
   isChampion: index < 8 && index % 2 === 0,
@@ -153,10 +153,41 @@ const news = Array.from({ length: 6 }, (_, index) => ({
 
 const fixtureUser = { id: 'audit-user-03', email: 'long.audit.address@example.test', username: 'jordan_rivera', firstName: 'Jordan', lastName: 'Rivera', country: 'MX', role: 'admin', tier: 'premium', totalPoints: 785, currentStreak: 5, avatarUrl: null, profileImageUrl: null, privacySettings: { showAvatar: true, showSocialLinks: true, showUsername: true }, socialLinks: {}, permissions: [] };
 
-const fixtureGroups: any[] = [];
-const fixtureGroupMessages: Record<string, any[]> = {};
+interface FixtureGroup {
+  id: string;
+  name: string;
+  description: string;
+  ownerId: string;
+  isPrivate: boolean;
+  maxMembers: number;
+  memberCount: number;
+  createdAt: string;
+  updatedAt: string;
+  members: Array<{
+    id: string;
+    groupId: string;
+    userId: string;
+    role: 'owner';
+    joinedAt: string;
+    username: string;
+    avatarUrl: string | null;
+    netUnits: number;
+  }>;
+}
 
-function buildFixtureGroup(name: string, description: string | undefined, isPrivate: boolean) {
+interface FixtureGroupMessage {
+  id: string;
+  groupId: string;
+  userId: string;
+  username: string;
+  content: string;
+  createdAt: string;
+}
+
+const fixtureGroups: FixtureGroup[] = [];
+const fixtureGroupMessages: Record<string, FixtureGroupMessage[]> = {};
+
+function buildFixtureGroup(name: string, description: string | undefined, isPrivate: boolean): FixtureGroup {
   const id = `audit-group-${fixtureGroups.length + 1}`;
   return {
     id,

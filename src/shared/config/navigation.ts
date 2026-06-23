@@ -25,13 +25,14 @@ import {
     Settings,
     Zap,
     Swords,
-    Activity
+    Activity,
+    type LucideIcon,
 } from 'lucide-react';
 
 export interface NavItem {
     id: string;
     labelKey: string;
-    icon: any;
+    icon: LucideIcon;
     path: string;
 }
 

@@ -9,7 +9,12 @@ interface QuickPickBoardProps {
   event: Event;
   fights: EventFight[];
   fighters: Map<string, Fighter>;
-  picks: any[];
+  picks: QuickPick[];
+}
+
+interface QuickPick {
+  fightId: string;
+  pickedFighterId: string;
 }
 
 export const QuickPickBoard: React.FC<QuickPickBoardProps> = ({

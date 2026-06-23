@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { EventFight, Fighter } from '@/shared/types/fighter';
+import { Event, EventFight, Fighter } from '@/shared/types/fighter';
 import { PickBoardFightCard } from './PickBoardFightCard';
 import html2canvas from 'html2canvas';
 import { Share, Loader2, Users } from 'lucide-react';
@@ -7,10 +7,16 @@ import { useSocket } from '@/shared/hooks/use-socket';
 import { useEffect } from 'react';
 
 interface PickBoardProps {
-  event: any;
+  event: Event;
   fights: EventFight[];
   fighters: Map<string, Fighter>;
-  picks: any[];
+  picks: PickBoardPick[];
+}
+
+interface PickBoardPick {
+  fightId: string;
+  pickedFighterId: string;
+  pickedMethod?: string | null;
 }
 
 export const PickBoard: React.FC<PickBoardProps> = ({ event, fights, fighters, picks }) => {

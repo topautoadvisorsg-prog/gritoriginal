@@ -1,6 +1,6 @@
 import { newsArticles, type NewsArticle, type InsertNewsArticle } from "../../shared/schema";
 import { db } from "../db";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, sql, type SQL } from "drizzle-orm";
 
 export interface INewsStorage {
     getAllNewsArticles(): Promise<NewsArticle[]>;
@@ -18,8 +18,8 @@ export class NewsStorage implements INewsStorage {
     }
 
     async getPublishedNewsArticles(filters?: { tags?: string[], layer?: string }): Promise<NewsArticle[]> {
-        let query = db.select().from(newsArticles);
-        const conditions: any[] = [eq(newsArticles.isPublished, true)];
+        const query = db.select().from(newsArticles);
+        const conditions: SQL[] = [eq(newsArticles.isPublished, true)];
 
         if (filters?.layer) {
             conditions.push(eq(newsArticles.layer, filters.layer));

@@ -31,8 +31,9 @@ function checkAspectRatio(filePath: string, imageType: string): { valid: boolean
       };
     }
     return { valid: true };
-  } catch (err: any) {
-    return { valid: false, message: `Failed to read image file: ${err.message}` };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { valid: false, message: `Failed to read image file: ${message}` };
   }
 }
 
@@ -73,7 +74,11 @@ export function registerFighterImageRoutes(app: Express): void {
       const aspectCheck = checkAspectRatio(filePath, imageType);
       if (!aspectCheck.valid) {
         // Remove the invalid file to keep storage clean
-        try { fs.unlinkSync(filePath); } catch {}
+        try {
+          fs.unlinkSync(filePath);
+        } catch (cleanupError) {
+          logger.warn("Failed to remove rejected fighter image:", cleanupError);
+        }
         return res.status(422).json({
           error: "Image rejected: invalid aspect ratio",
           details: aspectCheck.message,

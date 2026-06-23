@@ -5,7 +5,9 @@ import { cn } from '@/shared/lib/utils';
 interface QuickPickBoardRowProps {
   fight: EventFight;
   fighters: Map<string, Fighter>;
-  pick?: any;
+  pick?: {
+    pickedFighterId: string;
+  };
   onQuickPick: (fight: EventFight, fighterId: string) => void;
 }
 

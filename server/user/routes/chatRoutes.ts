@@ -4,6 +4,14 @@ import { isAuthenticated } from '../../auth/guards';
 import * as chatService from '../../services/chatService';
 import { logger } from '../../utils/logger';
 
+interface ChatRouteError extends Error {
+    remainingMinutes?: number;
+}
+
+function asChatRouteError(error: unknown): ChatRouteError {
+    return error instanceof Error ? error : new Error(String(error));
+}
+
 /**
  * Chat routes — all business logic delegated to chatService.
  */
@@ -68,29 +76,30 @@ export function registerChatRoutes(app: Express) {
             });
 
             res.status(201).json(newMessage);
-        } catch (error: any) {
-            if (error.message === 'CHAT_CLOSED') {
+        } catch (error: unknown) {
+            const chatError = asChatRouteError(error);
+            if (chatError.message === 'CHAT_CLOSED') {
                 return res.status(403).json({ error: "Chat opens during live events" });
             }
-            if (error.message === 'USER_BANNED') {
+            if (chatError.message === 'USER_BANNED') {
                 return res.status(403).json({ error: "You are banned from chat" });
             }
-            if (error.message === 'USER_MUTED') {
+            if (chatError.message === 'USER_MUTED') {
                 return res.status(403).json({ error: "You are muted in chat" });
             }
-            if (error.message === 'NO_COUNTRY_SET') {
+            if (chatError.message === 'NO_COUNTRY_SET') {
                 return res.status(400).json({ error: "Set your country in profile settings to use country chat" });
             }
-            if (error.message === 'SLIP_COOLDOWN') {
+            if (chatError.message === 'SLIP_COOLDOWN') {
                 return res.status(429).json({
                     error: "Slip cooldown active",
-                    remainingMinutes: error.remainingMinutes,
+                    remainingMinutes: chatError.remainingMinutes,
                 });
             }
-            if (error.message === 'SLIP_NOT_FOUND') {
+            if (chatError.message === 'SLIP_NOT_FOUND') {
                 return res.status(404).json({ error: "Slip not found or not approved" });
             }
-            if (error.message === 'SLIP_ID_REQUIRED') {
+            if (chatError.message === 'SLIP_ID_REQUIRED') {
                 return res.status(400).json({ error: "slipId is required for slip messages" });
             }
             logger.error("Error posting chat message:", error);

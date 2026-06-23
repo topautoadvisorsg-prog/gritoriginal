@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { fighters, fightHistory } from "../../shared/schema";
 import { logger } from "../utils/logger";
-const { stringify } = require("csv-stringify/sync");
+import { stringify } from "csv-stringify/sync";
 
 export const exportService = {
     /**
