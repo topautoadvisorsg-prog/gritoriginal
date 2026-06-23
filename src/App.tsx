@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useState, useEffect } from "react";
 import { Toaster } from "@/shared/components/ui/toaster";
 import { Toaster as Sonner } from "@/shared/components/ui/sonner";
 import { TooltipProvider } from "@/shared/components/ui/tooltip";
@@ -9,38 +9,45 @@ import { FightHistoryProvider } from "@/shared/context/FightHistoryContext";
 import { GamificationProvider } from "@/shared/context/GamificationContext";
 import { useAuth } from "@/shared/hooks/use-auth";
 import { ErrorBoundary } from "@/shared/components/ErrorBoundary";
-import Index from "./user/pages/Index";
-import LandingPage from "./user/pages/LandingPage";
-import OnboardingFlow from "@/user/components/OnboardingFlow";
-import TermsOfService from "./legal/TermsOfService";
-import PrivacyPolicy from "./legal/PrivacyPolicy";
-import CookiePolicy from "./legal/CookiePolicy";
-import CreatorAgreement from "./legal/CreatorAgreement";
-import AcceptableUsePolicy from "./legal/AcceptableUsePolicy";
-import SignInPage from "./auth/SignInPage";
-import SignUpPage from "./auth/SignUpPage";
-import FightDetail from "./user/pages/FightDetail";
-import Settings from "./user/pages/Settings";
-import AdminFightCards from "@/admin/pages/AdminFightCards";
-import AdminTabPage from "@/admin/pages/AdminTabPage";
 import { RequireAdmin } from "@/shared/components/RequireAdmin";
-import NotFound from "./user/pages/NotFound";
-import FighterProfilePage from "./user/pages/FighterProfilePage";
-import { Dashboard } from "@/user/components/dashboard";
-import { EventListPage } from "@/user/components/event/EventListPage";
-import EventCardRoute from "./user/pages/EventCardRoute";
-import { MMAMetricsRankings } from "@/user/components/rankings/MMAMetricsRankings";
-import { AIPredictionsTab } from "@/user/components/ai";
-import { ChatHub } from "@/user/components/chat/ChatHub";
-import { FighterIndex } from "@/user/components/fighter/FighterIndex";
-import { NewsPage } from "@/user/components/news/NewsPage";
-import NewsArticlePage from "./user/pages/NewsArticlePage";
-import Rules from "./user/pages/Rules";
 import { MobileBottomNav } from "@/user/components/layout/MobileBottomNav";
-import { GroupsHub } from "./user/pages/GroupsHub";
-import { GroupDetailPage } from "./user/pages/GroupDetailPage";
-import { EventHistoryPage } from "@/user/components/eventhistory/EventHistoryPage";
 import { useRequestNotificationPermission } from "@/shared/hooks/use-request-notification-permission";
+
+const Index = lazy(() => import('./user/pages/Index'));
+const LandingPage = lazy(() => import('./user/pages/LandingPage'));
+const OnboardingFlow = lazy(() => import('@/user/components/OnboardingFlow'));
+const TermsOfService = lazy(() => import('./legal/TermsOfService'));
+const PrivacyPolicy = lazy(() => import('./legal/PrivacyPolicy'));
+const CookiePolicy = lazy(() => import('./legal/CookiePolicy'));
+const CreatorAgreement = lazy(() => import('./legal/CreatorAgreement'));
+const AcceptableUsePolicy = lazy(() => import('./legal/AcceptableUsePolicy'));
+const SignInPage = lazy(() => import('./auth/SignInPage'));
+const SignUpPage = lazy(() => import('./auth/SignUpPage'));
+const FightDetail = lazy(() => import('./user/pages/FightDetail'));
+const Settings = lazy(() => import('./user/pages/Settings'));
+const AdminFightCards = lazy(() => import('@/admin/pages/AdminFightCards'));
+const AdminTabPage = lazy(() => import('@/admin/pages/AdminTabPage'));
+const NotFound = lazy(() => import('./user/pages/NotFound'));
+const FighterProfilePage = lazy(() => import('./user/pages/FighterProfilePage'));
+const Dashboard = lazy(() => import('@/user/components/dashboard').then(module => ({ default: module.Dashboard })));
+const EventListPage = lazy(() => import('@/user/components/event/EventListPage').then(module => ({ default: module.EventListPage })));
+const EventCardRoute = lazy(() => import('./user/pages/EventCardRoute'));
+const MMAMetricsRankings = lazy(() => import('@/user/components/rankings/MMAMetricsRankings').then(module => ({ default: module.MMAMetricsRankings })));
+const AIPredictionsTab = lazy(() => import('@/user/components/ai').then(module => ({ default: module.AIPredictionsTab })));
+const ChatHub = lazy(() => import('@/user/components/chat/ChatHub').then(module => ({ default: module.ChatHub })));
+const FighterIndex = lazy(() => import('@/user/components/fighter/FighterIndex').then(module => ({ default: module.FighterIndex })));
+const NewsPage = lazy(() => import('@/user/components/news/NewsPage').then(module => ({ default: module.NewsPage })));
+const NewsArticlePage = lazy(() => import('./user/pages/NewsArticlePage'));
+const Rules = lazy(() => import('./user/pages/Rules'));
+const GroupsHub = lazy(() => import('./user/pages/GroupsHub').then(module => ({ default: module.GroupsHub })));
+const GroupDetailPage = lazy(() => import('./user/pages/GroupDetailPage').then(module => ({ default: module.GroupDetailPage })));
+const EventHistoryPage = lazy(() => import('@/user/components/eventhistory/EventHistoryPage').then(module => ({ default: module.EventHistoryPage })));
+
+const RouteFallback = () => (
+  <div role="status" aria-live="polite" className="flex min-h-[45vh] items-center justify-center bg-background">
+    <span className="text-sm font-black uppercase tracking-[0.25em] text-primary">Loading GRIT</span>
+  </div>
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -180,7 +187,9 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <ErrorBoundary>
-                <AppRoutes />
+                <Suspense fallback={<RouteFallback />}>
+                  <AppRoutes />
+                </Suspense>
               </ErrorBoundary>
             </BrowserRouter>
           </TooltipProvider>

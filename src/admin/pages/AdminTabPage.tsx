@@ -8,5 +8,6 @@ export default function AdminTabPage() {
     return <Navigate to="/" replace />;
   }
 
-  return <>{ADMIN_TAB_COMPONENTS[tab]}</>;
+  const AdminComponent = ADMIN_TAB_COMPONENTS[tab];
+  return <AdminComponent />;
 }

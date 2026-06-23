@@ -1,6 +1,5 @@
 import type { Express, Request, Response } from 'express';
-import { isAuthenticated } from '../auth/guards';
-import { requireTier } from '../auth/tierMiddleware';
+import { isAuthenticated, requireTier } from '../auth/guards';
 import { generatePrediction } from './openaiClient';
 import { buildFightContext } from './promptBuilder';
 import { getCachedPrediction, cachePrediction } from './predictionCache';

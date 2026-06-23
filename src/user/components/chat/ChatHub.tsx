@@ -453,7 +453,7 @@ export const ChatHub: React.FC = () => {
         ? `/api/chat?chat_type=country&country_code=${encodeURIComponent(userCountry)}`
         : `/api/chat?chat_type=global`;
 
-    const queryKey = [`/api/chat`, activeChatType, userCountry];
+    const queryKey = useMemo(() => ['/api/chat', activeChatType, userCountry], [activeChatType, userCountry]);
 
     const { data: apiMessages = [], isLoading } = useQuery<ChatMessage[]>({
         queryKey,

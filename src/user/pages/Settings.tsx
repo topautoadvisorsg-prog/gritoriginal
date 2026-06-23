@@ -133,7 +133,7 @@ export default function Settings() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [username, profile]);
+  }, [username, profile, checkUsernameMutation]);
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: Partial<UserProfile>) => {

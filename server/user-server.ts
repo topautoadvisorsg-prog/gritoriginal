@@ -12,30 +12,8 @@ if (process.env.SENTRY_DSN) {
   });
 }
 
-import { isAuthenticated, requireAdmin } from "./auth/guards";
 import { clerkMiddleware } from "./auth/clerk";
-
-// Admin routes — mounted directly for single-port production compatibility
-import { registerAdminRoutes } from "./admin/routes/adminRoutes";
-import { registerAdminManagementRoutes } from "./admin/routes/adminManagementRoutes";
-import { registerVerificationRoutes } from "./admin/routes/verificationRoutes";
-import { registerModerationRoutes } from "./admin/routes/moderationRoutes";
-import { registerAdminNewsRoutes } from "./admin/routes/adminNewsRoutes";
-import { registerAdminEventRoutes } from "./admin/routes/adminEventRoutes";
-import { registerAdminSnapshotRoutes } from "./admin/routes/adminSnapshotRoutes";
-import { registerAdminFightResultsRoutes } from "./admin/routes/adminFightResultsRoutes";
-import { registerAdminUserRoutes } from "./admin/routes/adminUserRoutes";
-import { registerAdminAIChatRoutes } from "./admin/routes/adminAIChatRoutes";
-import { registerAdminProgressionRoutes } from "./admin/routes/adminProgressionRoutes";
-import { registerAdminRaffleRoutes } from "./admin/routes/adminRaffleRoutes";
-import { registerAdminFightResolutionRoutes } from "./admin/routes/adminFightResolutionRoutes";
-import { registerAdminTagRoutes } from "./admin/routes/adminTagRoutes";
-import { registerAdminDataPipelineRoutes } from "./admin/routes/adminDataPipelineRoutes";
-import { registerAdminNewsTagRoutes } from "./admin/routes/adminNewsTagRoutes";
-import { registerAdminIntelFeedRoutes } from "./admin/routes/adminIntelFeedRoutes";
-import { registerAdminChatRoutes } from "./admin/routes/adminChatRoutes";
-import { registerAdminSlipRoutes } from "./admin/routes/adminSlipRoutes";
-import { registerAdminJobsRoutes } from "./admin/routes/adminJobsRoutes";
+import { registerAdminApi } from './admin/registerAdminApi';
 
 import { registerFighterImageRoutes } from "./user/routes/fighterImageRoutes";
 import { registerFighterRoutes } from "./user/routes/fighterRoutes";
@@ -64,7 +42,6 @@ import { registerIntelFeedRoutes } from "./user/routes/intelFeedRoutes";
 import { registerSlipRoutes } from "./user/routes/slipRoutes";
 import { registerPicksDistributionRoutes } from "./user/routes/picksDistributionRoutes";
 import { registerActivityFeedRoutes } from "./user/routes/activityFeedRoutes";
-import { registerAdminFighterRoutes } from "./admin/routes/adminFighterRoutes";
 import groupsRoutes from "./user/routes/groupsRoutes";
 import paymentRouter from "./user/routes/paymentRoutes";
 import { registerStripeWebhook } from "./api/webhooks/stripeWebhook";
@@ -75,11 +52,12 @@ import { socketService } from "./services/socketService";
 import path from "path";
 import { logger } from "./utils/logger";
 import { initCrons } from "./services/cronService";
-import { publicApiLimiter, strictApiLimiter, authApiLimiter, aiChatLimiter } from './middleware/rateLimiter';
+import { publicApiLimiter, authApiLimiter, aiChatLimiter } from './middleware/rateLimiter';
 import { seedSuggestedQuestions } from './seeds/seedSuggestedQuestions';
 import { initJobService } from './services/jobService';
 import { requestLogger } from './middleware/requestLogger';
 import { registerUiAuditFixtures } from './fixtures/uiAuditFixtures';
+import { apiErrorHandler } from './middleware/errorHandler';
 
 async function startUserServer() {
     const app = express();
@@ -157,28 +135,7 @@ async function startUserServer() {
     app.use('/api', bootstrapRouter);
 
     // Admin routes — mounted directly (single-port architecture)
-    app.use('/api/admin', authApiLimiter, requireAdmin);
-    registerAdminRoutes(app);
-    registerAdminNewsRoutes(app);
-    registerAdminEventRoutes(app);
-    registerAdminFighterRoutes(app);
-    registerAdminSnapshotRoutes(app);
-    registerAdminFightResultsRoutes(app);
-    registerAdminUserRoutes(app);
-    registerAdminAIChatRoutes(app);
-    registerAdminProgressionRoutes(app);
-    registerAdminRaffleRoutes(app);
-    registerAdminFightResolutionRoutes(app);
-    registerAdminTagRoutes(app);
-    registerAdminNewsTagRoutes(app);
-    registerAdminDataPipelineRoutes(app);
-    registerAdminIntelFeedRoutes(app);
-    registerAdminChatRoutes(app);
-    registerAdminSlipRoutes(app);
-    registerVerificationRoutes(app);
-    registerAdminManagementRoutes(app);
-    registerAdminJobsRoutes(app);
-    registerModerationRoutes(app);
+    registerAdminApi(app);
 
     if (!fixtureMode) {
       seedSuggestedQuestions().catch(() => {});
@@ -189,6 +146,8 @@ async function startUserServer() {
     } else {
       logger.info('UI audit fixture mode: database seeds, cron tasks, and job queue disabled');
     }
+
+    app.use(apiErrorHandler);
 
     // Serve the Vite frontend build if it exists (production deployment)
     const distPublic = path.join(process.cwd(), 'dist/public');

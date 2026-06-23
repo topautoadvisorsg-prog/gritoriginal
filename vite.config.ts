@@ -33,6 +33,17 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     outDir: "dist/public",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'clerk-vendor': ['@clerk/clerk-react'],
+          'sentry-vendor': ['@sentry/react'],
+          'query-vendor': ['@tanstack/react-query'],
+          'motion-vendor': ['framer-motion'],
+        },
+      },
+    },
   },
   plugins: [react()].filter(Boolean),
   resolve: {

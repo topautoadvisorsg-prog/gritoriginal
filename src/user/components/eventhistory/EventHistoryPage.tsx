@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Fighter } from '@/shared/types/fighter';
 import { HistoryFightCard } from './HistoryFightCard';
@@ -81,15 +81,15 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
     return completedEvents.find(e => e.id === selectedEventId) || completedEvents[0];
   }, [completedEvents, selectedEventId]);
 
-  const getFighter = (id: string): Fighter | undefined => fighterMap.get(id);
+  const getFighter = useCallback((id: string): Fighter | undefined => fighterMap.get(id), [fighterMap]);
 
-  const getResult = (fightId: string) => {
+  const getResult = useCallback((fightId: string) => {
     return fightResults.find(r => r.fightId === fightId);
-  };
+  }, [fightResults]);
 
-  const getUserPick = (fightId: string) => {
+  const getUserPick = useCallback((fightId: string) => {
     return userPicks.find(p => p.fightId === fightId);
-  };
+  }, [userPicks]);
 
   const eventPerformance = useMemo(() => {
     if (!selectedEvent) return { correct: 0, total: 0, percentage: 0, netUnits: 0 };
@@ -119,7 +119,7 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
       percentage: total > 0 ? Math.round((correct / total) * 100) : 0,
       netUnits: Math.round(netUnits * 100) / 100,
     };
-  }, [selectedEvent, fightResults, userPicks]);
+  }, [selectedEvent, getResult, getUserPick]);
 
   if (eventsLoading) {
     return (

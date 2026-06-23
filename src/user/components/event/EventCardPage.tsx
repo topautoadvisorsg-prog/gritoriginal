@@ -200,7 +200,7 @@ export const EventCardPage: React.FC<EventCardPageProps> = ({ event, picks = [],
   useEffect(() => {
     if (activeTab === 'card' && event.fights?.length) {
       // Find the first fight without a pick
-      const firstUnpicked = event.fights
+      const firstUnpicked = [...event.fights]
         .sort((a, b) => a.boutOrder - b.boutOrder)
         .find(f => !picks.some(p => p.fightId === f.id));
       
@@ -213,7 +213,7 @@ export const EventCardPage: React.FC<EventCardPageProps> = ({ event, picks = [],
         }, 500);
       }
     }
-  }, [activeTab]); // Run on mount or tab switch
+  }, [activeTab, event.fights, picks]);
 
   const { mainEvent, coMain, mainCardRest, prelims, prePrelims } = useMemo(() => {
     if (!event?.fights?.length) return { mainEvent: null, coMain: null, mainCardRest: [], prelims: [], prePrelims: [] };

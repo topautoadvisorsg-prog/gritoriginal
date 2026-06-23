@@ -90,7 +90,7 @@ export const AIChatTab: React.FC<AIChatTabProps> = ({ fighterIds, fightContext }
         if (isFightContext && fightContext?.fightId && user) {
             fetchWithAuth(`/api/ai/fight/${fightContext.fightId}/open`, { method: 'POST' }).catch(() => {});
         }
-    }, [isFightContext, fightContext?.fightId, user?.id]);
+    }, [isFightContext, fightContext?.fightId, user]);
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: isStreaming ? 'auto' : 'smooth' });

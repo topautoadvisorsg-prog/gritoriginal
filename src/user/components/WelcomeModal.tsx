@@ -106,7 +106,7 @@ export default function WelcomeModal({ onComplete }: WelcomeModalProps) {
             setError('Network error. Please try again.');
             setSubmitting(false);
         }
-    }, [username, country, avatar, isValid, submitting, queryClient, onComplete]);
+    }, [username, country, avatarUrl, isValid, submitting, queryClient, onComplete]);
 
     return (
         <div className="welcome-overlay">
