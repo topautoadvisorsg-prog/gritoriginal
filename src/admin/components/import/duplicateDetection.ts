@@ -98,7 +98,7 @@ export function detectFightHistoryDuplicates(
       existingFight = fights.find(f => 
         f.eventDate === csvEventDate && 
         f.opponentName.toLowerCase() === csvOpponent.toLowerCase() &&
-        (f as any).fighterId === matchedFighter?.id
+        (f as { fighterId?: number | string }).fighterId === matchedFighter?.id
       );
     }
 

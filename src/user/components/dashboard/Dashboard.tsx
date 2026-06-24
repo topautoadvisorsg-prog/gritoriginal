@@ -51,11 +51,13 @@ const AnimatedCounter = ({ value, label, suffix = '' }: { value: number, label: 
 
 export const Dashboard: React.FC = () => {
     const { user } = useAuth();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: dashboard, isLoading, isError, refetch, isFetching } = useQuery<any>({
         queryKey: ['/api/me/dashboard'],
     });
     // Real career stats (win %, total picks) — sourced from the same endpoint
     // that powers Settings > My Stats. Surfaced here as the headline metric.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: stats } = useQuery<any>({
         queryKey: ['/api/me/stats'],
     });
@@ -105,7 +107,7 @@ export const Dashboard: React.FC = () => {
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.5, ease: "easeOut" as any }
+            transition: { duration: 0.5, ease: "easeOut" as const }
         }
     };
 
@@ -346,7 +348,7 @@ export const Dashboard: React.FC = () => {
                     <h3 className="text-[10px] font-black uppercase tracking-widest text-white/60">Intelligence Feed</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {dashboard.intelligence.map((item: any) => (
+                    {dashboard.intelligence.map((item) => (
                         <Link key={item.id} to={`/news/${item.id}`} className="p-4 bg-[#111] border border-white/5 rounded-2xl hover:border-[#E8A020]/30 transition-all group">
                             <h4 className="text-sm font-black text-white group-hover:text-[#E8A020] transition-colors line-clamp-2 uppercase leading-tight mb-2">
                                 {item.title}

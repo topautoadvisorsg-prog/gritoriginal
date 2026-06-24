@@ -408,11 +408,11 @@ export const FightHistoryLedger: React.FC<FightHistoryLedgerProps> = ({
                 )}
 
                 {/* Judges Display */}
-                {(fight as any).judges && (
+                {(fight as { judges?: string }).judges && (
                   <div className="px-4 pb-3">
                     <div className="data-label mb-1">Judges</div>
                     <div className="text-xs font-mono text-foreground">
-                      {(fight as any).judges}
+                      {(fight as { judges?: string }).judges}
                     </div>
                   </div>
                 )}

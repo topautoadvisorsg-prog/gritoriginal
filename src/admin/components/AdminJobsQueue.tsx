@@ -5,6 +5,7 @@ import { Activity, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 interface FailedJob {
   id: string;
   name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
   state: string;
   createdOn: string;

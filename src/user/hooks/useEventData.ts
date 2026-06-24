@@ -53,6 +53,7 @@ function adaptEventForUI(backendEvent: ApiEventResponse): Event {
       country: backendEvent.country,
       venue: backendEvent.venue,
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     status: backendEvent.status as any,
     fights: backendEvent.fights.map(f => ({
       id: f.id,
@@ -64,6 +65,7 @@ function adaptEventForUI(backendEvent: ApiEventResponse): Event {
       weightClass: f.weightClass,
       isTitleFight: f.isTitleFight,
       rounds: f.rounds,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       status: f.status as any,
       scheduledTime: f.scheduledTime || undefined,
     })),

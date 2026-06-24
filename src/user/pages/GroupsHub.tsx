@@ -68,6 +68,7 @@ export const GroupsHub: React.FC = () => {
             setShowCreateModal(false);
             navigate(`/groups/${newGroup.id}`);
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
             toast({
                 title: 'Error',

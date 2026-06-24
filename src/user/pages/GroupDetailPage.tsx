@@ -69,6 +69,7 @@ export const GroupDetailPage: React.FC = () => {
             });
             navigate('/groups');
         },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onError: (error: any) => {
             toast({
                 title: 'Error',
@@ -155,7 +156,7 @@ export const GroupDetailPage: React.FC = () => {
                             </div>
                             {/* Data Freshness Indicator */}
                             <DataFreshnessIndicator 
-                                dataUpdatedAt={group ? (group as any).updatedAt : 0}
+                                dataUpdatedAt={group ? (group as { updatedAt?: number }).updatedAt : 0}
                                 isFetching={isLoading}
                             />
                         </div>

@@ -126,6 +126,7 @@ export const PickBoardFightCard: React.FC<PickBoardFightCardProps> = ({ fight, f
 
   useEffect(() => {
     if (!socket) return;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleUpdate = (data: any) => {
       if (data.fightId === fight.id) {
         setCrowdData({

@@ -115,7 +115,7 @@ export const AdminEventEditor: React.FC = () => {
 
     // Update event details mutation
     const updateEventMutation = useMutation({
-        mutationFn: async (data: Record<string, any>) => {
+        mutationFn: async (data: Record<string, unknown>) => {
             const res = await fetchWithAuth(`/api/admin/events/${selectedEventId}`, {
                 method: 'PUT',
                 body: JSON.stringify(data),

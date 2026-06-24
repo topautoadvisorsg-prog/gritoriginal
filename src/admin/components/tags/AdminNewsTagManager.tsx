@@ -118,7 +118,7 @@ export const AdminNewsTagManager: React.FC = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label>Category</Label>
-                                <Select value={newTagCategory} onValueChange={(v: any) => setNewTagCategory(v)}>
+                                <Select value={newTagCategory} onValueChange={(v: string) => setNewTagCategory(v)}>
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>
@@ -184,7 +184,7 @@ export const AdminNewsTagManager: React.FC = () => {
                                                     <Label className="text-xs">Category</Label>
                                                     <Select 
                                                         value={editingTag.category} 
-                                                        onValueChange={(v: any) => setEditingTag({...editingTag, category: v})}
+                                                        onValueChange={(v: string) => setEditingTag({...editingTag, category: v})}
                                                     >
                                                         <SelectTrigger>
                                                             <SelectValue />

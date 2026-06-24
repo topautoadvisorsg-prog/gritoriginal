@@ -21,7 +21,7 @@ export function AccountTab({ profile, onDeleteAccount }: AccountTabProps) {
     admin: <Crown className="w-5 h-5 text-purple-400" />,
   };
 
-  const currentTier = (profile as any)?.tier || 'free';
+  const currentTier = (profile as { tier?: string })?.tier || 'free';
 
   return (
     <Card>

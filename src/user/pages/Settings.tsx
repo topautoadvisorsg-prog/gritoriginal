@@ -24,6 +24,7 @@ import { TrackerTab } from "./settings/TrackerTab";
 import { MySlipsTab } from "./settings/MySlipsTab";
 import { normalizeCountryCode } from '@/shared/lib/countries';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isChallenger(user: any) {
   return user?.tier === 'premium' || user?.subscriptionStatus === 'active';
 }

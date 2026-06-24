@@ -44,6 +44,7 @@ const EMPTY_PERFORMANCE = {
 };
 
 // Transform database record (snake_case) to frontend Fighter type (camelCase)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- DB row boundary: loosely-shaped record normalized field-by-field below
 function transformDbToFighter(dbRecord: any): Fighter {
   return {
     id: dbRecord.id,
@@ -95,7 +96,7 @@ function transformDbToFighter(dbRecord: any): Fighter {
 }
 
 // Transform frontend Fighter to database format
-function transformFighterToDb(fighter: Fighter): any {
+function transformFighterToDb(fighter: Fighter): Record<string, unknown> {
   return {
     id: fighter.id,
     firstName: fighter.firstName,

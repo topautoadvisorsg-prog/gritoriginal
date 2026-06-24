@@ -10,6 +10,7 @@ import { useSwipeable } from 'react-swipeable';
 interface InlinePickModalProps {
   fight: EventFight;
   fighters: Map<string, Fighter>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   existingPick?: any;
   onClose: () => void;
   onSuccess?: () => void;
@@ -246,7 +247,7 @@ export const InlinePickModal: React.FC<InlinePickModalProps> = ({
                   </span>
                 </div>
                 
-                {distributionData.distribution.map((dist: any) => {
+                {distributionData.distribution.map((dist: { fighterId: string; fighterName?: string; percentage: string }) => {
                   const isLeading = parseFloat(dist.percentage) > 50;
                   return (
                     <div key={dist.fighterId} className="flex items-center gap-3 mb-2 last:mb-0">

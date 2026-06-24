@@ -153,7 +153,7 @@ export default function AdminFightCards() {
   };
 
   // Check admin access
-  const isAdmin = (user as any)?.role === "admin";
+  const isAdmin = (user as { role?: string })?.role === "admin";
 
   if (authLoading) {
     return (

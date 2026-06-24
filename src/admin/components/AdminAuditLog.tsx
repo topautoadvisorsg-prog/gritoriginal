@@ -20,6 +20,7 @@ interface AuditLog {
     action: string;
     targetType: string;
     targetId: string;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     details: any;
     ipAddress: string;
     createdAt: string;

@@ -184,10 +184,12 @@ const ImportPage = () => {
 
       try {
         if (newFights.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await addFights(newFights as any, 'add');
         }
 
         if (replaceFights.length > 0) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await addFights(replaceFights as any, 'replace');
         }
 

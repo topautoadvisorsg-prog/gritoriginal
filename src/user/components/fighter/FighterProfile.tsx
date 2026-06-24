@@ -25,6 +25,7 @@ import { toast } from '@/shared/hooks/use-toast';
 
 interface FieldCheck {
   label: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value: any;
   critical?: boolean;
 }
@@ -51,6 +52,7 @@ function getFieldChecks(fighter: Fighter): FieldCheck[] {
   ];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isEmpty(value: any): boolean {
   if (value === null || value === undefined) return true;
   if (typeof value === 'string') return value.trim() === '' || value.trim() === 'UNKNOWN';

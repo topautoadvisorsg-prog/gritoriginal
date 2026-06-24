@@ -3,6 +3,7 @@
  * Generates JSON-LD structured data for fighters and events to improve search discovery.
  */
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- SEO JSON-LD over loosely-shaped fighter data
 export const generateFighterSchema = (fighter: any) => {
     const schema = {
         "@context": "https://schema.org",
@@ -27,6 +28,7 @@ export const generateFighterSchema = (fighter: any) => {
     return JSON.stringify(schema);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- SEO JSON-LD over loosely-shaped event data
 export const generateEventSchema = (event: any) => {
     const schema = {
         "@context": "https://schema.org",
@@ -43,7 +45,7 @@ export const generateEventSchema = (event: any) => {
             "@type": "Organization",
             "name": "GRIT"
         },
-        "competitor": event.fightCard?.map((fight: any) => ({
+        "competitor": event.fightCard?.map((fight: { fighter1Name?: string; fighter2Name?: string }) => ({
             "@type": "SportsTeam",
             "name": `${fight.fighter1Name} vs ${fight.fighter2Name}`
         }))

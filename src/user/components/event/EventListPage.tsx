@@ -111,6 +111,7 @@ const FighterHalf: React.FC<{
 const CarouselCard: React.FC<{
   event: DbEvent;
   detail: DbEventWithFights | undefined;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fighters: Map<string, any>;
   isCenter: boolean;
   onClick: () => void;
@@ -265,7 +266,7 @@ export const EventListPage = () => {
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
     const dx = e.changedTouches[0].clientX - touchStartX.current;
-    if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+    if (Math.abs(dx) > 40) { if (dx < 0) next(); else prev(); }
     touchStartX.current = null;
   };
 

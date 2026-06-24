@@ -103,6 +103,7 @@ export const OutcomeBarChart: React.FC<OutcomeBarChartProps> = ({ fighter, corne
                 borderRadius: '8px',
                 fontSize: '12px',
               }}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               formatter={(value: number, name: string, props: any) => [
                 `${value}% (${props.payload.count} wins)`,
                 props.payload.method

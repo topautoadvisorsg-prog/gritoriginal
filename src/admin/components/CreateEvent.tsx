@@ -589,7 +589,7 @@ export const CreateEvent = () => {
       });
       if (!response.ok) {
         let msg = 'Failed to create event';
-        try { const e = await response.json(); msg = e.error || msg; } catch {}
+        try { const e = await response.json(); msg = e.error || msg; } catch { /* body not JSON; keep default message */ }
         throw new Error(msg);
       }
       return response.json();

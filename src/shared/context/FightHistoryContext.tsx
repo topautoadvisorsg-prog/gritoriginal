@@ -14,6 +14,7 @@ interface FightHistoryContextType {
 
 const FightHistoryContext = createContext<FightHistoryContextType | undefined>(undefined);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- DB row boundary: loosely-shaped record normalized field-by-field below
 function transformDbToFightRecord(dbRecord: any): FightRecord {
   return {
     id: dbRecord.id,
@@ -67,7 +68,7 @@ export const FightHistoryProvider: React.FC<{ children: ReactNode }> = ({ childr
 
   const { data: fightHistory = [], isLoading } = useQuery<FightRecord[]>({
     queryKey: ['/api/fights'],
-    select: (data: any[]) => data.map(transformDbToFightRecord),
+    select: (data: unknown[]) => data.map(transformDbToFightRecord),
   });
 
   const bulkMutation = useMutation({

@@ -69,6 +69,7 @@ const FightDetail: React.FC = () => {
 
       // Fetch fights for each event
       const eventsWithFights = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         eventsList.map(async (event: any) => {
           const res = await fetch(`/api/events/${event.id}`);
           if (!res.ok) return { ...event, fights: [] };
@@ -328,6 +329,7 @@ const FightDetail: React.FC = () => {
           >
             Undo
           </button>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ) as any,
       });
       // Auto-expire undo after 5s (toast dismisses naturally)
