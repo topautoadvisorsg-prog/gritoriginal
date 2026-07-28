@@ -2,20 +2,17 @@ import type { Express, Request, Response } from "express";
 import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { storage } from '../../storage';
 import { logger } from '../../utils/logger';
-import path from 'path';
-import fs from 'fs';
+import { StorageService } from '../../services/storageService';
 import sizeOf from 'image-size';
-
-const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
 const ASPECT_RULES: Record<string, { label: string; targetRatio: number; tolerance: number }> = {
   face: { label: 'Headshot (1:1)', targetRatio: 1.0, tolerance: 0.15 },
   body: { label: 'Half-body (2:3)', targetRatio: 2 / 3, tolerance: 0.15 },
 };
 
-function checkAspectRatio(filePath: string, imageType: string): { valid: boolean; message?: string } {
+function checkAspectRatio(buffer: Buffer, imageType: string): { valid: boolean; message?: string } {
   try {
-    const dimensions = sizeOf(filePath);
+    const dimensions = sizeOf(buffer);
     if (!dimensions.width || !dimensions.height) {
       return { valid: false, message: 'Could not read image dimensions' };
     }
@@ -48,12 +45,13 @@ export function registerFighterImageRoutes(app: Express): void {
       }
 
       const objectPath = `fighters/${fighterId}/${imageType}.jpg`;
-      const uploadURL = `/api/uploads/${objectPath}`;
+      const storageService = new StorageService();
+      const uploadURL = await storageService.getUploadURLForPath(objectPath);
 
       res.json({ uploadURL, objectPath });
     } catch (err) {
       logger.error("Error generating upload URL:", err);
-      res.status(500).json({ error: "Failed to generate upload URL" });
+      res.status(500).json({ error: err instanceof Error ? err.message : "Failed to generate upload URL" });
     }
   });
 
@@ -65,20 +63,19 @@ export function registerFighterImageRoutes(app: Express): void {
         return res.status(400).json({ error: "Invalid parameters" });
       }
 
-      // Validate image aspect ratio before committing to DB
-      const filePath = path.join(UPLOAD_DIR, objectPath);
-      if (!fs.existsSync(filePath)) {
+      const storageService = new StorageService();
+
+      // Validate image aspect ratio before committing to DB - read the object
+      // back from R2 rather than trusting the client's PUT succeeded cleanly.
+      let buffer: Buffer;
+      try {
+        buffer = await storageService.getObjectBuffer(objectPath);
+      } catch {
         return res.status(404).json({ error: "Uploaded file not found — upload the image before confirming" });
       }
 
-      const aspectCheck = checkAspectRatio(filePath, imageType);
+      const aspectCheck = checkAspectRatio(buffer, imageType);
       if (!aspectCheck.valid) {
-        // Remove the invalid file to keep storage clean
-        try {
-          fs.unlinkSync(filePath);
-        } catch (cleanupError) {
-          logger.warn("Failed to remove rejected fighter image:", cleanupError);
-        }
         return res.status(422).json({
           error: "Image rejected: invalid aspect ratio",
           details: aspectCheck.message,
@@ -89,7 +86,7 @@ export function registerFighterImageRoutes(app: Express): void {
         });
       }
 
-      const publicUrl = `/objects/${objectPath}`;
+      const publicUrl = storageService.getPublicUrl(objectPath);
       const updateData = imageType === 'face'
         ? { imageUrl: publicUrl }
         : { bodyImageUrl: publicUrl };
@@ -102,7 +99,7 @@ export function registerFighterImageRoutes(app: Express): void {
       res.json({ fighterId, imageType, imageUrl: publicUrl });
     } catch (err) {
       logger.error("Error confirming image upload:", err);
-      res.status(500).json({ error: "Failed to confirm upload" });
+      res.status(500).json({ error: err instanceof Error ? err.message : "Failed to confirm upload" });
     }
   });
 }
