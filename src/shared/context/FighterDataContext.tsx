@@ -70,14 +70,18 @@ function transformDbToFighter(dbRecord: any): Fighter {
       weight: dbRecord.weight ?? dbRecord.physicalStats?.weight ?? 0,
     },
     record: {
-      wins: dbRecord.record?.wins ?? 0,
-      losses: dbRecord.record?.losses ?? 0,
-      draws: dbRecord.record?.draws ?? 0,
-      noContests: dbRecord.record?.noContests ?? 0,
+      wins: dbRecord.record?.wins ?? dbRecord.wins ?? 0,
+      losses: dbRecord.record?.losses ?? dbRecord.losses ?? 0,
+      draws: dbRecord.record?.draws ?? dbRecord.draws ?? 0,
+      noContests: dbRecord.record?.noContests ?? dbRecord.nc ?? 0,
     },
     performance: { ...EMPTY_PERFORMANCE, ...(dbRecord.performance || {}) },
     history: [],
-    notes: dbRecord.notes || [],
+    // `notes` here is the intake pipeline's free-text scouting note (a plain
+    // string column in the DB) - a different thing from the structured
+    // FighterNote[] this array type expects. A non-empty string was reaching
+    // FighterNotes.tsx's `.map()` uncaught, crashing the whole profile page.
+    notes: Array.isArray(dbRecord.notes) ? dbRecord.notes : [],
     riskSignals: dbRecord.riskSignals || [],
     odds: dbRecord.odds,
     campStartDate: dbRecord.campStartDate,
