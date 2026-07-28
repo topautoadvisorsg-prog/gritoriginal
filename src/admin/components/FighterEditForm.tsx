@@ -8,7 +8,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { Form } from '@/shared/components/ui/form';
 import { toast } from '@/shared/hooks/use-toast';
-import { Image, Loader2, Save, UserCircle, Trophy, Activity, Flag, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { Image, Loader2, Save, User, UserCircle, Trophy, Activity, Flag, ExternalLink, CheckCircle2 } from 'lucide-react';
 import { FormData } from './fighter-form/types';
 import { PersonalInfoTab } from './fighter-form/PersonalInfoTab';
 import { RecordStatsTab } from './fighter-form/RecordStatsTab';
