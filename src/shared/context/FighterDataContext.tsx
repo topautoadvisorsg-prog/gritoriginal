@@ -43,6 +43,14 @@ const EMPTY_PERFORMANCE = {
   sub_streak: 0,
 };
 
+// e.g. 73 -> `6'1"`. Returns '' for null/undefined so callers can `|| 'N/A'`.
+function formatInchesToFeet(inches: number | null | undefined): string {
+  if (inches === null || inches === undefined || Number.isNaN(inches)) return '';
+  const feet = Math.floor(inches / 12);
+  const remainder = Math.round(inches % 12);
+  return `${feet}'${remainder}"`;
+}
+
 // Transform database record (snake_case) to frontend Fighter type (camelCase)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- DB row boundary: loosely-shaped record normalized field-by-field below
 function transformDbToFighter(dbRecord: any): Fighter {
@@ -67,7 +75,14 @@ function transformDbToFighter(dbRecord: any): Fighter {
     organization: dbRecord.organization,
     physicalStats: {
       ...(dbRecord.physicalStats || {}),
+      age: dbRecord.physicalStats?.age ?? 0,
       weight: dbRecord.weight ?? dbRecord.physicalStats?.weight ?? 0,
+      height_inches: dbRecord.height ?? dbRecord.physicalStats?.height_inches ?? 0,
+      height: formatInchesToFeet(dbRecord.height) || dbRecord.physicalStats?.height || '',
+      reach_inches: dbRecord.reach ?? dbRecord.physicalStats?.reach_inches ?? 0,
+      reach: formatInchesToFeet(dbRecord.reach) || dbRecord.physicalStats?.reach || '',
+      leg_reach_inches: dbRecord.legReach ?? dbRecord.physicalStats?.leg_reach_inches ?? 0,
+      leg_reach: formatInchesToFeet(dbRecord.legReach) || dbRecord.physicalStats?.leg_reach || '',
     },
     record: {
       wins: dbRecord.record?.wins ?? dbRecord.wins ?? 0,
