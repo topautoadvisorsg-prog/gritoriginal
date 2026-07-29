@@ -36,7 +36,13 @@ export const FighterStatsGrid: React.FC<FighterStatsGridProps> = ({ fighter }) =
       {/* Bio Info Card */}
       <div className="glass-card rounded-xl p-6">
         <h3 className="section-header mb-4">Fighter Bio</h3>
-        
+
+        {fighter.bio && (
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4 pb-4 border-b border-border/50">
+            {fighter.bio}
+          </p>
+        )}
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="flex items-start gap-3">
             <div className="p-2 rounded-lg bg-primary/10">
