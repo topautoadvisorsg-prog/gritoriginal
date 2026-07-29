@@ -32,7 +32,7 @@ export const FighterIdentityBlock: React.FC<FighterIdentityBlockProps> = ({ figh
     <div className="relative h-[580px] w-full rounded-2xl overflow-hidden glass-card group">
       {/* Fighter Image with Parallax */}
       <div
-        className="absolute inset-x-0 h-[120%] -top-[10%] z-10 transition-transform duration-500 group-hover:scale-105"
+        className="absolute inset-x-0 h-[108%] -top-[3%] z-10 transition-transform duration-500 group-hover:scale-105"
         style={{ transform: `translateY(${offsetY * 0.3}px)` }}
       >
         <FighterImage fighter={fighter} variant="hero" alt={fullName} />
