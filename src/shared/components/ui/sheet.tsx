@@ -74,7 +74,7 @@ const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Con
             "border border-border/40",
             "transition-all duration-150",
             "hover:bg-card hover:text-foreground hover:border-border",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(190_90%_55%)]",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
             "disabled:pointer-events-none",
           )}
         >

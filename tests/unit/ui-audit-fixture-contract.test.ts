@@ -55,7 +55,7 @@ describe('UI audit fixture contracts', () => {
     expect(fixtureSource).toContain('/^\\/fighters\\/[^/]+\\/tags$/.test(path)');
   });
 
-  it('normalizes event status and exposes fighter cards to keyboards', () => {
+  it('normalizes event status and exposes fighter cards as native profile links', () => {
     const eventHeader = readFileSync(
       resolve(process.cwd(), 'src/user/components/event/EventHeader.tsx'),
       'utf8',
@@ -66,8 +66,9 @@ describe('UI audit fixture contracts', () => {
     );
 
     expect(eventHeader).toContain("String(event.status).toLowerCase()");
-    expect(fighterCard).toContain('role="button"');
-    expect(fighterCard).toContain("event.key === 'Enter'");
+    expect(fighterCard).toContain('import { Link } from');
+    expect(fighterCard).toContain('to={`/fighter/${fighter.id}`}');
+    expect(fighterCard).toContain('aria-label={`View ${firstName} ${lastName} profile`}');
   });
 
   it('routes personal history separately from global rankings', () => {
@@ -108,6 +109,6 @@ describe('UI audit fixture contracts', () => {
 
     expect(fighterContext).toContain('const EMPTY_PERFORMANCE = {');
     expect(fighterContext).toContain('performance: { ...EMPTY_PERFORMANCE, ...(dbRecord.performance || {}) }');
-    expect(fighterContext).toContain('noContests: dbRecord.record?.noContests ?? 0');
+    expect(fighterContext).toContain('noContests: dbRecord.record?.noContests ?? dbRecord.nc ?? 0');
   });
 });

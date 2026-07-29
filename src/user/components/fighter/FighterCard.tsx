@@ -1,6 +1,6 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Fighter } from '@/shared/types/fighter';
-import { Card } from '@/shared/components/ui/card';
 import { Crown, Medal } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 
@@ -10,23 +10,15 @@ interface FighterCardProps {
 }
 
 export const FighterCard: React.FC<FighterCardProps> = ({ fighter, onClick }) => {
-  const { firstName, lastName, nickname, record, ranking, isChampion, imageUrl } = fighter;
-  const recordStr = `${record.wins}-${record.losses}${record.draws > 0 ? `-${record.draws}` : ''}`;
+  const { firstName, lastName, nickname, ranking, isChampion, imageUrl } = fighter;
   
   return (
-    <Card
+    <Link
+      to={`/fighter/${fighter.id}`}
       onClick={() => onClick(fighter)}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          onClick(fighter);
-        }
-      }}
-      role="button"
-      tabIndex={0}
       aria-label={`View ${firstName} ${lastName} profile`}
       className={cn(
-        'group relative cursor-pointer overflow-hidden transition-all duration-300',
+        'group relative block overflow-hidden rounded-xl border text-card-foreground no-underline transition-all duration-300',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
         'hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/20',
         'bg-card/80 backdrop-blur border-border/50',
@@ -81,6 +73,6 @@ export const FighterCard: React.FC<FighterCardProps> = ({ fighter, onClick }) =>
         {/* Hover Indicator */}
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       </div>
-    </Card>
+    </Link>
   );
 };

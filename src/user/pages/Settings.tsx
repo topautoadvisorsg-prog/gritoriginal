@@ -301,12 +301,12 @@ export default function Settings() {
                 <div className="absolute -inset-1 rounded-full border border-[#E8A020]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none blur-sm" />
               </div>
               
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <CardTitle className="min-w-0 break-all text-base leading-tight sm:text-2xl display-font italic tracking-tight">{displayName}</CardTitle>
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex min-w-0 items-center gap-2">
+                  <CardTitle className="min-w-0 break-words text-base leading-tight [overflow-wrap:anywhere] sm:text-2xl display-font italic tracking-tight">{displayName}</CardTitle>
                   <CountryFlag country={profile.country} className="shrink-0 text-xl" />
                 </div>
-                <CardDescription className="break-all text-sm leading-relaxed text-white/40 font-medium">{profile.email}</CardDescription>
+                <CardDescription className="max-w-full break-words text-xs leading-relaxed text-white/40 [overflow-wrap:anywhere] sm:text-sm font-medium">{profile.email}</CardDescription>
                 <div className="flex items-center gap-4 mt-3">
                   <div className="flex items-center gap-1.5 px-3 py-1 bg-white/5 rounded-full border border-white/10">
                     <Trophy className="w-3.5 h-3.5 text-[#E8A020]" />

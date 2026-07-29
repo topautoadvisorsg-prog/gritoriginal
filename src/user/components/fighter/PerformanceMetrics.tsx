@@ -1,14 +1,18 @@
 import React from 'react';
-import { Fighter } from '@/shared/types/fighter';
+import { Fighter, FightRecord } from '@/shared/types/fighter';
 import { CircularProgress } from '@/shared/components/ui/CircularProgress';
 import { Last5FightsIndicator } from './Last5FightsIndicator';
 import { Zap, Shield, Target, Clock } from 'lucide-react';
 
 interface PerformanceMetricsProps {
   fighter: Fighter;
+  // fighter.history is always [] (see FighterProfile.tsx) - callers that have
+  // already fetched the real history should pass it here instead.
+  history?: FightRecord[];
 }
 
-export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ fighter }) => {
+export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ fighter, history }) => {
+  const fightHistory = history ?? fighter.history;
   const { performance } = fighter;
 
   const hasFinishRate = performance.finish_rate > 0;
@@ -146,7 +150,7 @@ export const PerformanceMetrics: React.FC<PerformanceMetricsProps> = ({ fighter 
 
       {/* Last 5 Fights Visual */}
       <div className="mt-4 pt-4 border-t border-border/50">
-        <Last5FightsIndicator fights={fighter.history} />
+        <Last5FightsIndicator fights={fightHistory} />
       </div>
 
       {/* Streaks */}

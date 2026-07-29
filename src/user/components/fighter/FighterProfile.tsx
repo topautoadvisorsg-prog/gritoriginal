@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Fighter } from '@/shared/types/fighter';
+import { Fighter, FightRecord } from '@/shared/types/fighter';
 import { FighterIdentityBlock } from './FighterIdentityBlock';
 import { FighterStatsGrid } from './FighterStatsGrid';
 import { FightHistoryLedger } from './FightHistoryLedger';
@@ -191,6 +191,90 @@ const WinMethodBar = ({ ko, sub, dec }: { ko: number, sub: number, dec: number }
 // -------------------------------------
 // -------------------------------------
 
+// "mm:ss" -> seconds. Returns 0 for missing/unparseable input.
+function parseTimeToSeconds(t: string | null | undefined): number {
+  if (!t) return 0;
+  const parts = t.split(':').map(Number);
+  if (parts.length !== 2 || parts.some(Number.isNaN)) return 0;
+  const [min, sec] = parts;
+  return min * 60 + sec;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- API row boundary, mapped field-by-field below
+function transformDbToFightRecord(row: any): FightRecord {
+  const s = row.stats;
+  const resultMap: Record<string, FightRecord['result']> = {
+    Win: 'WIN', Loss: 'LOSS', Draw: 'DRAW', NC: 'NC',
+  };
+
+  return {
+    id: row.id,
+    eventId: row.eventId,
+    fighterId: row.fighterId,
+    fighterName: row.fighterName ?? undefined,
+    fighterNickname: row.fighterNickname ?? undefined,
+    opponentId: row.opponentId,
+    opponentName: row.opponentName ?? 'Unknown',
+    opponentNickname: row.opponentNickname ?? undefined,
+    opponentLinked: row.opponentLinked ?? undefined,
+    eventName: row.eventName ?? 'Unknown Event',
+    eventDate: row.eventDate ?? '',
+    eventPromotion: row.eventPromotion ?? undefined,
+    weightClass: row.weightClass ?? undefined,
+    // Card placement (main/prelim/etc) isn't tracked by the intake pipeline at
+    // all - fightType there means "Bout" vs "Title Bout", a different concept.
+    // Not used anywhere in FightHistoryLedger's rendering, so a fixed
+    // placeholder here is honest (unknown), not a display-facing lie.
+    fightType: 'Main Card',
+    billing: row.billing ?? undefined,
+    boutOrder: row.boutOrder ?? 0,
+    roundsScheduled: row.roundsScheduled ?? undefined,
+    roundDurationMinutes: row.roundDurationMinutes ?? undefined,
+    location: {
+      city: row.eventCity ?? '',
+      state: row.eventState ?? undefined,
+      country: row.eventCountry ?? '',
+      venue: row.eventVenue ?? '',
+    },
+    result: resultMap[row.result as string] ?? 'PENDING',
+    method: row.method ?? '',
+    methodDetail: row.methodDetail ?? undefined,
+    round: row.round ?? 0,
+    time: row.time ?? '',
+    fightDurationSeconds: row.fightDurationSeconds ?? 0,
+    titleFight: row.titleFight ?? false,
+    titleFightDetail: row.titleFightDetail ?? undefined,
+    referee: row.referee ?? undefined,
+    round_time_format: row.roundTimeFormat ?? undefined,
+    judges_scores_data: row.judgesScoresData ?? undefined,
+    per_round_stats: row.perRoundStats ?? undefined,
+    // Per-bout stats only exist when the source page had a stats table
+    // (Format B / UFCStats single-bout pages) - null for list-style sources.
+    stats: s ? {
+      strikesLanded: s.total_str_landed ?? 0,
+      strikesAttempted: s.total_str_attempted ?? 0,
+      significantStrikesLanded: s.sig_str_landed ?? 0,
+      significantStrikesAttempted: s.sig_str_attempted ?? 0,
+      // Strike-by-target breakdown (head/body/leg/distance/clinch/ground) is
+      // not captured by the current extraction prompt - left at 0, which
+      // FightHistoryLedger correctly hides rather than showing fake zeros.
+      headStrikesLanded: 0, headStrikesAttempted: 0,
+      bodyStrikesLanded: 0, bodyStrikesAttempted: 0,
+      legStrikesLanded: 0, legStrikesAttempted: 0,
+      distanceStrikesLanded: 0, distanceStrikesAttempted: 0,
+      clinchStrikesLanded: 0, clinchStrikesAttempted: 0,
+      groundStrikesLanded: 0, groundStrikesAttempted: 0,
+      takedownsLanded: s.td_landed ?? 0,
+      takedownsAttempted: s.td_attempted ?? 0,
+      submissionAttempts: s.sub_att ?? 0,
+      controlTimeSeconds: parseTimeToSeconds(s.ctrl_time),
+      knockdowns: s.kd ?? 0,
+    } : undefined,
+    oddsSnapshot: row.oddsSnapshot ?? undefined,
+    isLocked: row.isLocked ?? false,
+  };
+}
+
 interface FighterProfileProps {
   fighter: Fighter;
 }
@@ -216,6 +300,22 @@ export const FighterProfile: React.FC<FighterProfileProps> = ({ fighter }) => {
   const [whatIsWrong, setWhatIsWrong] = useState('');
   const [sourceLink, setSourceLink] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // fighter.history from the bulk fighter-list context is always [] (that
+  // endpoint doesn't include fight history to keep the list payload light).
+  // Fetch this one fighter's real history lazily here instead.
+  const [fightHistory, setFightHistory] = useState<FightRecord[]>([]);
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`/api/fighters/${fighter.id}/fights`)
+      .then(res => (res.ok ? res.json() : []))
+      .then((rows: unknown[]) => {
+        if (cancelled) return;
+        setFightHistory(Array.isArray(rows) ? rows.map(transformDbToFightRecord) : []);
+      })
+      .catch(() => { if (!cancelled) setFightHistory([]); });
+    return () => { cancelled = true; };
+  }, [fighter.id]);
 
   const handleSubmitCorrection = async () => {
     if (whatIsWrong.trim().length < 10) {
@@ -369,7 +469,7 @@ export const FighterProfile: React.FC<FighterProfileProps> = ({ fighter }) => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left Column - Performance */}
         <div className="flex flex-col gap-6">
-          <PerformanceMetrics fighter={fighter} />
+          <PerformanceMetrics fighter={fighter} history={fightHistory} />
 
           {/* VISUAL VERIFICATION: REAL DATA CONNECTED */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -405,7 +505,7 @@ export const FighterProfile: React.FC<FighterProfileProps> = ({ fighter }) => {
       {/* BOTTOM: Fight History (Full Width) */}
       <div className="w-full">
         <FightHistoryLedger
-          fights={fighter.history}
+          fights={fightHistory}
           hasPendingFight={false}
         />
       </div>

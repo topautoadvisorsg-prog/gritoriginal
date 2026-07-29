@@ -49,7 +49,7 @@ const Index = () => {
 
       <main
         className={cn(
-          'pb-8 px-4 lg:px-8 transition-all duration-300',
+          'px-4 pb-28 transition-all duration-300 md:pb-8 lg:px-8',
           isAdmin
             ? (isSidebarCollapsed ? 'ml-0 pt-20 md:ml-16' : 'ml-0 pt-20 md:ml-64')
             : 'ml-0 pt-[130px]' // 16px (1rem) higher than 120 buffer to prevent content being under fixed top nav
