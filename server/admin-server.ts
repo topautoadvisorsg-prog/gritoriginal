@@ -9,6 +9,7 @@ import heartbeatRouter from "./system/heartbeat";
 import { logger } from "./utils/logger";
 import { apiErrorHandler } from './middleware/errorHandler';
 import { configureHttpSecurity, registerJsonBodyParsers } from './middleware/httpSecurity';
+import { apiNotFoundHandler } from './middleware/apiNotFound';
 
 async function startAdminServer() {
     const app = express();
@@ -24,6 +25,7 @@ async function startAdminServer() {
 
     app.use('/api/system', heartbeatRouter);
 
+    app.use('/api', apiNotFoundHandler);
     app.use(apiErrorHandler);
 
     // Typically we run admin on a different port internally (e.g., 3002)

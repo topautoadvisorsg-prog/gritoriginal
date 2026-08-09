@@ -36,7 +36,6 @@ import { registerDashboardRoutes } from "./user/routes/dashboardRoutes";
 import { registerProgressionRoutes } from "./user/routes/progressionRoutes";
 import userSettingsRoutes from "./user/routes/userSettingsRoutes";
 import badgeRoutes from "./user/routes/badgeRoutes";
-import { registerUploadRoutes } from "./user/routes/uploadRoutes";
 import { registerExportRoutes } from "./user/routes/exportRoutes";
 import { registerIntelFeedRoutes } from "./user/routes/intelFeedRoutes";
 import { registerSlipRoutes } from "./user/routes/slipRoutes";
@@ -122,7 +121,6 @@ async function startUserServer() {
     app.use('/api', userSettingsRoutes);
 
     app.use('/objects', express.static(path.join(process.cwd(), 'uploads')));
-    registerUploadRoutes(app);
     registerExportRoutes(app);
     registerIntelFeedRoutes(app);
     registerSlipRoutes(app);

@@ -1,6 +1,6 @@
 # R1-B HTTP Security and Request Budgets
 
-Status: local candidate verified; production promotion not yet approved
+Status: deployed and production-verified
 
 Date: 2026-08-09
 
@@ -79,6 +79,25 @@ After an approved push and successful Railway deployment:
    regressions; and
 8. roll back immediately if auth redirects, static assets, API routing, or
    webhook delivery regress.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `6f3f23a53c721f84d3e37eb45ced158607c85aa1` |
+| Railway deployment | `5025bbe2-0147-4c6a-adbf-44e6d8964a05` |
+| GitHub deployment status | Success, 2026-08-09 16:09:58 UTC |
+| `GET /api/health` | `200` JSON |
+| Unknown `/api/*` path | `404` JSON |
+| Unauthenticated data-engine webhook | `401` |
+| Oversized ordinary JSON | `413` |
+| Larger bounded import request | Parser accepted; authorization returned `401` |
+| Header contract | Passed, including absent `X-Powered-By` |
+| Deferred header contract | CSP and HSTS absent as documented |
+
+The larger import probe was unauthenticated and therefore could not mutate
+data. Its `401` response proves that the body passed the route-specific parser
+and reached the existing authorization boundary.
 
 ## Rollback
 

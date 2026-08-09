@@ -9,9 +9,13 @@ commit, and domain identities are recorded in
 [`RELEASE_PROVENANCE.md`](RELEASE_PROVENANCE.md). R0 containment status is in
 [`R0_CHANGE_CONTROL_AND_CONTAINMENT.md`](R0_CHANGE_CONTROL_AND_CONTAINMENT.md).
 The deployed logging/API boundary slice is documented in
-[`R1A_LOGGING_AND_API_BOUNDARY.md`](R1A_LOGGING_AND_API_BOUNDARY.md). The local
-HTTP-security and request-budget candidate is documented in
+[`R1A_LOGGING_AND_API_BOUNDARY.md`](R1A_LOGGING_AND_API_BOUNDARY.md). The
+deployed HTTP-security and request-budget slice is documented in
 [`R1B_HTTP_SECURITY_AND_REQUEST_BUDGETS.md`](R1B_HTTP_SECURITY_AND_REQUEST_BUDGETS.md).
+The local retirement of the arbitrary filesystem upload route is documented in
+[`R1C_LEGACY_UPLOAD_RETIREMENT.md`](R1C_LEGACY_UPLOAD_RETIREMENT.md).
+The R0–R1 pre-push code and technical-debt review is recorded in
+[`R1_PREPUSH_REVIEW.md`](R1_PREPUSH_REVIEW.md).
 
 ## Build and start
 

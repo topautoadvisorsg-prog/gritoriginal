@@ -74,4 +74,12 @@ describe('R1 logging boundary', () => {
     expect(source.indexOf("app.use('/api', apiNotFoundHandler)"))
       .toBeLessThan(source.indexOf('app.get(/(.*)/'));
   });
+
+  it('keeps the secondary admin server inside the same JSON API boundary', async () => {
+    const { readFile } = await import('node:fs/promises');
+    const source = await readFile('server/admin-server.ts', 'utf8');
+    expect(source).toContain("app.use('/api', apiNotFoundHandler)");
+    expect(source.indexOf("app.use('/api', apiNotFoundHandler)"))
+      .toBeLessThan(source.indexOf('app.use(apiErrorHandler)'));
+  });
 });

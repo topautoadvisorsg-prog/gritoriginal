@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import { db } from "../../db";
 import { slips, chatNotifications } from "../../../shared/schema";
 import { eq, and, desc, gt } from "drizzle-orm";
-import { isAuthenticated } from "../../auth/guards";
+import { isAuthenticated, requireTier } from "../../auth/guards";
 import { logger } from "../../utils/logger";
 
 const SLIP_EXPIRY_DAYS = 7;
@@ -42,7 +42,7 @@ export function registerSlipRoutes(app: Express) {
     // POST /api/slips/upload
     // Challenger-only (tier check is enforced but caller must also guard in UI).
     // Accepts multipart form-data with field "image".
-    app.post("/api/slips/upload", isAuthenticated, (req: Request, res: Response) => {
+    app.post("/api/slips/upload", isAuthenticated, requireTier("premium"), (req: Request, res: Response) => {
         upload.single("image")(req, res, async (err) => {
             if (err) {
                 if (err.message === "INVALID_FILE_TYPE") {
