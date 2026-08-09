@@ -27,6 +27,21 @@ only the host, port, database name, and marker ID; credentials are never printed
 
 Set `STAGING_ENV_FILE` only when a different local env filename is required.
 
+## Pipeline Smoke Test
+
+`npm run smoke:pipeline` is destructive by design, but only to its disposable
+fixture rows. It uses the same safety gate and verifies the staging marker before
+loading `server/db` or any service that imports it:
+
+```text
+npm run smoke:pipeline
+```
+
+The command refuses to run without `ALLOW_STAGING_WRITES=1`, an allowed staging
+runtime, a distinct `STAGING_DATABASE_URL`, a specific
+`STAGING_ENVIRONMENT_ID`, and a matching marker row. It never falls back to the
+normal `DATABASE_URL`. Refusal is the correct result when staging is not ready.
+
 ## Ranking Total Reconciliation
 
 Run the read-only drift report against the verified staging target:

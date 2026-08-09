@@ -1,7 +1,13 @@
 # GRIT Deployment
 
-**Truth date:** June 21, 2026
-**Current target:** Railway single-process Node deployment serving API, Socket.IO, jobs, and the built Vite frontend.
+**Truth date:** August 9, 2026
+**Current target:** Railway project `virtuous-freedom`, production service
+`gritoriginal`, serving API, Socket.IO, jobs, and the built Vite frontend.
+
+Exact non-secret project, environment, service, deployment, repository, branch,
+commit, and domain identities are recorded in
+[`RELEASE_PROVENANCE.md`](RELEASE_PROVENANCE.md). R0 containment status is in
+[`R0_CHANGE_CONTROL_AND_CONTAINMENT.md`](R0_CHANGE_CONTROL_AND_CONTAINMENT.md).
 
 ## Build and start
 
@@ -38,6 +44,9 @@ Railway currently uses only `/api/health`, so a process can remain “healthy”
 | Domain/socket | `CUSTOM_DOMAIN` or `RAILWAY_PUBLIC_DOMAIN` in production |
 
 `.env.example` is the shape reference, but several comments still describe historical phases. Never copy old secrets or commit `.env`.
+
+Production startup now fails closed without the Clerk server and publishable
+keys, and rejects fixture, bootstrap-route, and retired auto-apply flags.
 
 ## Deployment blockers
 

@@ -1,0 +1,58 @@
+# MMA Grid Release Provenance
+
+**Verified:** 2026-08-09
+**Method:** read-only Railway deployment-detail inspection plus local Git
+comparison
+**Cloud mutations:** none
+
+## Authoritative chain
+
+| Layer | Authority / identity |
+|---|---|
+| Local repository | `C:\Users\jovan\Downloads\gritapp` |
+| Git remote | `https://github.com/topautoadvisorsg-prog/gritoriginal.git` |
+| Branch | `main` |
+| Audited/deployed commit | `96b08f8ca279b2c67ee208b744cf599965d317fd` |
+| Railway workspace | `topautoadvisorsg-prog's Projects` |
+| Railway project | `virtuous-freedom` / `68681fa5-aff3-426a-b48d-4b375a6092ae` |
+| Railway environment | `production` / `bb6c0026-993f-4eda-8298-785a37a120e7` |
+| Railway service | `gritoriginal` / `eb45b6c8-997b-4fad-9dda-16ba62c95969` |
+| Active deployment | `261e8781-428b-4680-8603-c2e636f4e956` |
+| Public Railway domain | `gritoriginal-production.up.railway.app` |
+| Region / replicas | `sfo` / 1 |
+| Build / start | Nixpacks; `npm install --include=dev && npm run build`; `npm start` |
+| Health gate | `GET /api/health`, 100-second timeout |
+
+Railway's active deployment links directly to the GitHub commit above. At the
+time of verification, local `HEAD`, remote `origin/main`, and the active Railway
+deployment all referenced the same commit.
+
+## Database linkage
+
+The read-only Audit 3 database target fingerprint is
+`8b3f502f18638396`. This non-secret fingerprint is the comparison handle until
+the project/service variable-to-Supabase project relationship is independently
+recorded without exposing credentials. Database schema reconciliation remains a
+separate gate; provenance does not approve migrations.
+
+## Clerk and Stripe linkage
+
+The code contains Clerk and Stripe integrations, but R0 did not inspect or copy
+secret values. Exact Clerk instance and Stripe account/mode identifiers remain
+required evidence before authentication or payment production authorization.
+Payments and rewards remain disabled by release policy.
+
+## Per-release evidence requirement
+
+Before promotion, record:
+
+1. reviewed commit and tree;
+2. CI/test artifact and checksums;
+3. Railway project, environment, service, and deployment IDs;
+4. source repository and branch shown by Railway;
+5. database baseline/fingerprint and migration decision;
+6. Clerk instance and Stripe mode/account identifiers without secrets;
+7. previous known-good deployment ID;
+8. rollback owner and verification result.
+
+Stop if any identifier is missing, mismatched, or inferred rather than observed.

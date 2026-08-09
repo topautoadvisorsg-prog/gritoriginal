@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { registerAIRoutes } from "../../server/ai/aiRoutes";
 import {
+  isForbiddenPipelineConfigKey,
   isSensitivePipelineConfigKey,
   registerAdminDataPipelineRoutes,
   serializePipelineConfigValue,
@@ -88,6 +89,8 @@ describe("user route registration", () => {
     expect(isSensitivePipelineConfigKey("ACCESS_TOKEN")).toBe(true);
     expect(isSensitivePipelineConfigKey("SUPABASE_URL")).toBe(false);
     expect(isSensitivePipelineConfigKey("DATA_ENGINE_AUTO_APPLY")).toBe(false);
+    expect(isForbiddenPipelineConfigKey("DATA_ENGINE_AUTO_APPLY")).toBe(true);
+    expect(isForbiddenPipelineConfigKey("SUPABASE_URL")).toBe(false);
     expect(serializePipelineConfigValue("ANTHROPIC_API_KEY", "do-not-leak"))
       .toEqual({ key: "ANTHROPIC_API_KEY", value: "", configured: true });
     expect(serializePipelineConfigValue("SUPABASE_URL", "https://example.test"))

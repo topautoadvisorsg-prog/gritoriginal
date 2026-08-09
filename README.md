@@ -37,6 +37,7 @@ Do not enable paid acquisition, creator payments, token sales, or cash rewards u
 - [Creator economy](docs/creator-economy/README.md)
 - [Groups](docs/groups/README.md)
 - [Deployment](docs/deployment/README.md)
+- [Release provenance and R0 containment](docs/deployment/RELEASE_PROVENANCE.md)
 - [Audit index and system status](docs/system-audit/SYSTEM_STATUS_REPORT.md)
 - [Monetization audit](docs/system-audit/MONETIZATION_AUDIT.md)
 - [Payment flow diagrams](docs/system-audit/PAYMENT_FLOW.md)

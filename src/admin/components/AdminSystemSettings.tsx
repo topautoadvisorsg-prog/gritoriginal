@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card';
-import { Switch } from '@/shared/components/ui/switch';
 import { Label } from '@/shared/components/ui/label';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -56,19 +55,11 @@ const DataEngineConfigSection = () => {
     const queryClient = useQueryClient();
     const [apiKey, setApiKey] = useState('');
     const [isSaving, setIsSaving] = useState(false);
-    const [isTogglingAuto, setIsTogglingAuto] = useState(false);
 
     const { data: config, isLoading } = useQuery({
         queryKey: ['/api/admin/pipeline/config/DATA_ENGINE_API_KEY'],
         queryFn: () => fetchPipelineConfig('DATA_ENGINE_API_KEY'),
     });
-
-    const { data: autoApplyConfig } = useQuery({
-        queryKey: ['/api/admin/pipeline/config/DATA_ENGINE_AUTO_APPLY'],
-        queryFn: () => fetchPipelineConfig('DATA_ENGINE_AUTO_APPLY'),
-    });
-
-    const autoApplyEnabled = autoApplyConfig?.value === 'true';
 
     const saveKey = async () => {
         setIsSaving(true);
@@ -81,24 +72,6 @@ const DataEngineConfigSection = () => {
             toast({ title: 'Error', description: 'Failed to save API key.', variant: 'destructive' });
         } finally {
             setIsSaving(false);
-        }
-    };
-
-    const toggleAutoApply = async (checked: boolean) => {
-        setIsTogglingAuto(true);
-        try {
-            await savePipelineConfig('DATA_ENGINE_AUTO_APPLY', checked ? 'true' : 'false', 'Auto-approve and apply incoming data engine payloads without admin review');
-            toast({
-                title: checked ? 'Auto-Apply Enabled' : 'Auto-Apply Disabled',
-                description: checked
-                    ? 'Incoming payloads will be applied immediately without review.'
-                    : 'Incoming payloads will queue for admin approval.',
-            });
-            queryClient.invalidateQueries({ queryKey: ['/api/admin/pipeline/config/DATA_ENGINE_AUTO_APPLY'] });
-        } catch {
-            toast({ title: 'Error', description: 'Failed to toggle auto-apply.', variant: 'destructive' });
-        } finally {
-            setIsTogglingAuto(false);
         }
     };
 
@@ -143,22 +116,17 @@ const DataEngineConfigSection = () => {
                     </p>
                 </div>
 
-                {/* Auto-Apply Toggle */}
+                {/* Mandatory review policy */}
                 <div className="flex items-center justify-between pt-2 border-t">
                     <div className="space-y-0.5">
                         <Label className="text-sm font-medium flex items-center gap-2">
-                            Auto-Apply Incoming Payloads
-                            {autoApplyEnabled && <span className="text-xs bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded font-mono">ON</span>}
+                            Operator Review Required
+                            <span className="text-xs bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-mono">LOCKED</span>
                         </Label>
                         <p className="text-xs text-muted-foreground">
-                            When enabled, Data Engine pushes are immediately applied to DB — no admin review required.
+                            Incoming data is staged as pending and cannot write to canonical tables until an authenticated administrator reviews, approves, and applies it.
                         </p>
                     </div>
-                    <Switch
-                        checked={autoApplyEnabled}
-                        disabled={isTogglingAuto}
-                        onCheckedChange={toggleAutoApply}
-                    />
                 </div>
             </div>
         </div>

@@ -6,6 +6,10 @@ export function isSensitivePipelineConfigKey(key: string): boolean {
   return /(API_KEY|SECRET|TOKEN|PASSWORD)$/i.test(key);
 }
 
+export function isForbiddenPipelineConfigKey(key: string): boolean {
+  return key === 'DATA_ENGINE_AUTO_APPLY';
+}
+
 export function serializePipelineConfigValue(key: string, value: string) {
   return isSensitivePipelineConfigKey(key)
     ? { key, value: '', configured: true }
@@ -238,6 +242,12 @@ export function registerAdminDataPipelineRoutes(app: Express) {
 
       if (!key || !value) {
         return res.status(400).json({ error: "Key and value required" });
+      }
+
+      if (isForbiddenPipelineConfigKey(key)) {
+        return res.status(409).json({
+          error: 'Review-before-write is mandatory; auto-apply cannot be enabled',
+        });
       }
 
       await dataEngineService.setDataEngineConfig(key, value, description, adminUserId);

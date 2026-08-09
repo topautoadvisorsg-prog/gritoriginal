@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { z } from 'zod';
+import { assertProductionRuntimeSafety } from './productionSafety';
 
 // Simple console logger for early-stage errors before full logger is available
 const earlyLogger = {
@@ -81,6 +82,12 @@ const envSchema = z.object({
   CUSTOM_DOMAIN: z.string().optional(),
   RAILWAY_PUBLIC_DOMAIN: z.string().optional(),
 
+  // Development-only operational capabilities. Production validation below
+  // rejects every enabled value before the server starts.
+  UI_AUDIT_FIXTURES: z.enum(['0', '1']).optional(),
+  ENABLE_BOOTSTRAP_ROUTES: z.enum(['0', '1']).optional(),
+  DATA_ENGINE_AUTO_APPLY: z.enum(['true', 'false']).optional(),
+
   // Legacy Replit OIDC (removed when Clerk ships)
   REPL_ID: z.string().optional(),
   REPLIT_DEV_DOMAIN: z.string().optional(),
@@ -144,10 +151,11 @@ function stripEmptyStringEnv(source: NodeJS.ProcessEnv): Record<string, string |
   return out;
 }
 
-export function validateEnv(): EnvConfig {
+export function validateEnv(source: NodeJS.ProcessEnv = process.env): EnvConfig {
   try {
-    const cleaned = stripEmptyStringEnv(process.env);
+    const cleaned = stripEmptyStringEnv(source);
     const env = envSchema.parse(cleaned);
+    assertProductionRuntimeSafety(env);
     earlyLogger.info('Environment validation passed');
     return env;
   } catch (error) {

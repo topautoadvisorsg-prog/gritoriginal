@@ -1,9 +1,13 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { assertProductionBuildSafety } from "./server/config/productionSafety";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  assertProductionBuildSafety(mode, process.env.UI_AUDIT_FIXTURES);
+
+  return ({
   define: {
     'import.meta.env.UI_AUDIT_FIXTURES': JSON.stringify(process.env.UI_AUDIT_FIXTURES || '0'),
   },
@@ -52,4 +56,5 @@ export default defineConfig(({ mode }) => ({
       "@shared": path.resolve(__dirname, "./shared"),
     },
   },
-}));
+  });
+});

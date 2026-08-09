@@ -1,9 +1,42 @@
-import { pool } from "../server/db";
-import { finalizeFightResult } from "../server/services/scoringService";
-import { runEventProgression } from "../server/services/progressionService";
-import { createLeaderboardSnapshot } from "../server/services/leaderboardService";
-import { logger } from "../server/utils/logger";
+import dotenv from 'dotenv';
+import { assertSafeStagingTarget } from '../scripts/staging/stagingGuard';
+import { createStagingPool, verifyStagingMarker } from '../scripts/staging/stagingDatabase';
 import { v4 as uuidv4 } from "uuid";
+
+dotenv.config({ path: process.env.STAGING_ENV_FILE ?? '.env.staging.local' });
+// Load production identity values only for comparison; existing staging values win.
+dotenv.config();
+
+const stagingTarget = assertSafeStagingTarget(process.env);
+const markerPool = createStagingPool(stagingTarget);
+try {
+  await verifyStagingMarker(markerPool, stagingTarget);
+} finally {
+  await markerPool.end();
+}
+
+// Database-backed modules are loaded only after target identity and its staging
+// marker are independently verified. Their normal DATABASE_URL is redirected to
+// the approved disposable target for this process.
+process.env.DATABASE_URL = stagingTarget.connectionString;
+process.env.DIRECT_URL = stagingTarget.connectionString;
+process.env.NODE_ENV = 'test';
+
+const [
+  { pool },
+  { finalizeFightResult },
+  { runEventProgression },
+  { createLeaderboardSnapshot },
+  { logger },
+] = await Promise.all([
+  import('../server/db'),
+  import('../server/services/scoringService'),
+  import('../server/services/progressionService'),
+  import('../server/services/leaderboardService'),
+  import('../server/utils/logger'),
+]);
+
+console.log(`SAFE_STAGING_TARGET ${stagingTarget.displayTarget} marker=${stagingTarget.environmentId}`);
 
 type SmokeCheck = {
   name: string;

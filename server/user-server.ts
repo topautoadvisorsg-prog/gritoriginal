@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import './config/env';
+import { env } from './config/env';
 import './types/express';
 import fs from 'fs';
 import * as Sentry from "@sentry/node";
@@ -58,10 +58,11 @@ import { initJobService } from './services/jobService';
 import { requestLogger } from './middleware/requestLogger';
 import { registerUiAuditFixtures } from './fixtures/uiAuditFixtures';
 import { apiErrorHandler } from './middleware/errorHandler';
+import { shouldRegisterBootstrapRoutes } from './config/productionSafety';
 
 async function startUserServer() {
     const app = express();
-    const fixtureMode = process.env.UI_AUDIT_FIXTURES === '1';
+    const fixtureMode = env.UI_AUDIT_FIXTURES === '1';
 
     // Register Stripe webhook BEFORE global JSON middleware
     registerStripeWebhook(app);
@@ -131,8 +132,12 @@ async function startUserServer() {
     // Register data engine webhook (public endpoint with API key auth)
     app.use('/api', dataEngineWebhook);
 
-    // Register bootstrap/setup routes (API key protected, no user session needed)
-    app.use('/api', bootstrapRouter);
+    // Destructive/bootstrap operations are local/test-only and require an
+    // explicit capability flag. Production validation rejects this flag.
+    if (shouldRegisterBootstrapRoutes(env)) {
+      app.use('/api', bootstrapRouter);
+      logger.warn('Bootstrap routes enabled for this non-production runtime');
+    }
 
     // Admin routes — mounted directly (single-port architecture)
     registerAdminApi(app);

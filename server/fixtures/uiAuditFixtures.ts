@@ -214,6 +214,9 @@ function buildFixtureGroup(name: string, description: string | undefined, isPriv
 
 export function registerUiAuditFixtures(app: Express): void {
   if (process.env.UI_AUDIT_FIXTURES !== '1') return;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('UI audit fixtures cannot be registered in production.');
+  }
 
   app.use('/api', (req: Request, res: Response, next: NextFunction) => {
     const path = req.path;
