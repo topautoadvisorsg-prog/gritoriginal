@@ -8,6 +8,8 @@ Exact non-secret project, environment, service, deployment, repository, branch,
 commit, and domain identities are recorded in
 [`RELEASE_PROVENANCE.md`](RELEASE_PROVENANCE.md). R0 containment status is in
 [`R0_CHANGE_CONTROL_AND_CONTAINMENT.md`](R0_CHANGE_CONTROL_AND_CONTAINMENT.md).
+The current logging/API boundary candidate is documented in
+[`R1A_LOGGING_AND_API_BOUNDARY.md`](R1A_LOGGING_AND_API_BOUNDARY.md).
 
 ## Build and start
 

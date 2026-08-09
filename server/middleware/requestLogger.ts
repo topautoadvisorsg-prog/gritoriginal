@@ -16,16 +16,14 @@ export function requestLogger(req: Request, res: Response, next: NextFunction) {
         userId,
         status: res.statusCode,
         duration,
-        error: res.locals.error || null,
-        body: res.statusCode >= 400 ? req.body : undefined // sanitize body for successful requests
       };
 
       if (res.statusCode >= 500) {
-        logger.error(JSON.stringify(logData));
+        logger.error('API request completed with server error', undefined, logData);
       } else if (res.statusCode >= 400) {
-        logger.warn(JSON.stringify(logData));
+        logger.warn('API request completed with client error', logData);
       } else {
-        logger.info(JSON.stringify(logData));
+        logger.info('API request completed', logData);
       }
     }
   });

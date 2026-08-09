@@ -12,12 +12,13 @@ comparison
 | Local repository | `C:\Users\jovan\Downloads\gritapp` |
 | Git remote | `https://github.com/topautoadvisorsg-prog/gritoriginal.git` |
 | Branch | `main` |
-| Audited/deployed commit | `96b08f8ca279b2c67ee208b744cf599965d317fd` |
+| Current deployed commit | `0b65ede50f41b366b0f71659f5dd24262cc2a997` |
 | Railway workspace | `topautoadvisorsg-prog's Projects` |
 | Railway project | `virtuous-freedom` / `68681fa5-aff3-426a-b48d-4b375a6092ae` |
 | Railway environment | `production` / `bb6c0026-993f-4eda-8298-785a37a120e7` |
 | Railway service | `gritoriginal` / `eb45b6c8-997b-4fad-9dda-16ba62c95969` |
-| Active deployment | `261e8781-428b-4680-8603-c2e636f4e956` |
+| Active deployment | `6b6e67f0-0b06-4332-a51e-0d9ed156bd75` |
+| Previous rollback deployment | `261e8781-428b-4680-8603-c2e636f4e956` |
 | Public Railway domain | `gritoriginal-production.up.railway.app` |
 | Region / replicas | `sfo` / 1 |
 | Build / start | Nixpacks; `npm install --include=dev && npm run build`; `npm start` |
@@ -25,7 +26,8 @@ comparison
 
 Railway's active deployment links directly to the GitHub commit above. At the
 time of verification, local `HEAD`, remote `origin/main`, and the active Railway
-deployment all referenced the same commit.
+deployment all referenced the same commit. The previous deployment remains the
+recorded application rollback artifact.
 
 ## Database linkage
 

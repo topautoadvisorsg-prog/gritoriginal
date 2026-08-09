@@ -59,6 +59,7 @@ import { requestLogger } from './middleware/requestLogger';
 import { registerUiAuditFixtures } from './fixtures/uiAuditFixtures';
 import { apiErrorHandler } from './middleware/errorHandler';
 import { shouldRegisterBootstrapRoutes } from './config/productionSafety';
+import { apiNotFoundHandler } from './middleware/apiNotFound';
 
 async function startUserServer() {
     const app = express();
@@ -152,6 +153,8 @@ async function startUserServer() {
       logger.info('UI audit fixture mode: database seeds, cron tasks, and job queue disabled');
     }
 
+    // Unknown API requests must not fall through to the frontend HTML shell.
+    app.use('/api', apiNotFoundHandler);
     app.use(apiErrorHandler);
 
     // Serve the Vite frontend build if it exists (production deployment)

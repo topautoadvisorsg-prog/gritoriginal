@@ -692,7 +692,7 @@ export async function setDataEngineConfig(key: string, value: string, descriptio
       });
     }
 
-    logger.info(`[Data Engine Config] ${key} = ${value}`);
+    logger.info('[Data Engine Config] Configuration updated', { key });
   } catch (error) {
     logger.error('[Data Engine Config] Error setting config:', error);
     throw new Error('Failed to set configuration');

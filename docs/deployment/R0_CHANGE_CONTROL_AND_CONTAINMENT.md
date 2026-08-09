@@ -1,6 +1,6 @@
 # R0 — Change Control and Containment
 
-Status: **local candidate verified; production deployment not authorized**
+Status: **deployed and verified**
 Date: 2026-08-09
 
 ## Objective
@@ -51,10 +51,11 @@ runtime installation was performed to conceal this environment limitation.
 
 ## Production state
 
-The currently active Railway deployment remains commit
-`96b08f8ca279b2c67ee208b744cf599965d317fd`. It does **not** contain these local
-R0 changes. No code was pushed and no deployment, variable, domain, database, or
-service setting was changed in R0 implementation work.
+Railway deployment `6b6e67f0-0b06-4332-a51e-0d9ed156bd75` is active from
+commit `0b65ede50f41b366b0f71659f5dd24262cc2a997`. Health returned `200` JSON, the
+bootstrap status path returned the frontend fallback instead of bootstrap JSON,
+and the unauthenticated data-engine webhook returned `401`. No variable, domain,
+database, Supabase, Clerk, Stripe, or secret setting changed during promotion.
 
 ## Rollback
 
@@ -65,14 +66,11 @@ that deployment. Do not roll back by weakening production safety variables.
 
 ## Completion gate
 
-R0 is complete only after:
+R0 production containment is complete. Broader release readiness still requires:
 
-- verification passes on the repository-supported Node range;
-- the diff is reviewed and committed;
-- an explicit push/deployment approval is given;
-- the new Railway deployment links to the reviewed commit;
-- production startup succeeds with safe configuration;
-- fixture, bootstrap/reset, and auto-apply paths are verified absent;
-- rollback to the recorded previous deployment is demonstrably available.
-
-Until then, this milestone remains at the deployment approval boundary.
+- verification on the repository-supported Node range;
+- marked disposable-staging smoke evidence;
+- fixture, bootstrap/reset, and auto-apply regression coverage to remain green;
+- the previous deployment to remain available until the containment release is
+  superseded by another verified artifact; and
+- all later gates to retain the fail-closed production policy.
