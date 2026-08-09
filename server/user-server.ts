@@ -60,15 +60,18 @@ import { registerUiAuditFixtures } from './fixtures/uiAuditFixtures';
 import { apiErrorHandler } from './middleware/errorHandler';
 import { shouldRegisterBootstrapRoutes } from './config/productionSafety';
 import { apiNotFoundHandler } from './middleware/apiNotFound';
+import { configureHttpSecurity, registerJsonBodyParsers } from './middleware/httpSecurity';
 
 async function startUserServer() {
     const app = express();
     const fixtureMode = env.UI_AUDIT_FIXTURES === '1';
 
+    configureHttpSecurity(app, env.NODE_ENV);
+
     // Register Stripe webhook BEFORE global JSON middleware
     registerStripeWebhook(app);
 
-    app.use(express.json({ limit: '50mb' }));
+    registerJsonBodyParsers(app);
 
     registerUiAuditFixtures(app);
 

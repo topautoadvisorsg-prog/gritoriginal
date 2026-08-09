@@ -1,6 +1,6 @@
 # R1-A Logging and API Boundary
 
-Status: local candidate verified; production promotion not yet approved
+Status: deployed and production-verified
 
 Date: 2026-08-09
 
@@ -33,6 +33,21 @@ or business-route behavior.
 | ESLint | Zero errors; 15 pre-existing Fast Refresh warnings |
 | Production build | Pass; 3,931 modules |
 | Diff integrity | `git diff --check` pass |
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `0ff99330cc1f801a9232447af2d56b21df9f8da0` |
+| Railway deployment | `ed76ca30-b305-4e57-ad64-a4ac2bbf8c5b` |
+| GitHub deployment status | Success, 2026-08-09 15:33:36 UTC |
+| `GET /api/health` | `200` JSON |
+| `GET /api/setup/status` | `404` JSON |
+| Unknown `/api/*` path | `404` JSON |
+| Unauthenticated data-engine webhook | `401` JSON |
+
+Local `HEAD`, `origin/main`, and the Railway deployment source were reconciled
+to the reviewed commit before the production probes were accepted.
 
 ## Boundaries and remaining work
 

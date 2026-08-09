@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import './config/env';
+import { env } from './config/env';
 import './types/express';
 import express from "express";
 import { clerkMiddleware } from "./auth/clerk";
@@ -8,11 +8,14 @@ import { registerAdminApi } from './admin/registerAdminApi';
 import heartbeatRouter from "./system/heartbeat";
 import { logger } from "./utils/logger";
 import { apiErrorHandler } from './middleware/errorHandler';
+import { configureHttpSecurity, registerJsonBodyParsers } from './middleware/httpSecurity';
 
 async function startAdminServer() {
     const app = express();
 
-    app.use(express.json({ limit: '50mb' }));
+    configureHttpSecurity(app, env.NODE_ENV);
+
+    registerJsonBodyParsers(app);
 
     // Shared Auth (Clerk)
     app.use(clerkMiddleware);

@@ -8,8 +8,10 @@ Exact non-secret project, environment, service, deployment, repository, branch,
 commit, and domain identities are recorded in
 [`RELEASE_PROVENANCE.md`](RELEASE_PROVENANCE.md). R0 containment status is in
 [`R0_CHANGE_CONTROL_AND_CONTAINMENT.md`](R0_CHANGE_CONTROL_AND_CONTAINMENT.md).
-The current logging/API boundary candidate is documented in
-[`R1A_LOGGING_AND_API_BOUNDARY.md`](R1A_LOGGING_AND_API_BOUNDARY.md).
+The deployed logging/API boundary slice is documented in
+[`R1A_LOGGING_AND_API_BOUNDARY.md`](R1A_LOGGING_AND_API_BOUNDARY.md). The local
+HTTP-security and request-budget candidate is documented in
+[`R1B_HTTP_SECURITY_AND_REQUEST_BUDGETS.md`](R1B_HTTP_SECURITY_AND_REQUEST_BUDGETS.md).
 
 ## Build and start
 
@@ -62,7 +64,9 @@ keys, and rejects fixture, bootstrap-route, and retired auto-apply flags.
 - Uploads use local filesystem paths and are not durable across replicas/redeploys.
 - Database pool defaults to 50 per process unless overridden.
 - Main JS bundle is about 3.43 MB uncompressed and 766 KB gzip.
-- Dependency audit reports 2 critical, 6 high, and 28 moderate advisories.
+- The latest install-time dependency audit reports 1 critical, 20 high, 16
+  moderate, and 1 low advisory. These are tracked separately; no automatic
+  dependency rewrite is authorized.
 
 ## Safe release workflow
 
