@@ -2,7 +2,9 @@
  * Outbound Sync Service
  *
  * Pushes data from the main app to the data engine's Supabase instance.
- * Credentials are stored in data_engine_config (UI-driven, never hard-coded).
+ * Credentials prefer deployment-managed environment variables. A legacy
+ * database read fallback remains temporarily for migration compatibility;
+ * new secret database writes are rejected.
  *
  * Triggered after admin approves & applies a pipeline entry, and when
  * admin directly edits a fighter, event, or news article.

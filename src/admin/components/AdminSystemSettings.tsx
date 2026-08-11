@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/components/ui/card';
 import { Label } from '@/shared/components/ui/label';
 import { Button } from '@/shared/components/ui/button';
@@ -25,7 +25,7 @@ export const AdminSystemSettings = () => {
                 <ApiKeysConfigSection />
                 <div className="pt-4 border-t">
                     <p className="text-xs text-muted-foreground italic">
-                        Secret values are write-only in the browser. Existing keys are reported only as configured.
+                        Secrets are managed in the deployment environment. This page reports configuration status only.
                     </p>
                 </div>
             </CardContent>
@@ -51,29 +51,10 @@ async function fetchPipelineConfig(key: string) {
 }
 
 const DataEngineConfigSection = () => {
-    const { toast } = useToast();
-    const queryClient = useQueryClient();
-    const [apiKey, setApiKey] = useState('');
-    const [isSaving, setIsSaving] = useState(false);
-
     const { data: config, isLoading } = useQuery({
         queryKey: ['/api/admin/pipeline/config/DATA_ENGINE_API_KEY'],
         queryFn: () => fetchPipelineConfig('DATA_ENGINE_API_KEY'),
     });
-
-    const saveKey = async () => {
-        setIsSaving(true);
-        try {
-            await savePipelineConfig('DATA_ENGINE_API_KEY', apiKey, 'Primary API key for external data engine (Server 1)');
-            toast({ title: 'Data Engine Updated', description: 'API Key saved. Server 1 can now push data.' });
-            setApiKey('');
-            queryClient.invalidateQueries({ queryKey: ['/api/admin/pipeline/config/DATA_ENGINE_API_KEY'] });
-        } catch {
-            toast({ title: 'Error', description: 'Failed to save API key.', variant: 'destructive' });
-        } finally {
-            setIsSaving(false);
-        }
-    };
 
     return (
         <div className="space-y-4 pt-6 border-t">
@@ -91,26 +72,12 @@ const DataEngineConfigSection = () => {
                 {/* API Key */}
                 <div className="space-y-2">
                     <Label htmlFor="api_key">Webhook API Key (x-data-engine-api-key)</Label>
-                    <div className="flex gap-2">
-                        <Input
-                            id="api_key"
-                            type="password"
-                            placeholder={isLoading ? 'Loading...' : 'Enter secure API key...'}
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
-                        />
-                        <Button
-                            onClick={saveKey}
-                            disabled={!apiKey || isSaving}
-                            className="bg-primary hover:bg-primary/90 shrink-0"
-                        >
-                            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4 mr-1" />}
-                            Save
-                        </Button>
-                    </div>
+                    <p className="text-xs text-muted-foreground">
+                        Managed as <code>DATA_ENGINE_API_KEY</code> in the deployment environment.
+                    </p>
                     <p className="text-xs text-muted-foreground">
                         Status:{' '}
-                        {config?.configured || config?.value
+                        {!isLoading && (config?.configured || config?.value)
                             ? <span className="text-green-500 font-bold">CONFIGURED</span>
                             : <span className="text-amber-500 font-bold">NOT SET</span>}
                     </p>
@@ -139,6 +106,7 @@ interface SupabaseField {
     key: string;
     placeholder: string;
     hint: string;
+    secret: boolean;
 }
 
 const SUPABASE_FIELDS: SupabaseField[] = [
@@ -148,6 +116,7 @@ const SUPABASE_FIELDS: SupabaseField[] = [
         key: 'SUPABASE_URL',
         placeholder: 'https://xxxxxxxxxxx.supabase.co',
         hint: 'Found in Supabase → Project Settings → API',
+        secret: false,
     },
     {
         id: 'supabase_api_key',
@@ -155,6 +124,7 @@ const SUPABASE_FIELDS: SupabaseField[] = [
         key: 'SUPABASE_API_KEY',
         placeholder: 'sb_secret_...',
         hint: 'Service role key — grants full write access. Keep secret.',
+        secret: true,
     },
     {
         id: 'supabase_anon_key',
@@ -162,6 +132,7 @@ const SUPABASE_FIELDS: SupabaseField[] = [
         key: 'SUPABASE_ANON_KEY',
         placeholder: 'eyJ...',
         hint: 'Public anon key for read-only operations.',
+        secret: true,
     },
 ];
 
@@ -181,6 +152,7 @@ const SupabaseConfigSection = () => {
     };
 
     const handleSave = async (field: SupabaseField) => {
+        if (field.secret) return;
         const val = values[field.key];
         if (!val) return;
         setSaving((s) => ({ ...s, [field.key]: true }));
@@ -214,24 +186,29 @@ const SupabaseConfigSection = () => {
                     return (
                         <div key={field.key} className="space-y-2">
                             <Label htmlFor={field.id}>{field.label}</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    id={field.id}
-                                    type="password"
-                                    placeholder={q.isLoading ? 'Loading...' : field.placeholder}
-                                    value={values[field.key] ?? ''}
-                                    onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-                                />
-                                <Button
-                                    onClick={() => handleSave(field)}
-                                    disabled={!values[field.key] || saving[field.key]}
-                                    className="bg-primary hover:bg-primary/90 shrink-0"
-                                >
-                                    {saving[field.key]
-                                        ? <Loader2 className="h-4 w-4 animate-spin" />
-                                        : <><Save className="h-4 w-4 mr-1" />Save</>}
-                                </Button>
-                            </div>
+                            {field.secret ? (
+                                <p className="text-xs text-muted-foreground">
+                                    Managed in the deployment environment; database writes are disabled.
+                                </p>
+                            ) : (
+                                <div className="flex gap-2">
+                                    <Input
+                                        id={field.id}
+                                        placeholder={q.isLoading ? 'Loading...' : field.placeholder}
+                                        value={values[field.key] ?? ''}
+                                        onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
+                                    />
+                                    <Button
+                                        onClick={() => handleSave(field)}
+                                        disabled={!values[field.key] || saving[field.key]}
+                                        className="bg-primary hover:bg-primary/90 shrink-0"
+                                    >
+                                        {saving[field.key]
+                                            ? <Loader2 className="h-4 w-4 animate-spin" />
+                                            : <><Save className="h-4 w-4 mr-1" />Save</>}
+                                    </Button>
+                                </div>
+                            )}
                             <p className="text-xs text-muted-foreground">
                                 {field.hint} &nbsp;|&nbsp; Status:{' '}
                                 {isConfigured
@@ -250,7 +227,6 @@ interface ApiKeyField {
     id: string;
     label: string;
     key: string;
-    placeholder: string;
     hint: string;
 }
 
@@ -259,30 +235,23 @@ const API_KEY_FIELDS: ApiKeyField[] = [
         id: 'anthropic_api_key',
         label: 'Anthropic (Claude) API Key',
         key: 'ANTHROPIC_API_KEY',
-        placeholder: 'sk-ant-...',
         hint: 'Used for AI fight analysis and chat features.',
     },
     {
         id: 'brave_search_api_key',
         label: 'Brave Search API Key',
         key: 'BRAVE_SEARCH_API_KEY',
-        placeholder: 'BSA...',
         hint: 'Used for live MMA news and fighter search queries.',
     },
     {
         id: 'nano_banana_api_key',
         label: 'Nano Banana API Key',
         key: 'NANO_BANANA_API_KEY',
-        placeholder: 'nb_...',
         hint: 'Used for data enrichment and fight analytics pipeline.',
     },
 ];
 
 const ApiKeysConfigSection = () => {
-    const { toast } = useToast();
-    const [values, setValues] = useState<Record<string, string>>({});
-    const [saving, setSaving] = useState<Record<string, boolean>>({});
-
     const anthropicQ = useQuery({ queryKey: ['/api/admin/pipeline/config/ANTHROPIC_API_KEY'], queryFn: () => fetchPipelineConfig('ANTHROPIC_API_KEY') });
     const braveQ = useQuery({ queryKey: ['/api/admin/pipeline/config/BRAVE_SEARCH_API_KEY'], queryFn: () => fetchPipelineConfig('BRAVE_SEARCH_API_KEY') });
     const nanoBananaQ = useQuery({ queryKey: ['/api/admin/pipeline/config/NANO_BANANA_API_KEY'], queryFn: () => fetchPipelineConfig('NANO_BANANA_API_KEY') });
@@ -293,21 +262,6 @@ const ApiKeysConfigSection = () => {
         NANO_BANANA_API_KEY: nanoBananaQ,
     };
 
-    const handleSave = async (field: ApiKeyField) => {
-        const val = values[field.key];
-        if (!val) return;
-        setSaving((s) => ({ ...s, [field.key]: true }));
-        try {
-            await savePipelineConfig(field.key, val, field.label);
-            toast({ title: 'Saved', description: `${field.label} updated.` });
-            setValues((v) => ({ ...v, [field.key]: '' }));
-        } catch {
-            toast({ title: 'Error', description: `Failed to save ${field.label}.`, variant: 'destructive' });
-        } finally {
-            setSaving((s) => ({ ...s, [field.key]: false }));
-        }
-    };
-
     return (
         <div className="space-y-4 pt-6 border-t">
             <div className="space-y-1">
@@ -316,7 +270,7 @@ const ApiKeysConfigSection = () => {
                     External API Keys
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                    API keys for AI and data enrichment services used by GRIT. Stored securely — never exposed in responses.
+                    API keys for AI and enrichment services are managed through the deployment environment.
                 </p>
             </div>
 
@@ -327,24 +281,9 @@ const ApiKeysConfigSection = () => {
                     return (
                         <div key={field.key} className="space-y-2">
                             <Label htmlFor={field.id}>{field.label}</Label>
-                            <div className="flex gap-2">
-                                <Input
-                                    id={field.id}
-                                    type="password"
-                                    placeholder={q.isLoading ? 'Loading...' : field.placeholder}
-                                    value={values[field.key] ?? ''}
-                                    onChange={(e) => setValues((v) => ({ ...v, [field.key]: e.target.value }))}
-                                />
-                                <Button
-                                    onClick={() => handleSave(field)}
-                                    disabled={!values[field.key] || saving[field.key]}
-                                    className="bg-primary hover:bg-primary/90 shrink-0"
-                                >
-                                    {saving[field.key]
-                                        ? <Loader2 className="h-4 w-4 animate-spin" />
-                                        : <><Save className="h-4 w-4 mr-1" />Save</>}
-                                </Button>
-                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Managed as <code>{field.key}</code>; database writes are disabled.
+                            </p>
                             <p className="text-xs text-muted-foreground">
                                 {field.hint} &nbsp;|&nbsp; Status:{' '}
                                 {isConfigured

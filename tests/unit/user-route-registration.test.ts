@@ -90,6 +90,9 @@ describe("user route registration", () => {
     expect(isSensitivePipelineConfigKey("SUPABASE_URL")).toBe(false);
     expect(isSensitivePipelineConfigKey("DATA_ENGINE_AUTO_APPLY")).toBe(false);
     expect(isForbiddenPipelineConfigKey("DATA_ENGINE_AUTO_APPLY")).toBe(true);
+    expect(isForbiddenPipelineConfigKey("DATA_ENGINE_API_KEY")).toBe(true);
+    expect(isForbiddenPipelineConfigKey("SUPABASE_API_KEY")).toBe(true);
+    expect(isForbiddenPipelineConfigKey("SUPABASE_ANON_KEY")).toBe(true);
     expect(isForbiddenPipelineConfigKey("SUPABASE_URL")).toBe(false);
     expect(serializePipelineConfigValue("ANTHROPIC_API_KEY", "do-not-leak"))
       .toEqual({ key: "ANTHROPIC_API_KEY", value: "", configured: true });

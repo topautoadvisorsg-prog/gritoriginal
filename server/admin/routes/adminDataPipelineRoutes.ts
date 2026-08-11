@@ -1,20 +1,16 @@
 import type { Express, Request, Response } from "express";
 import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { logger } from '../../utils/logger';
-
-export function isSensitivePipelineConfigKey(key: string): boolean {
-  return /(API_KEY|SECRET|TOKEN|PASSWORD)$/i.test(key);
-}
-
-export function isForbiddenPipelineConfigKey(key: string): boolean {
-  return key === 'DATA_ENGINE_AUTO_APPLY';
-}
-
-export function serializePipelineConfigValue(key: string, value: string) {
-  return isSensitivePipelineConfigKey(key)
-    ? { key, value: '', configured: true }
-    : { key, value, configured: true };
-}
+import {
+  isForbiddenPipelineConfigKey,
+  isSensitivePipelineConfigKey,
+  serializePipelineConfigValue,
+} from '../../config/pipelineConfigPolicy';
+export {
+  isForbiddenPipelineConfigKey,
+  isSensitivePipelineConfigKey,
+  serializePipelineConfigValue,
+} from '../../config/pipelineConfigPolicy';
 import * as dataEngineService from '../../services/dataEngineService';
 import { db } from '../../db';
 import { dataPipeline, fighters, events, eventFights } from '../../../shared/schema';
@@ -246,7 +242,9 @@ export function registerAdminDataPipelineRoutes(app: Express) {
 
       if (isForbiddenPipelineConfigKey(key)) {
         return res.status(409).json({
-          error: 'Review-before-write is mandatory; auto-apply cannot be enabled',
+          error: isSensitivePipelineConfigKey(key)
+            ? 'Secret configuration is managed through the deployment environment'
+            : 'Review-before-write is mandatory; auto-apply cannot be enabled',
         });
       }
 

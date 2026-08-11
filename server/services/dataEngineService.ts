@@ -4,6 +4,11 @@ import { eq, desc, and, sql, lt, lte } from "drizzle-orm";
 import { logger } from '../utils/logger';
 import { v4 as uuidv4 } from "uuid";
 import {
+  assertDatabaseConfigWriteAllowed,
+  getPipelineSecretFromEnv,
+  isSensitivePipelineConfigKey,
+} from '../config/pipelineConfigPolicy';
+import {
   syncFighterToSupabase,
   syncEventToSupabase,
   syncFightHistoryToSupabase,
@@ -593,19 +598,27 @@ async function applyOddsData(tx: DbTransaction, entry: PipelineEntry): Promise<v
  * Get data engine configuration value.
  */
 export async function getDataEngineConfig(key: string): Promise<string | null> {
+  const environmentSecret = getPipelineSecretFromEnv(key);
+  if (environmentSecret) return environmentSecret;
+
   try {
     const [config] = await db.select()
       .from(dataEngineConfig)
       .where(eq(dataEngineConfig.configKey, key));
 
-    if (config?.configValue) return config.configValue;
+    if (config?.configValue) {
+      if (isSensitivePipelineConfigKey(key)) {
+        logger.warn('[Data Engine Config] Using legacy database secret fallback', { key });
+      }
+      return config.configValue;
+    }
 
-    // Fall back to environment variable if DB has no value set
+    // Non-secret settings retain their environment fallback.
     const envVal = process.env[key];
     return envVal || null;
   } catch (error) {
     logger.error('[Data Engine Config] Error fetching config:', error);
-    // Still try env var on DB error
+    // Secret environment values returned above never depend on database health.
     return process.env[key] || null;
   }
 }
@@ -672,9 +685,13 @@ export async function retryFailedEntries(): Promise<{ attempted: number; succeed
  */
 export async function setDataEngineConfig(key: string, value: string, description?: string, adminUserId?: string): Promise<void> {
   try {
-    const existing = await getDataEngineConfig(key);
+    assertDatabaseConfigWriteAllowed(key);
+
+    const [existing] = await db.select({ id: dataEngineConfig.id })
+      .from(dataEngineConfig)
+      .where(eq(dataEngineConfig.configKey, key));
     
-    if (existing !== null) {
+    if (existing) {
       await db.update(dataEngineConfig)
         .set({
           configValue: value,
