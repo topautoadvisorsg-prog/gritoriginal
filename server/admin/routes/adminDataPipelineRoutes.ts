@@ -16,6 +16,7 @@ import { db } from '../../db';
 import { dataPipeline, fighters, events, eventFights } from '../../../shared/schema';
 import { eq, count } from 'drizzle-orm';
 import { PipelineActionPolicyError } from '../../config/pipelineActionPolicy';
+import { PipelineDataPolicyError } from '../../config/pipelineDataPolicy';
 
 const DATA_PIPELINE_STATUSES: dataEngineService.DataPipelineStatus[] = ['pending', 'approved', 'rejected', 'applied', 'failed'];
 
@@ -28,7 +29,7 @@ function getErrorMessage(error: unknown): string {
 }
 
 function sendPipelineMutationError(res: Response, error: unknown, fallback: string): Response {
-  if (error instanceof PipelineActionPolicyError) {
+  if (error instanceof PipelineActionPolicyError || error instanceof PipelineDataPolicyError) {
     return res.status(error.statusCode).json({ error: error.message, code: error.code });
   }
   return res.status(500).json({ error: fallback });
@@ -188,7 +189,7 @@ export function registerAdminDataPipelineRoutes(app: Express) {
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error);
       logger.error("Error applying pipeline entry:", error);
-      if (error instanceof PipelineActionPolicyError) {
+      if (error instanceof PipelineActionPolicyError || error instanceof PipelineDataPolicyError) {
         return res.status(error.statusCode).json({ error: error.message, code: error.code });
       }
       res.status(500).json({ 

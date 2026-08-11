@@ -86,9 +86,8 @@ export const syncEventFightSchema = z.object({
 
 /**
  * Fight history schema — all snapshot fields (eventName, eventDate, fightType,
- * location) are optional. The DB columns are nullable so pushes succeed whether
- * or not the data engine includes them. Use "unknown"/null placeholders when
- * values are unavailable rather than omitting the field entirely.
+ * location) are optional. Leave unavailable optional values omitted or null;
+ * required values must fail review rather than be fabricated.
  */
 export const syncFightHistorySchema = z.object({
   fighterId: z.string().uuid(),

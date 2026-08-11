@@ -16,6 +16,10 @@ import {
   pipelineStateConflict,
   PipelineActionPolicyError,
 } from '../config/pipelineActionPolicy';
+import {
+  assertFighterImageContract,
+  PipelineDataPolicyError,
+} from '../config/pipelineDataPolicy';
 
 export type DataPipelineStatus = 'pending' | 'approved' | 'rejected' | 'applied' | 'failed';
 export type SourceType = 'fighter' | 'fight' | 'news' | 'odds' | 'event';
@@ -236,6 +240,7 @@ export async function approveEntry(entryId: string, adminUserId: string): Promis
       sourceType: dataPipeline.sourceType,
       actionType: dataPipeline.actionType,
       sourceId: dataPipeline.sourceId,
+      data: dataPipeline.data,
     })
       .from(dataPipeline)
       .where(eq(dataPipeline.id, entryId));
@@ -246,6 +251,9 @@ export async function approveEntry(entryId: string, adminUserId: string): Promis
       entry.actionType as ActionType,
       entry.sourceId,
     );
+    if (entry.sourceType === 'fighter') {
+      assertFighterImageContract(entry.actionType as ActionType, asRecord(entry.data));
+    }
 
     const approved = await db.update(dataPipeline)
       .set({
@@ -263,7 +271,9 @@ export async function approveEntry(entryId: string, adminUserId: string): Promis
     logger.info(`[Data Pipeline] Entry ${entryId} approved by admin ${adminUserId}`);
   } catch (error) {
     logger.error('[Data Pipeline] Error approving entry:', error);
-    if (error instanceof PipelineActionPolicyError) throw error;
+    if (error instanceof PipelineActionPolicyError || error instanceof PipelineDataPolicyError) {
+      throw error;
+    }
     throw new Error('Failed to approve entry');
   }
 }
@@ -315,6 +325,9 @@ export async function applyEntry(entryId: string): Promise<void> {
         entry.actionType as ActionType,
         entry.sourceId,
       );
+      if (entry.sourceType === 'fighter') {
+        assertFighterImageContract(entry.actionType as ActionType, asRecord(entry.data));
+      }
 
       // Apply based on source type and action; capture resolved IDs where needed
       let resolvedId: string | undefined;
@@ -492,10 +505,6 @@ function normalizeFighterData(data: unknown): FighterPipelineData {
   if (out.dateOfBirth && typeof out.dateOfBirth === 'string') {
     const d = new Date(out.dateOfBirth);
     out.dateOfBirth = isNaN(d.getTime()) ? undefined : d;
-  }
-  // image_url is NOT NULL in DB — default to empty string if omitted
-  if (!out.imageUrl) {
-    out.imageUrl = '';
   }
   return out;
 }
