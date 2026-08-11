@@ -1,6 +1,6 @@
 # R1-E Avatar Confirmation
 
-Status: local candidate; not deployed
+Status: deployed and production-verified
 
 Date: 2026-08-10
 
@@ -51,6 +51,26 @@ provider setting, bucket policy, secret, grant, or production data operation.
 
 Revert only the R1-E application commit. Do not restore arbitrary confirmation
 paths or client-controlled database URLs as a compatibility workaround.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `c0a741ef00b5feb720c8f06be5458aa91272c3d3` |
+| Railway deployment | `7d19679b-3ea0-400c-98e6-73ce2316c57d` |
+| GitHub deployment status | Success, 2026-08-11 05:35:14 UTC |
+| `GET /api/health` | `200` JSON |
+| Avatar presign without authentication | `401` JSON |
+| Avatar confirmation without authentication | `401` JSON |
+| Fighter presign without authentication | `401` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unknown API path | `404` JSON |
+| Oversized ordinary JSON | `413` JSON |
+| R1-B header contract | Preserved |
+
+The production probes used no application credential and therefore created no
+upload URL, object, user update, or database row. Owned-key, byte, signature,
+and canonical-URL behavior is established by reviewed source and contract tests.
 
 ## Stop conditions
 

@@ -20,6 +20,8 @@ The local owned-key and bounded fighter-image validation candidate is documented
 in [`R1D_FIGHTER_IMAGE_VALIDATION.md`](R1D_FIGHTER_IMAGE_VALIDATION.md).
 The local authenticated avatar confirmation candidate is documented in
 [`R1E_AVATAR_CONFIRMATION.md`](R1E_AVATAR_CONFIRMATION.md).
+The local bounded R2 event-image candidate is documented in
+[`R1F_EVENT_IMAGE_STORAGE.md`](R1F_EVENT_IMAGE_STORAGE.md).
 
 ## Build and start
 

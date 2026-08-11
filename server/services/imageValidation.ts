@@ -33,3 +33,17 @@ export function detectSupportedImageType(buffer: Buffer): SupportedImageContentT
 
   return null;
 }
+
+/** Confirm that allowlisted image bytes are structurally readable. */
+export function hasReadableImageDimensions(buffer: Buffer): boolean {
+  try {
+    const dimensions = sizeOf(buffer);
+    return Number.isSafeInteger(dimensions.width)
+      && Number.isSafeInteger(dimensions.height)
+      && dimensions.width > 0
+      && dimensions.height > 0;
+  } catch {
+    return false;
+  }
+}
+import sizeOf from 'image-size';

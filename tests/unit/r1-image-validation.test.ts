@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   detectSupportedImageType,
+  hasReadableImageDimensions,
   isSupportedImageContentType,
 } from '../../server/services/imageValidation';
 import {
@@ -27,6 +28,10 @@ describe('R1 owned image validation', () => {
     expect(detectSupportedImageType(Buffer.from('RIFFxxxxWEBP', 'ascii'))).toBe('image/webp');
     expect(detectSupportedImageType(Buffer.from('icnsxxxx', 'ascii'))).toBeNull();
     expect(detectSupportedImageType(Buffer.from('ftypheic', 'ascii'))).toBeNull();
+  });
+
+  it('rejects a supported signature when the image structure is unreadable', () => {
+    expect(hasReadableImageDimensions(Buffer.from([0xff, 0xd8, 0xff, 0x00]))).toBe(false);
   });
 
   it('collects an object only within the explicit byte budget', async () => {

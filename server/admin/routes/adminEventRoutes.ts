@@ -11,15 +11,11 @@ import { allowedEventStatusTransitions, canTransitionEventStatus } from '../../.
 import { archiveEventFightCaches } from '../../ai/fightQaCache';
 import { closeEventWithSnapshot, EventCloseError, getEventCloseStatus } from '../../services/eventCloseService';
 import { runEventProgression } from '../../services/progressionService';
-import fs from 'fs';
-import path from 'path';
 import multer from 'multer';
+import { StorageService } from '../../services/storageService';
+import { detectSupportedImageType, hasReadableImageDimensions } from '../../services/imageValidation';
 
-const EVENTS_UPLOAD_DIR = path.join(process.cwd(), 'uploads', 'events');
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Unknown error';
-}
+const MAX_EVENT_IMAGE_BYTES = 5 * 1024 * 1024;
 
 function isCardPlacement(value: unknown): value is CardPlacement {
   return typeof value === 'string' && CARD_PLACEMENTS.includes(value as CardPlacement);
@@ -37,24 +33,13 @@ interface EventFightInput {
 }
 
 const eventImageUpload = multer({
-  storage: multer.diskStorage({
-    destination: (_req, _file, cb) => {
-      if (!fs.existsSync(EVENTS_UPLOAD_DIR)) {
-        fs.mkdirSync(EVENTS_UPLOAD_DIR, { recursive: true });
-      }
-      cb(null, EVENTS_UPLOAD_DIR);
-    },
-    filename: (_req, file, cb) => {
-      const ext = path.extname(file.originalname).toLowerCase();
-      cb(null, `${uuidv4()}${ext}`);
-    },
-  }),
-  limits: { fileSize: 5 * 1024 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_EVENT_IMAGE_BYTES },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
       cb(null, true);
     } else {
-      cb(new Error('Only JPG and PNG files are allowed'));
+      cb(new Error('INVALID_FILE_TYPE'));
     }
   },
 });
@@ -62,18 +47,47 @@ const eventImageUpload = multer({
 export function registerAdminEventRoutes(app: Express) {
 
   app.post("/api/admin/events/upload-image", isAuthenticated, requireAdmin,
-    eventImageUpload.single('image'),
     (req: Request, res: Response) => {
-      try {
-        if (!req.file) {
-          return res.status(400).json({ error: 'No file uploaded' });
+      eventImageUpload.single('image')(req, res, async (uploadError) => {
+        if (uploadError) {
+          if (uploadError.message === 'INVALID_FILE_TYPE') {
+            return res.status(400).json({ error: 'Only JPG and PNG files are allowed' });
+          }
+          if (uploadError.code === 'LIMIT_FILE_SIZE') {
+            return res.status(413).json({ error: 'File too large (max 5MB)' });
+          }
+          logger.error('Event image multipart error:', uploadError);
+          return res.status(500).json({ error: 'Upload failed' });
         }
-        const url = `/objects/events/${req.file.filename}`;
-        res.json({ url });
-      } catch (error: unknown) {
-        logger.error('Event image upload error:', error);
-        res.status(400).json({ error: getErrorMessage(error) || 'Upload failed' });
-      }
+
+        try {
+          if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+          }
+
+          const detectedType = detectSupportedImageType(req.file.buffer);
+          if ((detectedType !== 'image/jpeg' && detectedType !== 'image/png')
+            || detectedType !== req.file.mimetype
+            || !hasReadableImageDimensions(req.file.buffer)) {
+            return res.status(422).json({ error: 'Image bytes are invalid or do not match the content type' });
+          }
+
+          const extension = detectedType === 'image/jpeg' ? 'jpg' : 'png';
+          const objectPath = `events/${uuidv4()}.${extension}`;
+          const objectStorageService = new StorageService();
+          await objectStorageService.putObject(
+            objectPath,
+            req.file.buffer,
+            detectedType,
+            MAX_EVENT_IMAGE_BYTES,
+          );
+          const url = objectStorageService.getPublicUrl(objectPath);
+          res.json({ url });
+        } catch (error: unknown) {
+          logger.error('Event image upload error:', error);
+          res.status(500).json({ error: 'Upload failed' });
+        }
+      });
     }
   );
 

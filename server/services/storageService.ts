@@ -43,6 +43,31 @@ export class StorageService {
         return getSignedUrl(this.client, command, { expiresIn: 300 });
     }
 
+    // Uploads a server-received object only after the caller's byte budget has
+    // been enforced. Used for small multipart admin flows that do not need a
+    // browser presign round trip.
+    async putObject(
+        objectPath: string,
+        body: Buffer,
+        contentType: string,
+        maxBytes: number,
+    ): Promise<void> {
+        assertPositiveByteLimit(maxBytes);
+        if (body.byteLength > maxBytes) {
+            throw new ObjectSizeLimitError(maxBytes);
+        }
+
+        const cleanPath = objectPath.startsWith('/') ? objectPath.slice(1) : objectPath;
+        const command = new PutObjectCommand({
+            Bucket: this.bucket,
+            Key: cleanPath,
+            Body: body,
+            ContentType: contentType,
+            ContentLength: body.byteLength,
+        });
+        await this.client.send(command);
+    }
+
     // Downloads the object's bytes (used server-side for validation, e.g.
     // checking aspect ratio, before trusting a client-reported upload).
     async getObjectBuffer(objectPath: string, maxBytes: number): Promise<Buffer> {
@@ -77,9 +102,7 @@ export async function collectBodyWithLimit(
     body: AsyncIterable<Uint8Array>,
     maxBytes: number,
 ): Promise<Buffer> {
-    if (!Number.isSafeInteger(maxBytes) || maxBytes <= 0) {
-        throw new TypeError('maxBytes must be a positive safe integer');
-    }
+    assertPositiveByteLimit(maxBytes);
 
     const chunks: Uint8Array[] = [];
     let totalBytes = 0;
@@ -91,4 +114,10 @@ export async function collectBodyWithLimit(
         chunks.push(chunk);
     }
     return Buffer.concat(chunks, totalBytes);
+}
+
+function assertPositiveByteLimit(maxBytes: number): void {
+    if (!Number.isSafeInteger(maxBytes) || maxBytes <= 0) {
+        throw new TypeError('maxBytes must be a positive safe integer');
+    }
 }
