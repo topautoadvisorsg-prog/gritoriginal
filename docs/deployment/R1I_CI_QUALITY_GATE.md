@@ -20,6 +20,8 @@ mandatory and reproducible on every pull request and update to `main`.
 - Add canonical `typecheck` and single-worker `test:ci` package scripts.
 - Run TypeScript, all tests, ESLint, and the production build without production
   credentials or database connectivity.
+- Force every Vitest worker to use a loopback port with no listener and a
+  test-only session value before dotenv can load developer credentials.
 
 ## Safety boundary
 
@@ -35,7 +37,7 @@ It cannot change Railway, Supabase, Clerk, Stripe, R2, or production data.
 | Clean install (Node 22.13.0 / npm 10.8.2) | Pass; 1,365 packages installed from the lockfile |
 | Focused CI and type-contract tests | 2 files, 7 tests passed |
 | Repository TypeScript (`npm run typecheck`) | Pass |
-| Complete CI suite (`npm run test:ci`) | 43 files, 252 tests passed |
+| Complete CI suite (`npm run test:ci`) | 43 files, 253 tests passed with external DB credentials removed |
 | ESLint | Zero errors; 15 pre-existing Fast Refresh warnings |
 | Production build | Pass; 3,931 modules |
 
@@ -51,6 +53,12 @@ lockfile did not fully represent the dependency graph on a clean Linux runner.
 R1-I keeps the clean-install gate strict. The repair aligns the declared and CI
 runtime at Node 22.13 and regenerates the lockfile; it does not replace
 `npm ci`, suppress engine checks, or use a permissive install mode.
+
+The next hosted run passed clean installation and TypeScript, then exposed that
+unit tests had been relying on developer `.env` values to satisfy import-time
+validation. The test runner now overrides those two required values with inert,
+non-secret test configuration. A test that unexpectedly reaches PostgreSQL
+will fail against loopback port 1 instead of reaching any external database.
 
 ## Rollback
 

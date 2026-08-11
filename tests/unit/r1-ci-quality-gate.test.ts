@@ -9,6 +9,10 @@ const packageJson = JSON.parse(readFileSync(
   new URL('../../package.json', import.meta.url),
   'utf8',
 )) as { engines: { node: string }; scripts: Record<string, string> };
+const testEnvironment = readFileSync(
+  new URL('../setup/test-environment.ts', import.meta.url),
+  'utf8',
+);
 
 describe('R1 CI quality gate', () => {
   it('runs for pull requests and main with read-only repository permission', () => {
@@ -39,5 +43,11 @@ describe('R1 CI quality gate', () => {
   it('contains no deployment, database, or provider-secret step', () => {
     expect(workflow).not.toMatch(/DATABASE_URL|DIRECT_URL|SUPABASE|CLERK|STRIPE|R2_/);
     expect(workflow).not.toMatch(/railway|deploy|migration|db:push/i);
+  });
+
+  it('forces tests away from developer and production credentials', () => {
+    expect(testEnvironment).toContain("process.env.NODE_ENV = 'test'");
+    expect(testEnvironment).toContain('@127.0.0.1:1/grit_ci');
+    expect(testEnvironment).not.toMatch(/SUPABASE|CLERK|STRIPE|R2_/);
   });
 });
