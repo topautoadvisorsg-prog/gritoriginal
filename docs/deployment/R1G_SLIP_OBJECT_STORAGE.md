@@ -1,6 +1,6 @@
 # R1-G Slip Image Object Storage
 
-Status: local candidate; not deployed
+Status: deployed and production-verified
 
 Date: 2026-08-10
 
@@ -65,6 +65,26 @@ existing testing/CI debt finding and was not silently mixed into R1-G.
 Revert only the R1-G application commit. Newly written R2 objects remain inert
 for explicit review; do not restore ephemeral local writes as a compatibility
 fix. Existing legacy paths remain untouched.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `ff16f832ccb027dc73c3d07fd6b16437d6bbcdfd` |
+| Railway deployment | `3a5686f3-a073-4fe9-93f3-cf21f6694b88` |
+| GitHub deployment status | Success, 2026-08-11 06:03:29 UTC |
+| `GET /api/health` | `200` JSON |
+| Slip upload without authentication | `401` JSON |
+| User slip delete without authentication | `401` JSON |
+| Admin slip delete without authentication | `401` JSON |
+| Event-image upload without authentication | `401` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unknown API path | `404` JSON |
+| R1-B header contract | Preserved |
+
+The production probes used no application credential and created no upload,
+object operation, slip/event change, or database row. The authenticated media
+lifecycle is established by reviewed source and contract tests.
 
 ## Stop conditions
 
