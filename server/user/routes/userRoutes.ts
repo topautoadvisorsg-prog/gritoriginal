@@ -98,7 +98,7 @@ export function registerUserRoutes(app: Express): void {
 
       const objectStorageService = new StorageService();
       const storagePath = `users/${userId}/avatar`;
-      const uploadURL = await objectStorageService.getUploadURLForPath(storagePath);
+      const uploadURL = await objectStorageService.getUploadURLForPath(storagePath, contentType);
       const objectPath = `/objects/${storagePath}`;
 
       res.json({ uploadURL, objectPath });

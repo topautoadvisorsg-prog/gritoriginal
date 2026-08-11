@@ -2,13 +2,16 @@ import type { Express, Request, Response } from "express";
 import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { storage } from '../../storage';
 import { logger } from '../../utils/logger';
-import { StorageService } from '../../services/storageService';
+import { ObjectSizeLimitError, StorageService } from '../../services/storageService';
+import { detectSupportedImageType, isSupportedImageContentType } from '../../services/imageValidation';
 import sizeOf from 'image-size';
 
 const ASPECT_RULES: Record<string, { label: string; targetRatio: number; tolerance: number }> = {
   face: { label: 'Headshot (1:1)', targetRatio: 1.0, tolerance: 0.15 },
   body: { label: 'Half-body (2:3)', targetRatio: 2 / 3, tolerance: 0.15 },
 };
+
+const MAX_FIGHTER_IMAGE_BYTES = 5 * 1024 * 1024;
 
 function checkAspectRatio(buffer: Buffer, imageType: string): { valid: boolean; message?: string } {
   try {
@@ -38,20 +41,31 @@ export function registerFighterImageRoutes(app: Express): void {
 
   app.post("/api/fighter/image/request-url", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
     try {
-      const { fighterId, imageType } = req.body;
+      const { fighterId, imageType, size, contentType } = req.body;
 
-      if (!fighterId || !['face', 'body'].includes(imageType)) {
-        return res.status(400).json({ error: "Invalid fighterId or imageType" });
+      if (typeof fighterId !== 'string'
+        || !fighterId
+        || !['face', 'body'].includes(imageType)
+        || !Number.isSafeInteger(size)
+        || size <= 0
+        || size > MAX_FIGHTER_IMAGE_BYTES
+        || !isSupportedImageContentType(contentType)) {
+        return res.status(400).json({ error: "Invalid fighter image upload metadata" });
+      }
+
+      const fighter = await storage.getFighter(fighterId);
+      if (!fighter) {
+        return res.status(404).json({ error: "Fighter not found" });
       }
 
       const objectPath = `fighters/${fighterId}/${imageType}.jpg`;
       const storageService = new StorageService();
-      const uploadURL = await storageService.getUploadURLForPath(objectPath);
+      const uploadURL = await storageService.getUploadURLForPath(objectPath, contentType);
 
       res.json({ uploadURL, objectPath });
     } catch (err) {
       logger.error("Error generating upload URL:", err);
-      res.status(500).json({ error: err instanceof Error ? err.message : "Failed to generate upload URL" });
+      res.status(500).json({ error: "Failed to generate upload URL" });
     }
   });
 
@@ -59,8 +73,18 @@ export function registerFighterImageRoutes(app: Express): void {
     try {
       const { fighterId, imageType, objectPath } = req.body;
 
-      if (!fighterId || !['face', 'body'].includes(imageType) || !objectPath) {
+      if (typeof fighterId !== 'string' || !fighterId || !['face', 'body'].includes(imageType)) {
         return res.status(400).json({ error: "Invalid parameters" });
+      }
+
+      const expectedObjectPath = `fighters/${fighterId}/${imageType}.jpg`;
+      if (objectPath !== expectedObjectPath) {
+        return res.status(400).json({ error: "Object path does not match the requested fighter image" });
+      }
+
+      const fighter = await storage.getFighter(fighterId);
+      if (!fighter) {
+        return res.status(404).json({ error: "Fighter not found" });
       }
 
       const storageService = new StorageService();
@@ -69,9 +93,16 @@ export function registerFighterImageRoutes(app: Express): void {
       // back from R2 rather than trusting the client's PUT succeeded cleanly.
       let buffer: Buffer;
       try {
-        buffer = await storageService.getObjectBuffer(objectPath);
-      } catch {
+        buffer = await storageService.getObjectBuffer(objectPath, MAX_FIGHTER_IMAGE_BYTES);
+      } catch (error) {
+        if (error instanceof ObjectSizeLimitError) {
+          return res.status(413).json({ error: "Uploaded image exceeds the 5MB limit" });
+        }
         return res.status(404).json({ error: "Uploaded file not found — upload the image before confirming" });
+      }
+
+      if (!detectSupportedImageType(buffer)) {
+        return res.status(422).json({ error: "Image rejected: unsupported file signature" });
       }
 
       const aspectCheck = checkAspectRatio(buffer, imageType);
@@ -99,7 +130,7 @@ export function registerFighterImageRoutes(app: Express): void {
       res.json({ fighterId, imageType, imageUrl: publicUrl });
     } catch (err) {
       logger.error("Error confirming image upload:", err);
-      res.status(500).json({ error: err instanceof Error ? err.message : "Failed to confirm upload" });
+      res.status(500).json({ error: "Failed to confirm upload" });
     }
   });
 }

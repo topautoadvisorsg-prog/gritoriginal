@@ -1,6 +1,6 @@
 # R1-C Legacy Upload Retirement
 
-Status: local candidate verified; production promotion not yet approved
+Status: deployed and production-verified
 
 Date: 2026-08-09
 
@@ -62,6 +62,25 @@ The verified R1-B deployment is
 found, roll back the application artifact while migrating that dependency to a
 bounded R2 contract. Do not restore an unbounded path-controlled filesystem
 writer as a permanent fix.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `70590656dab49d69d0f9710be6c76c63967464be` |
+| Railway deployment | `1518fe37-219e-456f-8d5a-526d39276d1f` |
+| GitHub deployment status | Success, 2026-08-09 17:16:46 UTC |
+| `GET /api/health` | `200` JSON |
+| Unknown API path | `404` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unauthenticated slip upload | `401` JSON |
+| Unauthenticated data-engine webhook | `401` |
+| Oversized ordinary JSON | `413` JSON |
+| R1-B header contract | Preserved |
+
+The upload retirement probe used an unauthenticated request to a nonexistent
+release-probe path and could not create data. Challenger-tier enforcement is
+covered by the source contract; no production user credential was used.
 
 ## Stop conditions
 

@@ -33,23 +33,29 @@ export class StorageService {
     }
 
     // Returns a presigned URL the frontend can PUT the file directly to R2 with.
-    async getUploadURLForPath(objectPath: string): Promise<string> {
+    async getUploadURLForPath(objectPath: string, contentType: string): Promise<string> {
         const cleanPath = objectPath.startsWith('/') ? objectPath.slice(1) : objectPath;
-        const command = new PutObjectCommand({ Bucket: this.bucket, Key: cleanPath });
+        const command = new PutObjectCommand({
+            Bucket: this.bucket,
+            Key: cleanPath,
+            ContentType: contentType,
+        });
         return getSignedUrl(this.client, command, { expiresIn: 300 });
     }
 
     // Downloads the object's bytes (used server-side for validation, e.g.
     // checking aspect ratio, before trusting a client-reported upload).
-    async getObjectBuffer(objectPath: string): Promise<Buffer> {
+    async getObjectBuffer(objectPath: string, maxBytes: number): Promise<Buffer> {
         const cleanPath = objectPath.startsWith('/') ? objectPath.slice(1) : objectPath;
         const command = new GetObjectCommand({ Bucket: this.bucket, Key: cleanPath });
         const response = await this.client.send(command);
-        const chunks: Uint8Array[] = [];
-        for await (const chunk of response.Body as AsyncIterable<Uint8Array>) {
-            chunks.push(chunk);
+        if (typeof response.ContentLength === 'number' && response.ContentLength > maxBytes) {
+            throw new ObjectSizeLimitError(maxBytes);
         }
-        return Buffer.concat(chunks);
+        if (!response.Body) {
+            throw new Error('Object response body missing');
+        }
+        return collectBodyWithLimit(response.Body as AsyncIterable<Uint8Array>, maxBytes);
     }
 
     // Public read URL for a stored object — served directly from R2, never
@@ -58,4 +64,31 @@ export class StorageService {
         const cleanPath = objectPath.startsWith('/') ? objectPath.slice(1) : objectPath;
         return `${this.publicUrl}/${cleanPath}`;
     }
+}
+
+export class ObjectSizeLimitError extends Error {
+    constructor(readonly maxBytes: number) {
+        super(`Object exceeds ${maxBytes} byte limit`);
+        this.name = 'ObjectSizeLimitError';
+    }
+}
+
+export async function collectBodyWithLimit(
+    body: AsyncIterable<Uint8Array>,
+    maxBytes: number,
+): Promise<Buffer> {
+    if (!Number.isSafeInteger(maxBytes) || maxBytes <= 0) {
+        throw new TypeError('maxBytes must be a positive safe integer');
+    }
+
+    const chunks: Uint8Array[] = [];
+    let totalBytes = 0;
+    for await (const chunk of body) {
+        totalBytes += chunk.byteLength;
+        if (totalBytes > maxBytes) {
+            throw new ObjectSizeLimitError(maxBytes);
+        }
+        chunks.push(chunk);
+    }
+    return Buffer.concat(chunks, totalBytes);
 }

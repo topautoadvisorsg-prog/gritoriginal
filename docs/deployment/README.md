@@ -16,6 +16,8 @@ The local retirement of the arbitrary filesystem upload route is documented in
 [`R1C_LEGACY_UPLOAD_RETIREMENT.md`](R1C_LEGACY_UPLOAD_RETIREMENT.md).
 The R0–R1 pre-push code and technical-debt review is recorded in
 [`R1_PREPUSH_REVIEW.md`](R1_PREPUSH_REVIEW.md).
+The local owned-key and bounded fighter-image validation candidate is documented
+in [`R1D_FIGHTER_IMAGE_VALIDATION.md`](R1D_FIGHTER_IMAGE_VALIDATION.md).
 
 ## Build and start
 
