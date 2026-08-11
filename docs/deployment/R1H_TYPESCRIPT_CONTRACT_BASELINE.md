@@ -1,6 +1,6 @@
 # R1-H TypeScript Contract Baseline
 
-Status: local candidate; not deployed
+Status: deployed and production-verified
 
 Date: 2026-08-10
 
@@ -49,3 +49,22 @@ production regression probes.
 
 Revert only the R1-H commit. R1-G object-storage behavior is independent and
 must remain intact.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `7c5e77e872f477534b830f79b9ed9636af3da6d8` |
+| Railway deployment | `341fda77-fff3-4d3b-92d5-4fd6b33debef` |
+| GitHub deployment status | Success, 2026-08-11 06:13:35 UTC |
+| Public application root | `200` HTML |
+| `GET /api/health` | `200` JSON |
+| Slip upload without authentication | `401` JSON |
+| Admin slip delete without authentication | `401` JSON |
+| Event-image upload without authentication | `401` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unknown API path | `404` JSON |
+| R1-B header contract | Preserved |
+
+The production probes used no application credential and performed no object,
+database, provider, or configuration mutation.
