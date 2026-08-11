@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { cashPayouts } from "../../shared/schema";
 import { logger } from "../utils/logger";
+import { assertRewardOperationsEnabled } from './rewardOperationsPolicy';
 
 export type MonthlyBonusCandidate = {
     userId: string;
@@ -99,6 +100,7 @@ export async function recordMonthlyBonusPayouts(
     periodStart: Date,
     periodEnd: Date
 ) {
+    assertRewardOperationsEnabled();
     if (winners.length === 0) {
         logger.info("[MonthlyBonus] No winners to record");
         return [];

@@ -5,6 +5,7 @@ import { db } from "../../db";
 import { rafflePool, raffleDraws, events, userKeys } from "../../../shared/schema";
 import { eq, desc } from "drizzle-orm";
 import * as raffleService from '../../services/raffleService';
+import { requireRewardOperationsEnabled } from '../../services/rewardOperationsPolicy';
 
 /**
  * Admin raffle management routes for the new subscription-based raffle system.
@@ -70,7 +71,8 @@ export function registerAdminRaffleRoutes(app: Express) {
   });
 
   // Manually trigger raffle draw (if not already done)
-  app.post("/api/admin/raffle/draw/:eventId", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+  app.post("/api/admin/raffle/draw/:eventId", isAuthenticated, requireAdmin,
+    requireRewardOperationsEnabled, async (req: Request, res: Response) => {
     try {
       const { eventId } = req.params;
 
@@ -105,7 +107,8 @@ export function registerAdminRaffleRoutes(app: Express) {
   });
 
   // Mark raffle draw as notified
-  app.post("/api/admin/raffle/draw/:drawId/notify", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+  app.post("/api/admin/raffle/draw/:drawId/notify", isAuthenticated, requireAdmin,
+    requireRewardOperationsEnabled, async (req: Request, res: Response) => {
     try {
       const { drawId } = req.params;
 
@@ -119,7 +122,8 @@ export function registerAdminRaffleRoutes(app: Express) {
   });
 
   // Set prize amount for a key (clean sweep bonus)
-  app.post("/api/admin/raffle/key/:keyId/prize", isAuthenticated, requireAdmin, async (req: Request, res: Response) => {
+  app.post("/api/admin/raffle/key/:keyId/prize", isAuthenticated, requireAdmin,
+    requireRewardOperationsEnabled, async (req: Request, res: Response) => {
     try {
       const { keyId } = req.params;
       const { prizeAmount } = req.body; // In cents

@@ -8,13 +8,11 @@
  *   - ROI race: qualified for 2+ events in the month
  *   - Random draw: qualified for ≥1 event in the month
  *
- * DORMANT BY DEFAULT — guarded in cronService.ts by `MONTHLY_BONUS_DRAW_ENABLED` env
- * because it writes to `cash_payouts`, which only exists after Week 2 migration applies.
+ * DORMANT — the code-owned reward policy rejects direct and scheduled execution.
+ * `MONTHLY_BONUS_DRAW_ENABLED` is only a secondary gate and cannot enable it.
  *
- * After founder approves and applies the migration:
- *   1. Add `MONTHLY_BONUS_DRAW_ENABLED=true` to `.env`
- *   2. The cron in cronService.ts step 6 will run on the next 1st-of-month tick
- *   3. Winners get a OneSignal push notification (admin pays manually via PayPal/USDC)
+ * Re-enabling requires a reviewed code change after legal, funding, schema,
+ * ledger, idempotency, reconciliation, and operator-runbook approval.
  */
 import { db } from '../db';
 import { users, userPicks, eventFights, events, leaderboardSnapshots } from '../../shared/schema';
@@ -27,6 +25,7 @@ import {
   type MonthlyBonusCandidate,
 } from './monthlyBonusService';
 import { config } from '../config/env';
+import { assertRewardOperationsEnabled } from './rewardOperationsPolicy';
 
 export interface MonthlyBonusDrawResult {
   winners: number;
@@ -41,6 +40,7 @@ export interface MonthlyBonusDrawResult {
  * winner selection + payout recording to monthlyBonusService (pure functions).
  */
 export async function runMonthlyBonusDraw(): Promise<MonthlyBonusDrawResult> {
+  assertRewardOperationsEnabled();
   const now = new Date();
   const periodStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
   const periodEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0, 23, 59, 59, 999));

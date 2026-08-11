@@ -5,6 +5,7 @@ import { logger } from '../utils/logger';
 import { config } from '../config/env';
 import { v4 as uuidv4 } from "uuid";
 import { sendNotificationToUser, broadcastNotification } from './notificationService';
+import { assertRewardOperationsEnabled } from './rewardOperationsPolicy';
 
 /**
  * Create raffle pool entries for all active subscribers when an event is finalized.
@@ -20,6 +21,7 @@ import { sendNotificationToUser, broadcastNotification } from './notificationSer
  * @param eventCloseDate  Date the event closed (used for monthsActive calculation)
  */
 export async function createRafflePoolEntries(eventId: string, eventCloseDate: Date = new Date()): Promise<void> {
+    assertRewardOperationsEnabled();
     try {
         // Get all active subscribers including their subscription start date
         const activeSubscribers = await db.select({
@@ -111,6 +113,7 @@ export async function getRafflePoolTotal(eventId: string): Promise<{ total: numb
  * Randomly selects one subscriber from the pool.
  */
 export async function drawRaffleWinner(eventId: string): Promise<{ winnerId: string; poolTotal: number; totalTickets: number } | null> {
+    assertRewardOperationsEnabled();
     try {
         // Get pool total and all entries
         const { total: poolTotal, ticketCount: totalTickets } = await getRafflePoolTotal(eventId);
@@ -182,6 +185,7 @@ export async function drawRaffleWinner(eventId: string): Promise<{ winnerId: str
  * Mark raffle draw as notified.
  */
 export async function markRaffleNotified(drawId: string): Promise<void> {
+    assertRewardOperationsEnabled();
     try {
         await db.update(raffleDraws)
             .set({ notified: true })

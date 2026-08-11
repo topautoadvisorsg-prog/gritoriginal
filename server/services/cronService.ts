@@ -8,6 +8,7 @@ import { retryFailedEntries } from './dataEngineService';
 import { expirationService } from './expirationService';
 import { logger } from '../utils/logger';
 import { deleteSlipImage } from './slipImageStorage';
+import { rewardOperationsEnabled } from './rewardOperationsPolicy';
 
 /**
  * Initialize all scheduled tasks for the system.
@@ -109,11 +110,13 @@ export function initCrons() {
 
     // 6. Monthly Bonus Draw (Blueprint §7 — $550 pool)
     // Schedule: 1st of every month at 00:05 UTC (5 min after monthly snapshot at 00:01)
-    // Gated by MONTHLY_BONUS_DRAW_ENABLED env var because it writes to cash_payouts,
-    // which only exists once the Week 2 migration is applied. Flip the env var to 'true'
-    // (or unset it after migration apply if you want it default-on) the moment migration
-    // applies and the draw will start firing on the next 1st-of-month tick.
+    // The code-owned reward policy is the first, non-configurable gate. The legacy
+    // environment flag remains a second gate, but cannot enable execution by itself.
     cron.schedule('5 0 1 * *', async () => {
+        if (!rewardOperationsEnabled()) {
+            logger.info('[Cron] Monthly bonus draw skipped — prize-bearing reward operations are disabled');
+            return;
+        }
         if (process.env.MONTHLY_BONUS_DRAW_ENABLED !== 'true') {
             logger.info('[Cron] Monthly bonus draw skipped — MONTHLY_BONUS_DRAW_ENABLED is not "true" (waiting on Week 2 migration)');
             return;
