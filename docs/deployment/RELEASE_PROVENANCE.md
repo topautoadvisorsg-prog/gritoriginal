@@ -12,13 +12,13 @@ comparison
 | Local repository | `C:\Users\jovan\Downloads\gritapp` |
 | Git remote | `https://github.com/topautoadvisorsg-prog/gritoriginal.git` |
 | Branch | `main` |
-| Current deployed commit | `c0a741ef00b5feb720c8f06be5458aa91272c3d3` |
+| Current deployed commit | `eefd9db653d1cf71da138061e75b3e1e61c787a6` |
 | Railway workspace | `topautoadvisorsg-prog's Projects` |
 | Railway project | `virtuous-freedom` / `68681fa5-aff3-426a-b48d-4b375a6092ae` |
 | Railway environment | `production` / `bb6c0026-993f-4eda-8298-785a37a120e7` |
 | Railway service | `gritoriginal` / `eb45b6c8-997b-4fad-9dda-16ba62c95969` |
-| Active deployment | `7d19679b-3ea0-400c-98e6-73ce2316c57d` |
-| Previous rollback deployment | `d2c10de6-8812-4f91-a50d-a4ef5b0f100c` |
+| Active deployment | `2af11f7b-d361-4d54-95c8-99ef495aba1e` |
+| Previous rollback deployment | `7d19679b-3ea0-400c-98e6-73ce2316c57d` |
 | Public Railway domain | `gritoriginal-production.up.railway.app` |
 | Region / replicas | `sfo` / 1 |
 | Build / start | Nixpacks; `npm install --include=dev && npm run build`; `npm start` |

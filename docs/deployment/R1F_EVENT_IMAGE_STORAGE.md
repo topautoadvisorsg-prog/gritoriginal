@@ -1,6 +1,6 @@
 # R1-F Event Image Storage
 
-Status: local candidate; not deployed
+Status: deployed and production-verified
 
 Date: 2026-08-10
 
@@ -43,6 +43,26 @@ expiry deletion paths remain a separate slice.
 Revert only the R1-F application commit. Existing R2 objects remain inert and
 can be reviewed separately; do not restore ephemeral writes as a permanent
 compatibility fix.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `eefd9db653d1cf71da138061e75b3e1e61c787a6` |
+| Railway deployment | `2af11f7b-d361-4d54-95c8-99ef495aba1e` |
+| GitHub deployment status | Success, 2026-08-11 05:49:34 UTC |
+| `GET /api/health` | `200` JSON |
+| Event-image upload without authentication | `401` JSON |
+| Avatar confirmation without authentication | `401` JSON |
+| Fighter presign without authentication | `401` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unknown API path | `404` JSON |
+| Oversized ordinary JSON | `413` JSON |
+| R1-B header contract | Preserved |
+
+The production probes used no application credential and created no upload,
+R2 object, event change, or database row. Media validation and bounded R2-write
+behavior is established by reviewed source and contract tests.
 
 ## Stop conditions
 
