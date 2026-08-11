@@ -1,4 +1,4 @@
-import { shadcn } from '@clerk/ui/themes';
+import { shadcn } from '@clerk/themes';
 
 export const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 

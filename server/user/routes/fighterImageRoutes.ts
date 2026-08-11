@@ -3,8 +3,11 @@ import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { storage } from '../../storage';
 import { logger } from '../../utils/logger';
 import { ObjectSizeLimitError, StorageService } from '../../services/storageService';
-import { detectSupportedImageType, isSupportedImageContentType } from '../../services/imageValidation';
-import sizeOf from 'image-size';
+import {
+  detectSupportedImageType,
+  isSupportedImageContentType,
+  readSupportedImageDimensions,
+} from '../../services/imageValidation';
 
 const ASPECT_RULES: Record<string, { label: string; targetRatio: number; tolerance: number }> = {
   face: { label: 'Headshot (1:1)', targetRatio: 1.0, tolerance: 0.15 },
@@ -15,8 +18,8 @@ const MAX_FIGHTER_IMAGE_BYTES = 5 * 1024 * 1024;
 
 function checkAspectRatio(buffer: Buffer, imageType: string): { valid: boolean; message?: string } {
   try {
-    const dimensions = sizeOf(buffer);
-    if (!dimensions.width || !dimensions.height) {
+    const dimensions = readSupportedImageDimensions(buffer);
+    if (!dimensions) {
       return { valid: false, message: 'Could not read image dimensions' };
     }
     const rule = ASPECT_RULES[imageType];

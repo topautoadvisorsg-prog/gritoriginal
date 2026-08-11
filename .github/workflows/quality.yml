@@ -36,6 +36,9 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
+      - name: Reject high and critical production dependency advisories
+        run: npm run audit:production
+
       - name: Check TypeScript contracts
         run: npm run typecheck
 

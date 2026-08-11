@@ -214,7 +214,7 @@ export async function calculateUserProgressionPerEvent(
     const roi = performance.roi;
 
     // 6. Apply progression rules
-    const { newStars, newBadge, reason } = applyProgressionRules({
+    const progression = applyProgressionRules({
         oldStars,
         oldBadge,
         roi,
@@ -223,6 +223,8 @@ export async function calculateUserProgressionPerEvent(
         validPicksCount,
         requiredPicks,
     });
+    let { newStars, reason } = progression;
+    const { newBadge } = progression;
 
     // 6.b Login Bonus (Gamification)
     const loginBonus = Math.min(config.LOGIN_BONUS_MAX, (user.monthlyLoginCount || 0) * (config.LOGIN_BONUS_MAX / config.LOGIN_BONUS_LOGINS_REQUIRED));
