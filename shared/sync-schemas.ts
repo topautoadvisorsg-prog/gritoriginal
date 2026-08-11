@@ -162,7 +162,9 @@ export const syncNewsSchema = z.object({
 
 export const syncPayloadSchema = z.object({
   sourceType: z.enum(['fighter', 'fight', 'news', 'odds', 'event']),
+  // Canonical local target for updates; odds identify the target in data.fightId.
   sourceId: z.string().uuid().optional(),
+  // `delete` remains parseable for an explicit policy rejection and legacy compatibility.
   actionType: z.enum(['create', 'update', 'delete']),
   dataType: z.string().default('mma_data'),
   data: z.any(), // Validated conditionally in webhook

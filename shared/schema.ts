@@ -909,8 +909,8 @@ export type AiFightStats = typeof aiFightStats.$inferSelect;
 export const dataPipeline = pgTable("data_pipeline", {
   id: uuid("id").defaultRandom().primaryKey(),
   sourceType: varchar("source_type", { length: 50 }).notNull(), // 'fighter' | 'fight' | 'news' | 'odds'
-  sourceId: varchar("source_id"), // External system ID
-  actionType: varchar("action_type", { length: 20 }).notNull(), // 'create' | 'update' | 'delete'
+  sourceId: varchar("source_id"), // Canonical local target UUID for update proposals
+  actionType: varchar("action_type", { length: 20 }).notNull(), // delete retained for legacy rows; new ingestion deletes are policy-blocked
   dataType: varchar("data_type", { length: 50 }).notNull(), // 'fighter_profile' | 'fight_record' | etc.
   data: jsonb("data").notNull(), // The actual data to be applied
   submittedBy: varchar("submitted_by"), // External API key or system name

@@ -9,6 +9,13 @@ import {
   isSensitivePipelineConfigKey,
 } from '../config/pipelineConfigPolicy';
 import { enqueueOutboundSync, type OutboundSyncEntry } from './jobService';
+import {
+  assertPipelineActionAllowed,
+  assertPipelineTargetChanged,
+  pipelineEntryNotFound,
+  pipelineStateConflict,
+  PipelineActionPolicyError,
+} from '../config/pipelineActionPolicy';
 
 export type DataPipelineStatus = 'pending' | 'approved' | 'rejected' | 'applied' | 'failed';
 export type SourceType = 'fighter' | 'fight' | 'news' | 'odds' | 'event';
@@ -91,6 +98,8 @@ function normalizeName(name: string): string {
  * Submit data to the pipeline for admin review.
  */
 export async function submitToPipeline(payload: PipelineData): Promise<string> {
+  assertPipelineActionAllowed(payload.sourceType, payload.actionType, payload.sourceId);
+
   try {
     let isPotentialDuplicate = payload.isPotentialDuplicate || false;
 
@@ -159,6 +168,7 @@ export async function submitToPipeline(payload: PipelineData): Promise<string> {
     return entry.id;
   } catch (error) {
     logger.error('[Data Pipeline] Error submitting to pipeline:', error);
+    if (error instanceof PipelineActionPolicyError) throw error;
     throw new Error('Failed to submit data to pipeline');
   }
 }
@@ -222,17 +232,38 @@ export async function updatePipelineEntryData(entryId: string, data: JsonRecord)
  */
 export async function approveEntry(entryId: string, adminUserId: string): Promise<void> {
   try {
-    await db.update(dataPipeline)
+    const [entry] = await db.select({
+      sourceType: dataPipeline.sourceType,
+      actionType: dataPipeline.actionType,
+      sourceId: dataPipeline.sourceId,
+    })
+      .from(dataPipeline)
+      .where(eq(dataPipeline.id, entryId));
+
+    if (!entry) throw pipelineEntryNotFound(entryId);
+    assertPipelineActionAllowed(
+      entry.sourceType as SourceType,
+      entry.actionType as ActionType,
+      entry.sourceId,
+    );
+
+    const approved = await db.update(dataPipeline)
       .set({
         status: 'approved',
         reviewedBy: adminUserId,
         reviewedAt: new Date(),
       })
-      .where(eq(dataPipeline.id, entryId));
+      .where(and(eq(dataPipeline.id, entryId), eq(dataPipeline.status, 'pending')))
+      .returning({ id: dataPipeline.id });
+
+    if (approved.length !== 1) {
+      throw pipelineStateConflict('Only pending entries can be approved');
+    }
 
     logger.info(`[Data Pipeline] Entry ${entryId} approved by admin ${adminUserId}`);
   } catch (error) {
     logger.error('[Data Pipeline] Error approving entry:', error);
+    if (error instanceof PipelineActionPolicyError) throw error;
     throw new Error('Failed to approve entry');
   }
 }
@@ -269,15 +300,21 @@ export async function applyEntry(entryId: string): Promise<void> {
     try {
       const [entry] = await tx.select()
         .from(dataPipeline)
-        .where(eq(dataPipeline.id, entryId));
+        .where(eq(dataPipeline.id, entryId))
+        .for('update');
 
       if (!entry) {
-        throw new Error('Entry not found');
+        throw pipelineEntryNotFound(entryId);
       }
 
       if (entry.status !== 'approved') {
-        throw new Error('Entry must be approved before applying');
+        throw pipelineStateConflict('Entry must be approved before applying');
       }
+      assertPipelineActionAllowed(
+        entry.sourceType as SourceType,
+        entry.actionType as ActionType,
+        entry.sourceId,
+      );
 
       // Apply based on source type and action; capture resolved IDs where needed
       let resolvedId: string | undefined;
@@ -383,9 +420,11 @@ async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<
   } else if (entry.actionType === 'update') {
     if (!entry.sourceId) throw new Error('sourceId required for update');
     resolvedEventId = entry.sourceId;
-    await tx.update(events)
+    const updated = await tx.update(events)
       .set(normalizeEventMeta(metadata))
-      .where(eq(events.id, resolvedEventId));
+      .where(eq(events.id, resolvedEventId))
+      .returning({ id: events.id });
+    assertPipelineTargetChanged(updated, 'Event', resolvedEventId);
     logger.info(`[Data Pipeline] Updated event ${resolvedEventId}`);
   } else {
     throw new Error(`Unsupported event action: ${entry.actionType}`);
@@ -411,9 +450,11 @@ async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<
       if (existing.length > 0) {
         // Update existing fight
         const fightId = existing[0].id;
-        await tx.update(eventFights)
+        const updated = await tx.update(eventFights)
           .set({ ...fight, eventId: resolvedEventId })
-          .where(eq(eventFights.id, fightId));
+          .where(eq(eventFights.id, fightId))
+          .returning({ id: eventFights.id });
+        assertPipelineTargetChanged(updated, 'Event fight', fightId);
         fightRows.push({
           actionType: 'update',
           data: { id: fightId, ...fight, eventId: resolvedEventId },
@@ -483,9 +524,11 @@ async function applyFighterData(tx: DbTransaction, entry: PipelineEntry): Promis
 
       if (existing.length > 0) {
         // Upgrade 'create' to 'update' — merge into the existing record
-        await tx.update(fighters)
+        const updated = await tx.update(fighters)
           .set({ ...fighterData, lastUpdated: new Date() })
-          .where(eq(fighters.id, existing[0].id));
+          .where(eq(fighters.id, existing[0].id))
+          .returning({ id: fighters.id });
+        assertPipelineTargetChanged(updated, 'Fighter', existing[0].id);
         logger.info(`[Data Pipeline] applyFighterData: upgraded create→update for existing fighter ${existing[0].id}`);
         return existing[0].id;
       }
@@ -501,16 +544,11 @@ async function applyFighterData(tx: DbTransaction, entry: PipelineEntry): Promis
     if (!entry.sourceId) {
       throw new Error('sourceId required for update');
     }
-    await tx.update(fighters)
+    const updated = await tx.update(fighters)
       .set({ ...fighterData, lastUpdated: new Date() })
-      .where(eq(fighters.id, entry.sourceId));
-    return entry.sourceId;
-  } else if (entry.actionType === 'delete') {
-    if (!entry.sourceId) {
-      throw new Error('sourceId required for delete');
-    }
-    await tx.delete(fighters)
-      .where(eq(fighters.id, entry.sourceId));
+      .where(eq(fighters.id, entry.sourceId))
+      .returning({ id: fighters.id });
+    assertPipelineTargetChanged(updated, 'Fighter', entry.sourceId);
     return entry.sourceId;
   }
   throw new Error(`Unsupported fighter action: ${entry.actionType}`);
@@ -556,9 +594,11 @@ async function applyFightData(tx: DbTransaction, entry: PipelineEntry): Promise<
     if (!entry.sourceId) {
       throw new Error('sourceId required for update');
     }
-    await tx.update(fightHistory)
+    const updated = await tx.update(fightHistory)
       .set(fightData)
-      .where(eq(fightHistory.id, entry.sourceId));
+      .where(eq(fightHistory.id, entry.sourceId))
+      .returning({ id: fightHistory.id });
+    assertPipelineTargetChanged(updated, 'Fight history', entry.sourceId);
     return entry.sourceId;
   }
   throw new Error(`Unsupported fight action: ${entry.actionType}`);
@@ -581,9 +621,11 @@ async function applyNewsData(tx: DbTransaction, entry: PipelineEntry): Promise<s
     if (!entry.sourceId) {
       throw new Error('sourceId required for update');
     }
-    await tx.update(newsArticles)
+    const updated = await tx.update(newsArticles)
       .set(newsData)
-      .where(eq(newsArticles.id, entry.sourceId));
+      .where(eq(newsArticles.id, entry.sourceId))
+      .returning({ id: newsArticles.id });
+    assertPipelineTargetChanged(updated, 'News article', entry.sourceId);
     return entry.sourceId;
   }
   throw new Error(`Unsupported news action: ${entry.actionType}`);
@@ -597,9 +639,11 @@ async function applyOddsData(tx: DbTransaction, entry: PipelineEntry): Promise<v
   const { fightId, ...oddsFields } = oddsData;
 
   // 1. Update live odds on the fight
-  await tx.update(eventFights)
+  const updated = await tx.update(eventFights)
     .set({ odds: oddsFields })
-    .where(eq(eventFights.id, fightId));
+    .where(eq(eventFights.id, fightId))
+    .returning({ id: eventFights.id });
+  assertPipelineTargetChanged(updated, 'Event fight', fightId);
 
   // 2. Log to history
   await tx.insert(fightOddsHistory).values({

@@ -15,6 +15,7 @@ import * as dataEngineService from '../../services/dataEngineService';
 import { db } from '../../db';
 import { dataPipeline, fighters, events, eventFights } from '../../../shared/schema';
 import { eq, count } from 'drizzle-orm';
+import { PipelineActionPolicyError } from '../../config/pipelineActionPolicy';
 
 const DATA_PIPELINE_STATUSES: dataEngineService.DataPipelineStatus[] = ['pending', 'approved', 'rejected', 'applied', 'failed'];
 
@@ -24,6 +25,13 @@ function isDataPipelineStatus(status: string): status is dataEngineService.DataP
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unknown error';
+}
+
+function sendPipelineMutationError(res: Response, error: unknown, fallback: string): Response {
+  if (error instanceof PipelineActionPolicyError) {
+    return res.status(error.statusCode).json({ error: error.message, code: error.code });
+  }
+  return res.status(500).json({ error: fallback });
 }
 
 async function sendPipelineHealthResponse(res: Response) {
@@ -145,7 +153,7 @@ export function registerAdminDataPipelineRoutes(app: Express) {
       res.json({ message: "Entry approved successfully", entryId: id });
     } catch (error) {
       logger.error("Error approving pipeline entry:", error);
-      res.status(500).json({ error: "Failed to approve entry" });
+      sendPipelineMutationError(res, error, "Failed to approve entry");
     }
   });
 
@@ -180,6 +188,9 @@ export function registerAdminDataPipelineRoutes(app: Express) {
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error);
       logger.error("Error applying pipeline entry:", error);
+      if (error instanceof PipelineActionPolicyError) {
+        return res.status(error.statusCode).json({ error: error.message, code: error.code });
+      }
       res.status(500).json({ 
         error: "Failed to apply entry",
         details: errorMessage

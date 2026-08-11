@@ -11,6 +11,10 @@ import {
 } from '../../../shared/sync-schemas';
 import { strictApiLimiter } from '../../middleware/rateLimiter';
 import { env } from '../../config/env';
+import {
+  assertPipelineActionAllowed,
+  PipelineActionPolicyError,
+} from '../../config/pipelineActionPolicy';
 
 const router = Router();
 router.use('/data-engine/webhook', strictApiLimiter);
@@ -39,45 +43,50 @@ router.post('/data-engine/webhook', async (req: Request, res: Response) => {
     }
 
     const payload = payloadResult.data;
+    try {
+      assertPipelineActionAllowed(payload.sourceType, payload.actionType, payload.sourceId);
+    } catch (error) {
+      if (error instanceof PipelineActionPolicyError) {
+        return res.status(error.statusCode).json({ error: error.message, code: error.code });
+      }
+      throw error;
+    }
+
     let validatedData = payload.data;
 
-    if (payload.actionType !== 'delete') {
-      let dataValidation;
-      switch (payload.sourceType) {
-        case 'fighter':
-          dataValidation = syncFighterSchema.safeParse(payload.data);
-          break;
-        case 'fight':
-          dataValidation = syncFightHistorySchema.safeParse(payload.data);
-          break;
-        case 'news':
-          dataValidation = syncNewsSchema.safeParse(payload.data);
-          break;
-        case 'odds':
-          dataValidation = syncOddsSchema.safeParse(payload.data);
-          break;
-        case 'event':
-          dataValidation = syncEventSchema.safeParse(payload.data);
-          break;
-        default:
-          return res.status(400).json({ error: `Unknown sourceType: ${payload.sourceType}` });
-      }
-
-      if (!dataValidation.success) {
-        logger.error(
-          '[Data Engine Webhook] Validation failed for %s: %o',
-          payload.sourceType,
-          dataValidation.error.format(),
-        );
-        return res.status(422).json({
-          error: `Validation failed for ${payload.sourceType}`,
-          details: dataValidation.error.issues,
-        });
-      }
-      validatedData = dataValidation.data;
-    } else if (!payload.sourceId) {
-      return res.status(422).json({ error: 'sourceId is required for delete actions' });
+    let dataValidation;
+    switch (payload.sourceType) {
+      case 'fighter':
+        dataValidation = syncFighterSchema.safeParse(payload.data);
+        break;
+      case 'fight':
+        dataValidation = syncFightHistorySchema.safeParse(payload.data);
+        break;
+      case 'news':
+        dataValidation = syncNewsSchema.safeParse(payload.data);
+        break;
+      case 'odds':
+        dataValidation = syncOddsSchema.safeParse(payload.data);
+        break;
+      case 'event':
+        dataValidation = syncEventSchema.safeParse(payload.data);
+        break;
+      default:
+        return res.status(400).json({ error: `Unknown sourceType: ${payload.sourceType}` });
     }
+
+    if (!dataValidation.success) {
+      logger.error(
+        '[Data Engine Webhook] Validation failed for %s: %o',
+        payload.sourceType,
+        dataValidation.error.format(),
+      );
+      return res.status(422).json({
+        error: `Validation failed for ${payload.sourceType}`,
+        details: dataValidation.error.issues,
+      });
+    }
+    validatedData = dataValidation.data;
 
     const entryId = await dataEngineService.submitToPipeline({
       sourceType: payload.sourceType,
