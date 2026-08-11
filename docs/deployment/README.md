@@ -24,10 +24,10 @@ The local bounded R2 event-image candidate is documented in
 [`R1F_EVENT_IMAGE_STORAGE.md`](R1F_EVENT_IMAGE_STORAGE.md).
 
 The descriptions above preserve the pre-promotion review state of early R1
-slices. R1-A through R1-O are now deployed; each immutable `R1*.md` record names
+slices. R1-A through R1-P are now deployed; each immutable `R1*.md` record names
 its reviewed commit, hosted gate, Railway deployment, production probes,
 residual boundary, and rollback. The latest slice is
-[`R1O_DEPENDENCY_REMEDIATION.md`](R1O_DEPENDENCY_REMEDIATION.md).
+[`R1P_REWARD_OPERATION_CONTAINMENT.md`](R1P_REWARD_OPERATION_CONTAINMENT.md).
 
 ## Build and start
 

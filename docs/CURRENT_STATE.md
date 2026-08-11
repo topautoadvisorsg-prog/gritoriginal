@@ -2,9 +2,9 @@
 
 **Evidence cutoff:** August 11, 2026
 
-**Runtime baseline:** `c77f71e97cbb0d3d4dec990ee98f563023a72637`
+**Runtime baseline:** `e59d8e12b0fd4d6dd8448533ba5f026c8807cc46`
 
-**Documentation baseline:** R1-O
+**Documentation baseline:** R1-P
 
 This page is the repository entry point for current implementation and release
 state. It supersedes historical progress boards, handoffs, audit snapshots, and
@@ -15,8 +15,8 @@ target plans when their claims conflict.
 - GitHub `main` is the reviewed release branch.
 - Railway project `virtuous-freedom`, service `gritoriginal`, deploys that
   branch to the production environment.
-- Runtime commit `c77f71e` passed hosted quality gate `31500110247`; its exact
-  Railway promotion evidence is recorded in the R1-O release document.
+- Runtime commit `e59d8e1` passed hosted quality gate `31501284526`; its exact
+  Railway promotion evidence is recorded in the R1-P release document.
 - The deployed root and liveness endpoint returned `200`; unauthenticated data
   ingestion and administrator mutation probes returned `401`.
 - Production write guards, explicit review-before-write, and destructive-route
@@ -27,7 +27,7 @@ target plans when their claims conflict.
 | Gate | Result |
 |---|---|
 | TypeScript project references | Pass |
-| Vitest | 47 files, 273 tests pass |
+| Vitest | 48 files, 276 tests pass |
 | ESLint | 0 errors; 15 known Fast Refresh warnings |
 | Production build | Pass; 3,752 modules |
 | Production dependency policy | Pass; 0 Critical/High, 2 Moderate |
@@ -39,13 +39,14 @@ or production data quality.
 
 ## Implemented safety and reliability slices
 
-R0 and R1-A through R1-O are deployed. Their immutable evidence, boundaries,
+R0 and R1-A through R1-P are deployed. Their immutable evidence, boundaries,
 and rollback instructions live in [`deployment/`](deployment/README.md).
 Material controls include production containment, HTTP and upload boundaries,
 hosted quality gates, environment-only integration-secret reads, retryable
 outbound delivery, preservation-first ingestion actions, and the
 no-placeholder fighter image contract, documentation authority, and a
-CI-enforced production dependency severity ceiling.
+CI-enforced production dependency severity ceiling, and code-owned containment
+of prize-bearing reward mutations.
 
 ## Open release gates
 
