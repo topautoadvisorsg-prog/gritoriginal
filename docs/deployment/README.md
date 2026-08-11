@@ -27,7 +27,7 @@ The descriptions above preserve the pre-promotion review state of early R1
 slices. R1-A through R1-M are now deployed; each immutable `R1*.md` record names
 its reviewed commit, hosted gate, Railway deployment, production probes,
 residual boundary, and rollback. The latest slice is
-[`R1M_NO_PLACEHOLDER_FIGHTER_IMAGE.md`](R1M_NO_PLACEHOLDER_FIGHTER_IMAGE.md).
+[`R1N_DOCUMENT_AUTHORITY.md`](R1N_DOCUMENT_AUTHORITY.md).
 
 ## Build and start
 
