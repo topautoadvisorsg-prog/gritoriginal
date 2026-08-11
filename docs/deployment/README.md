@@ -1,6 +1,6 @@
 # GRIT Deployment
 
-**Truth date:** August 9, 2026
+**Truth date:** August 11, 2026
 **Current target:** Railway project `virtuous-freedom`, production service
 `gritoriginal`, serving API, Socket.IO, jobs, and the built Vite frontend.
 
@@ -22,6 +22,12 @@ The local authenticated avatar confirmation candidate is documented in
 [`R1E_AVATAR_CONFIRMATION.md`](R1E_AVATAR_CONFIRMATION.md).
 The local bounded R2 event-image candidate is documented in
 [`R1F_EVENT_IMAGE_STORAGE.md`](R1F_EVENT_IMAGE_STORAGE.md).
+
+The descriptions above preserve the pre-promotion review state of early R1
+slices. R1-A through R1-M are now deployed; each immutable `R1*.md` record names
+its reviewed commit, hosted gate, Railway deployment, production probes,
+residual boundary, and rollback. The latest slice is
+[`R1M_NO_PLACEHOLDER_FIGHTER_IMAGE.md`](R1M_NO_PLACEHOLDER_FIGHTER_IMAGE.md).
 
 ## Build and start
 

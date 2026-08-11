@@ -4,28 +4,31 @@ GRIT is a fantasy MMA prediction and community platform. Users make picks on rea
 
 ## Current status
 
-The application is a React/Vite/TypeScript frontend with an Express 5 backend, PostgreSQL via Drizzle, Clerk authentication, Stripe integration, Supabase-backed data, Socket.IO chat, and OpenAI-powered analysis. It is deployed from the `main` branch, but the June 21, 2026 audit classifies it as **not ready for paid production launch**.
+The application is a React/Vite/TypeScript frontend with an Express 5 backend, PostgreSQL via Drizzle, Clerk authentication, Stripe integration, Supabase-backed data, Socket.IO chat, and OpenAI-powered analysis. It is deployed from the `main` branch and remains **not approved for paid, prize-bearing, or viral-scale production launch**. The canonical current implementation and release summary is [`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md).
 
-The launch blockers are documented in [`docs/system-audit/PRODUCTION_READINESS.md`](docs/system-audit/PRODUCTION_READINESS.md). The most important are:
+The active release-gate summary is maintained in
+[`docs/CURRENT_STATE.md`](docs/CURRENT_STATE.md). The June audit findings remain
+available as a dated snapshot in
+[`docs/system-audit/PRODUCTION_READINESS.md`](docs/system-audit/PRODUCTION_READINESS.md).
+The highest-level open gates are:
 
-- the pick contract is code-remediated but still needs isolated staging database proof;
-- checkout creates a one-time Stripe payment while granting subscription access;
-- checkout accepts arbitrary Stripe price and redirect values from the client;
-- creator, AI-token, payout, and legal-acceptance tables are declared but not deployed;
-- rankings, flag budgets, event snapshots, and dashboard event selection have integrity defects;
-- advertised creator monetization and reward flows are not operational end to end.
+- authoritative schema reconciliation and production-shaped staging proof;
+- administrator revocation and identity-lifecycle authority;
+- shared MMA data ownership, identity, and replay rules;
+- Stripe entitlement/event-ledger correctness and reward containment;
+- safe multi-replica jobs, limits, readiness, and recovery evidence;
+- dependency, Supabase exposure, and observability remediation.
 
 Do not enable paid acquisition, creator payments, token sales, or cash rewards until the P0/P1 release gates are closed.
 
 | Pipeline | Current evidence state |
 |---|---|
-| Picks | Code Verified / Staging DB Proof Pending |
-| Rankings | Remediation In Progress / R0-R1 Staging Proof Pending |
-| Groups | Functional / Production Verification Pending |
-| AI | Functional / Production Verification Pending; UX refinement later |
-| Payments | Audit Complete / Production Blocked |
-| Creator economy | Audit Complete / Not Implemented |
-| Production readiness | Core architecture is viable; launch is blocked by ranking remediation, payment safety, and staging proof |
+| Fighter ingestion | Review-before-write controls deployed; schema/identity/ownership gates remain |
+| Picks and rankings | Remediation evidence exists; production-shaped reconciliation remains gated |
+| Groups and AI | Implemented surfaces; viral-scale, cost, and multi-instance proof pending |
+| Payments and rewards | Production blocked |
+| Creator economy | Not approved for production |
+| Production readiness | Controlled internal QA only; paid, prize-bearing, and viral launch not approved |
 
 ## Audit documentation
 
@@ -38,7 +41,9 @@ Do not enable paid acquisition, creator payments, token sales, or cash rewards u
 - [Groups](docs/groups/README.md)
 - [Deployment](docs/deployment/README.md)
 - [Release provenance and R0 containment](docs/deployment/RELEASE_PROVENANCE.md)
-- [Audit index and system status](docs/system-audit/SYSTEM_STATUS_REPORT.md)
+- [Current engineering state](docs/CURRENT_STATE.md)
+- [Documentation authority](docs/DOCUMENT_AUTHORITY.md)
+- [June 2026 system audit snapshot](docs/system-audit/SYSTEM_STATUS_REPORT.md)
 - [Monetization audit](docs/system-audit/MONETIZATION_AUDIT.md)
 - [Payment flow diagrams](docs/system-audit/PAYMENT_FLOW.md)
 - [Ranking and picks audit](docs/system-audit/RANKING_SYSTEM_AUDIT.md)
@@ -76,12 +81,13 @@ npm run build
 npm audit --omit=dev
 ```
 
-Audit baseline on June 21, 2026:
+Current R1-M application baseline on August 11, 2026:
 
 - TypeScript: pass
-- Vitest: 25 files, 166 tests passed
-- Production build: pass; main bundle is about 3.43 MB uncompressed / 766 KB gzip
-- Dependency audit: 36 advisories (2 critical, 6 high, 28 moderate)
+- Vitest: 47 files, 271 tests passed
+- ESLint: zero errors; 15 known Fast Refresh warnings
+- Production build: pass; 3,931 modules transformed
+- Hosted quality gate: pass on the reviewed runtime commit
 
 ## Repository map
 
@@ -92,7 +98,7 @@ shared/                 Drizzle schemas and shared validation/types
 migrations/             Baseline plus staged migrations
 tests/                  Vitest and operational test scripts
 docs/ui-audit/           Visual audit artifacts
-docs/system-audit/       Current code-grounded platform audit
+docs/system-audit/       Dated audit snapshots and remediation inputs
 ```
 
 ## Operational rules

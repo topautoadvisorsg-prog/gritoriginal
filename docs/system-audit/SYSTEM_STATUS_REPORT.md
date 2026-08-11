@@ -1,5 +1,9 @@
 # GRIT System Status Report
 
+> **Historical audit snapshot.** This report describes the June 21, 2026
+> evidence cutoff at commit `d36badf`; it is not current runtime authority. Use
+> [`../CURRENT_STATE.md`](../CURRENT_STATE.md) for current state.
+
 **Audit date:** June 21, 2026
 **Reviewed branch/commit:** `main` at `d36badf`
 **Method:** static code trace, route/schema/UI comparison, read-only connected database inspection, TypeScript, Vitest, production build, and dependency audit.

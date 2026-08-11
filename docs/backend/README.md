@@ -1,5 +1,9 @@
 # GRIT Backend Capability Ledger
 
+> **Historical June 2026 capability baseline.** Preserve this ledger as audit
+> evidence. Current deployed state and release gates are maintained in
+> [`../CURRENT_STATE.md`](../CURRENT_STATE.md).
+
 **Last verified:** June 21, 2026
 **Purpose:** record what is provably complete before work moves to the next backend pipeline. Frontend visual approval remains a founder decision.
 

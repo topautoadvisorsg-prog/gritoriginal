@@ -1,5 +1,9 @@
 # Pre-Test Technical Debt Register
 
+> **Historical June 22, 2026 register.** Counts and dependency observations are
+> evidence-cutoff facts. Use [`../CURRENT_STATE.md`](../CURRENT_STATE.md) for the
+> current quality baseline.
+
 Last updated: 2026-06-22 on `codex/product-validation-audit-2026-06-22`.
 
 ## Current Gate Status
