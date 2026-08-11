@@ -1,6 +1,6 @@
 # R1-J Secret Configuration Boundary
 
-Status: local candidate; not deployed
+Status: deployed and production-verified
 
 Date: 2026-08-11
 
@@ -56,6 +56,26 @@ legacy fallback is used; they never contain the value.
 After staging verification, add the reviewed canonical environment variables,
 deploy env-only resolution, rotate affected credentials, and remove legacy
 database secret values through a separately authorized data operation.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `7850a24b31c0ae76b1342414b6b4fec2051eaf2a` |
+| GitHub Actions run | `31492162707`, success |
+| Railway deployment | `56bf836e-9b9a-4ebc-9da2-dab194082721` |
+| Railway status | Success, 2026-08-11 12:40:10 UTC |
+| Public application root | `200` HTML |
+| `GET /api/health` | `200` JSON |
+| Admin config read without authentication | `401` JSON |
+| Admin config write without authentication | `401` JSON |
+| Slip and event-image writes without authentication | `401` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unknown API path | `404` JSON |
+| R1-B header contract | Preserved |
+
+The production probes used no credential and performed no configuration,
+provider, object, database, or schema mutation.
 
 ## Rollback
 
