@@ -1,6 +1,6 @@
 # R1-I CI Quality Gate
 
-Status: local candidate; not deployed
+Status: deployed and production-verified
 
 Date: 2026-08-11
 
@@ -43,8 +43,7 @@ It cannot change Railway, Supabase, Clerk, Stripe, R2, or production data.
 | ESLint | Zero errors; 15 pre-existing Fast Refresh warnings |
 | Production build | Pass; 3,931 modules |
 
-Promotion still requires GitHub to recognize the workflow and complete the
-first hosted run successfully.
+GitHub recognizes the workflow and the final hosted run completed every gate.
 
 ## Hosted-run finding
 
@@ -61,6 +60,27 @@ unit tests had been relying on developer `.env` values to satisfy import-time
 validation. The test runner now overrides those two required values with inert,
 non-secret test configuration. A test that unexpectedly reaches PostgreSQL
 will fail against loopback port 1 instead of reaching any external database.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed runtime commit | `77153c476c578ee71c9ad97e447e9a2750545e61` |
+| GitHub Actions run | `31490256095`, success; all eight validation steps passed |
+| Railway deployment | `5feec48e-1f31-4b3a-8d37-36f85ff52300` |
+| Railway status | Success, 2026-08-11 12:16:10 UTC |
+| Public application root | `200` HTML |
+| `GET /api/health` | `200` JSON |
+| Slip upload without authentication | `401` JSON |
+| User slip delete without authentication | `401` JSON |
+| Admin slip delete without authentication | `401` JSON |
+| Event-image upload without authentication | `401` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unknown API path | `404` JSON |
+| R1-B header contract | Preserved |
+
+The production probes used no application credential and performed no object,
+database, provider, or configuration mutation.
 
 ## Rollback
 
