@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Fighter } from '@/shared/types/fighter';
+import type { EventFight, Fighter } from '@/shared/types/fighter';
 import { HistoryFightCard } from './HistoryFightCard';
 import { useFighters } from '@/shared/hooks/useFighters';
 import { cn } from '@/shared/lib/utils';
@@ -8,6 +8,7 @@ import { AlertCircle, Calendar, History, Database, Upload, Loader2 } from 'lucid
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { Button } from '@/shared/components/ui/button';
 import { ErrorState } from '@/shared/components/ui/error-state';
+import { normalizeCardPlacementToFightType } from '@/shared/utils/eventHelpers';
 
 interface CompletedEvent {
   id: string;
@@ -31,7 +32,7 @@ interface CompletedEvent {
     weightClass: string;
     isTitleFight: boolean;
     rounds: number;
-    status: string;
+    status: EventFight['status'];
   }[];
 }
 
@@ -313,7 +314,8 @@ export const EventHistoryPage: React.FC<EventHistoryPageProps> = ({ onNavigateTo
                     weightClass: fight.weightClass,
                     boutOrder: fight.boutOrder,
                     isTitleFight: fight.isTitleFight,
-                    fightType: fight.cardPlacement,
+                    rounds: fight.rounds,
+                    fightType: normalizeCardPlacementToFightType(fight.cardPlacement),
                     status: fight.status,
                   }}
                   fighter1={getFighter(fight.fighter1Id)}

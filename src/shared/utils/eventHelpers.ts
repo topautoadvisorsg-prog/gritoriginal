@@ -23,3 +23,15 @@ export const getFightSectionLabel = (fightType: EventFight['fightType']): string
       return 'EXHIBITION';
   }
 };
+
+export const normalizeCardPlacementToFightType = (
+  cardPlacement: string,
+): NonNullable<EventFight['fightType']> => {
+  const normalized = cardPlacement.trim().toLowerCase();
+  if (normalized.includes('early prelim') || normalized.includes('pre-prelim')) {
+    return 'Early Prelim';
+  }
+  if (normalized.includes('prelim')) return 'Prelim';
+  if (normalized.includes('exhibition')) return 'Exhibition';
+  return 'Main Card';
+};

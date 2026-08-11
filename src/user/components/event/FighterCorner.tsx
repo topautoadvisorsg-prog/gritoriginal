@@ -1,5 +1,5 @@
 import React from 'react';
-import { Fighter } from '@/shared/types/fighter';
+import type { Fighter } from '@/shared/types/fighter';
 import { cn } from '@/shared/lib/utils';
 import { Crown, TrendingUp, TrendingDown } from 'lucide-react';
 
@@ -12,7 +12,7 @@ interface FighterCornerProps {
 const getStreakInfo = (fighter: Fighter | undefined): { type: 'win' | 'loss' | 'none'; count: number } => {
   if (!fighter?.performance) return { type: 'none', count: 0 };
   
-  const { winStreak, lossStreak } = fighter.performance;
+  const { win_streak: winStreak, loss_streak: lossStreak } = fighter.performance;
   if (winStreak > 0) return { type: 'win', count: winStreak };
   if (lossStreak > 0) return { type: 'loss', count: lossStreak };
   return { type: 'none', count: 0 };

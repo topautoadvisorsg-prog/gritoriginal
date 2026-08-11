@@ -118,7 +118,14 @@ export const AdminNewsTagManager: React.FC = () => {
                             </div>
                             <div className="space-y-2">
                                 <Label>Category</Label>
-                                <Select value={newTagCategory} onValueChange={(v: string) => setNewTagCategory(v)}>
+                                <Select
+                                    value={newTagCategory}
+                                    onValueChange={(value: string) => {
+                                        if (value === 'standard' || value === 'intelligence') {
+                                            setNewTagCategory(value);
+                                        }
+                                    }}
+                                >
                                     <SelectTrigger>
                                         <SelectValue />
                                     </SelectTrigger>

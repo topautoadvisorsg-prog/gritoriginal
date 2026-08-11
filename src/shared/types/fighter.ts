@@ -195,6 +195,9 @@ export interface PerformanceMetrics {
   longest_win_streak: number;
   ko_streak: number;
   sub_streak: number;
+  kotko_win_pct?: number;
+  submission_win_pct?: number;
+  decision_win_pct?: number;
 }
 
 export interface OddsData {

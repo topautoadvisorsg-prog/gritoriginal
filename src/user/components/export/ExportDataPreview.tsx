@@ -10,8 +10,8 @@ import {
   TableRow,
 } from '@/shared/components/ui/table';
 import { ScrollArea } from '@/shared/components/ui/scroll-area';
-import { Fighter } from '@/shared/types/fighter';
-import { ImportableFightRecord } from '@/shared/types/import';
+import type { Fighter } from '@/shared/types/fighter';
+import type { ImportableFightRecord } from '@/shared/utils/fightHistoryTransform';
 import { fieldGroups } from './ExportFieldSelector';
 
 export interface ExportDataPreviewProps {

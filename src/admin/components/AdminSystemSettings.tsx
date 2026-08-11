@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/sha
 import { Label } from '@/shared/components/ui/label';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
-import { Settings, Save, Database, Key, Zap } from 'lucide-react';
+import { Settings, Save, Database, Key, Loader2, Zap } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 
 export const AdminSystemSettings = () => {
