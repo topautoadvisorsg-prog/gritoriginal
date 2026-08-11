@@ -4,14 +4,14 @@ import { isAuthenticated } from '../../auth/guards';
 import { db } from "../../db";
 import { users, updateUserProfileSchema } from "../../../shared/schema";
 import { eq } from "drizzle-orm";
-import { StorageService } from "../../services/storageService";
+import { ObjectSizeLimitError, StorageService } from "../../services/storageService";
+import { detectSupportedImageType, isSupportedImageContentType } from "../../services/imageValidation";
 import { logger } from '../../utils/logger';
 import { validate } from '../../middleware/validate';
 import { updateProfileSchema } from '../../schemas';
 
 // Admin authorization is centralized in requireAdmin middleware
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024; // 2MB
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export function registerUserRoutes(app: Express): void {
   // Get current user profile
@@ -82,18 +82,13 @@ export function registerUserRoutes(app: Express): void {
   app.post("/api/me/avatar/request-url", isAuthenticated, async (req: Request, res) => {
     try {
       const userId = req.user.id;
-      const { size, contentType } = req.body;
+      const { size, contentType } = req.body ?? {};
 
-      if (!contentType) {
-        return res.status(400).json({ message: "Content type required" });
-      }
-
-      if (!ALLOWED_IMAGE_TYPES.includes(contentType)) {
-        return res.status(400).json({ message: "Invalid image type. Allowed: jpg, png, webp" });
-      }
-
-      if (size && size > MAX_AVATAR_SIZE) {
-        return res.status(400).json({ message: "Image too large. Max size: 2MB" });
+      if (!Number.isSafeInteger(size)
+        || size <= 0
+        || size > MAX_AVATAR_SIZE
+        || !isSupportedImageContentType(contentType)) {
+        return res.status(400).json({ message: "Invalid avatar upload metadata" });
       }
 
       const objectStorageService = new StorageService();
@@ -112,23 +107,44 @@ export function registerUserRoutes(app: Express): void {
   app.post("/api/me/avatar", isAuthenticated, async (req: Request, res) => {
     try {
       const userId = req.user.id;
-      const { objectPath } = req.body;
+      const { objectPath } = req.body ?? {};
+      const storagePath = `users/${userId}/avatar`;
+      const expectedObjectPath = `/objects/${storagePath}`;
 
-      if (!objectPath) {
-        return res.status(400).json({ message: "Object path required" });
+      if (objectPath !== expectedObjectPath) {
+        return res.status(400).json({ message: "Object path does not match the authenticated user" });
       }
 
-      // Update user record with the avatar URL
+      const objectStorageService = new StorageService();
+      let buffer: Buffer;
+      try {
+        buffer = await objectStorageService.getObjectBuffer(storagePath, MAX_AVATAR_SIZE);
+      } catch (error) {
+        if (error instanceof ObjectSizeLimitError) {
+          return res.status(413).json({ message: "Uploaded avatar exceeds the 2MB limit" });
+        }
+        return res.status(404).json({ message: "Uploaded avatar not found" });
+      }
+
+      if (!detectSupportedImageType(buffer)) {
+        return res.status(422).json({ message: "Avatar rejected: unsupported file signature" });
+      }
+
+      const publicUrl = objectStorageService.getPublicUrl(storagePath);
       const [updatedUser] = await db
         .update(users)
         .set({
-          avatarUrl: objectPath,
+          avatarUrl: publicUrl,
           updatedAt: new Date(),
         })
         .where(eq(users.id, userId))
         .returning();
 
-      res.json({ avatarUrl: objectPath, user: updatedUser });
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ avatarUrl: publicUrl, user: updatedUser });
     } catch (error) {
       logger.error("Error confirming avatar upload:", error);
       res.status(500).json({ message: "Failed to confirm avatar upload" });

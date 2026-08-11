@@ -1,6 +1,6 @@
 # R1-D Fighter Image Validation
 
-Status: local candidate verified; production promotion not yet approved
+Status: deployed and production-verified
 
 Date: 2026-08-10
 
@@ -55,6 +55,25 @@ There is no database, data, or provider configuration mutation. Revert the
 application commit and redeploy verified R1-C deployment
 `1518fe37-219e-456f-8d5a-526d39276d1f`. Do not compensate by allowing unbounded
 or auto-detected object formats.
+
+## Production promotion
+
+| Evidence | Identity / result |
+|---|---|
+| Reviewed commit | `31b4ffcf5fb3475d89b9c957bc26edab31413363` |
+| Railway deployment | `d2c10de6-8812-4f91-a50d-a4ef5b0f100c` |
+| GitHub deployment status | Success, 2026-08-11 05:28:54 UTC |
+| `GET /api/health` | `200` JSON |
+| Fighter presign without authentication | `401` JSON |
+| Fighter confirmation without authentication | `401` JSON |
+| Retired wildcard upload | `404` JSON |
+| Unknown API path | `404` JSON |
+| Oversized ordinary JSON | `413` JSON |
+| R1-B header contract | Preserved |
+
+The probes used no user or administrator credential and did not issue an upload
+URL, create an object, or mutate a fighter or database row. Owned-key and media
+validation behavior is established by the reviewed source and contract tests.
 
 ## Stop conditions
 

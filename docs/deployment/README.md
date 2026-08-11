@@ -18,6 +18,8 @@ The R0–R1 pre-push code and technical-debt review is recorded in
 [`R1_PREPUSH_REVIEW.md`](R1_PREPUSH_REVIEW.md).
 The local owned-key and bounded fighter-image validation candidate is documented
 in [`R1D_FIGHTER_IMAGE_VALIDATION.md`](R1D_FIGHTER_IMAGE_VALIDATION.md).
+The local authenticated avatar confirmation candidate is documented in
+[`R1E_AVATAR_CONFIRMATION.md`](R1E_AVATAR_CONFIRMATION.md).
 
 ## Build and start
 
