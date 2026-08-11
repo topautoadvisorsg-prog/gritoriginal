@@ -24,10 +24,10 @@ The local bounded R2 event-image candidate is documented in
 [`R1F_EVENT_IMAGE_STORAGE.md`](R1F_EVENT_IMAGE_STORAGE.md).
 
 The descriptions above preserve the pre-promotion review state of early R1
-slices. R1-A through R1-M are now deployed; each immutable `R1*.md` record names
+slices. R1-A through R1-O are now deployed; each immutable `R1*.md` record names
 its reviewed commit, hosted gate, Railway deployment, production probes,
 residual boundary, and rollback. The latest slice is
-[`R1N_DOCUMENT_AUTHORITY.md`](R1N_DOCUMENT_AUTHORITY.md).
+[`R1O_DEPENDENCY_REMEDIATION.md`](R1O_DEPENDENCY_REMEDIATION.md).
 
 ## Build and start
 
@@ -80,16 +80,18 @@ keys, and rejects fixture, bootstrap-route, and retired auto-apply flags.
 - Uploads use local filesystem paths and are not durable across replicas/redeploys.
 - Database pool defaults to 50 per process unless overridden.
 - Main JS bundle is about 3.43 MB uncompressed and 766 KB gzip.
-- The latest install-time dependency audit reports 1 critical, 20 high, 16
-  moderate, and 1 low advisory. These are tracked separately; no automatic
-  dependency rewrite is authorized.
+- The locked production dependency audit reports 0 Critical, 0 High, and 2
+  Moderate React Router advisories. The full tree reports 9 Moderate
+  advisories. React Router v7 and remaining development-tool chains require
+  separate compatibility gates; no forced audit rewrite is authorized.
 
 ## Safe release workflow
 
 1. Create a release branch and record the intended commit.
 2. Put isolated database credentials in `.env.staging.local`; never reuse production credentials.
 3. Run `npm run staging:check` and retain the redacted target/marker evidence.
-4. Run `npm ci`, TypeScript, Vitest, production build, and dependency review.
+4. Run `npm ci`, `npm run audit:production`, TypeScript, Vitest, lint, and the
+   production build.
 5. Apply reviewed migrations to staging; verify event-status, snapshot-idempotency, durable close-run, and progression-application constraints plus actual parity.
 6. Run authenticated browser QA without `UI_AUDIT_FIXTURES` against deterministic staging data.
 7. Run Stripe test-mode subscription lifecycle and webhook replay tests when payments are enabled.
