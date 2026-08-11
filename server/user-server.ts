@@ -148,8 +148,9 @@ async function startUserServer() {
       seedSuggestedQuestions().catch(() => {});
       initCrons();
 
-      // Start background job queue for durable outbox syncing.
-      initJobService().catch(err => logger.error('Failed to initialize job queue', err));
+      // Outbound delivery must be durable before the API accepts write traffic.
+      // Fail startup if pg-boss cannot register its queue/worker.
+      await initJobService();
     } else {
       logger.info('UI audit fixture mode: database seeds, cron tasks, and job queue disabled');
     }

@@ -15,16 +15,28 @@ import { getDataEngineConfig } from './dataEngineService';
 
 // ─── Credential helpers ──────────────────────────────────────────────────────
 
-async function getSupabaseCredentials(): Promise<{ url: string; key: string } | null> {
+async function getSupabaseCredentials(): Promise<{ url: string; key: string }> {
   const [url, key] = await Promise.all([
     getDataEngineConfig('SUPABASE_URL'),
     getDataEngineConfig('SUPABASE_API_KEY'),
   ]);
   if (!url || !key) {
-    logger.warn('[OutboundSync] Supabase credentials not configured — skipping outbound push');
-    return null;
+    throw new OutboundSyncError(
+      'OUTBOUND_SYNC_NOT_CONFIGURED',
+      'Supabase outbound-sync credentials are not configured',
+    );
   }
   return { url, key };
+}
+
+export class OutboundSyncError extends Error {
+  constructor(
+    public readonly code: 'OUTBOUND_SYNC_NOT_CONFIGURED' | 'OUTBOUND_SYNC_INVALID_RECORD',
+    message: string,
+  ) {
+    super(message);
+    this.name = 'OutboundSyncError';
+  }
 }
 
 /**
@@ -74,6 +86,27 @@ async function supabaseInsert(
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`Supabase INSERT to ${table} failed (${res.status}): ${body}`);
+  }
+}
+
+async function supabaseDelete(
+  table: string,
+  record: Record<string, unknown>,
+  credentials: { url: string; key: string },
+): Promise<void> {
+  const endpoint = `${credentials.url}/rest/v1/${table}?id=eq.${record.id}`;
+  const res = await fetch(endpoint, {
+    method: 'DELETE',
+    headers: {
+      'apikey': credentials.key,
+      'Authorization': `Bearer ${credentials.key}`,
+      'Prefer': 'return=minimal',
+    },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Supabase DELETE from ${table} failed (${res.status}): ${body}`);
   }
 }
 
@@ -165,7 +198,7 @@ function mapEventFightToSupabase(data: object): Record<string, unknown> {
 
 // ─── Public sync functions ────────────────────────────────────────────────────
 
-type SyncAction = 'create' | 'update';
+export type SyncAction = 'create' | 'update' | 'delete';
 
 async function _syncEntity(
   table: string,
@@ -173,14 +206,17 @@ async function _syncEntity(
   action: SyncAction,
   label: string,
 ): Promise<void> {
-  const creds = await getSupabaseCredentials();
-  if (!creds) return;
   if (!record.id) {
-    logger.warn(`[OutboundSync] ${label} sync skipped — no id`);
-    return;
+    throw new OutboundSyncError(
+      'OUTBOUND_SYNC_INVALID_RECORD',
+      `${label} outbound-sync record is missing an id`,
+    );
   }
+  const creds = await getSupabaseCredentials();
   if (action === 'create') {
     await supabaseInsert(table, record, creds);
+  } else if (action === 'delete') {
+    await supabaseDelete(table, record, creds);
   } else {
     await supabasePatch(table, record, creds);
   }
@@ -195,6 +231,7 @@ export async function syncFighterToSupabase(
     await _syncEntity('fighters', mapFighterToSupabase(data), action, 'Fighter');
   } catch (err) {
     logger.error('[OutboundSync] Fighter sync failed:', err);
+    throw err;
   }
 }
 
@@ -206,6 +243,7 @@ export async function syncEventToSupabase(
     await _syncEntity('events', mapEventToSupabase(data), action, 'Event');
   } catch (err) {
     logger.error('[OutboundSync] Event sync failed:', err);
+    throw err;
   }
 }
 
@@ -217,6 +255,7 @@ export async function syncFightHistoryToSupabase(
     await _syncEntity('fight_history', mapFightHistoryToSupabase(data), action, 'FightHistory');
   } catch (err) {
     logger.error('[OutboundSync] Fight history sync failed:', err);
+    throw err;
   }
 }
 
@@ -228,6 +267,7 @@ export async function syncNewsToSupabase(
     await _syncEntity('news_articles', mapNewsToSupabase(data), action, 'News');
   } catch (err) {
     logger.error('[OutboundSync] News sync failed:', err);
+    throw err;
   }
 }
 
@@ -239,5 +279,6 @@ export async function syncEventFightToSupabase(
     await _syncEntity('event_fights', mapEventFightToSupabase(data), action, 'EventFight');
   } catch (err) {
     logger.error('[OutboundSync] EventFight sync failed:', err);
+    throw err;
   }
 }

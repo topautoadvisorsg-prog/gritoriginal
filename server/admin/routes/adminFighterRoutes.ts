@@ -5,7 +5,7 @@ import { insertFighterSchema } from "../../../shared/schema";
 import { logger } from '../../utils/logger';
 import { validate } from '../../middleware/validate';
 import { bulkFightersSchema, bulkFightsSchema } from '../../schemas';
-import { syncFighterToSupabase } from '../../services/outboundSyncService';
+import { enqueueOutboundSync } from '../../services/jobService';
 
 type CreatedFighter = Awaited<ReturnType<typeof storage.createFighter>>;
 type UpdatedFighter = NonNullable<Awaited<ReturnType<typeof storage.updateFighter>>>;
@@ -32,10 +32,12 @@ export function registerAdminFighterRoutes(app: Express) {
       const fullName = `${fighter.firstName} ${fighter.lastName}`;
       await storage.linkUnlinkedFightHistory(fullName, fighter.id);
 
-      // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncFighterToSupabase(fighter, 'create').catch((e) =>
-        logger.error('[OutboundSync] Fighter create sync failed:', e)
-      ));
+      await enqueueOutboundSync({
+        id: `admin-fighter:create:${fighter.id}`,
+        sourceType: 'fighter',
+        actionType: 'create',
+        data: fighter,
+      }).catch((e) => logger.error('[OutboundSync] Fighter create enqueue failed:', e));
 
       res.status(201).json(fighter);
     } catch (error) {
@@ -66,10 +68,12 @@ export function registerAdminFighterRoutes(app: Express) {
         return res.status(500).json({ error: "Failed to update fighter" });
       }
 
-      // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncFighterToSupabase(fighter).catch((e) =>
-        logger.error('[OutboundSync] Fighter update sync failed:', e)
-      ));
+      await enqueueOutboundSync({
+        id: `admin-fighter:update:${fighter.id}`,
+        sourceType: 'fighter',
+        actionType: 'update',
+        data: fighter,
+      }).catch((e) => logger.error('[OutboundSync] Fighter update enqueue failed:', e));
 
       res.json(fighter);
     } catch (error) {

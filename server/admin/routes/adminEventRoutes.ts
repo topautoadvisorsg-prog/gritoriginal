@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from 'express';
 import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { storage } from "../../storage";
-import { syncEventToSupabase } from '../../services/outboundSyncService';
+import { enqueueOutboundSync } from '../../services/jobService';
 import { insertEventSchema, CARD_PLACEMENTS, type CardPlacement } from "../../../shared/schema";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from '../../utils/logger';
@@ -157,10 +157,12 @@ export function registerAdminEventRoutes(app: Express) {
 
       const createdFights = await storage.createEventFights(fightsToCreate);
 
-      // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncEventToSupabase(createdEvent, 'create').catch((e) =>
-        logger.error('[OutboundSync] Event create sync failed:', e)
-      ));
+      await enqueueOutboundSync({
+        id: `admin-event:create:${createdEvent.id}`,
+        sourceType: 'event',
+        actionType: 'create',
+        data: createdEvent,
+      }).catch((e) => logger.error('[OutboundSync] Event create enqueue failed:', e));
 
       res.status(201).json({
         ...createdEvent,
@@ -197,10 +199,12 @@ export function registerAdminEventRoutes(app: Express) {
         return res.status(500).json({ error: "Failed to update event" });
       }
 
-      // Outbound sync to data engine (non-blocking)
-      setImmediate(() => syncEventToSupabase(updatedEvent).catch((e) =>
-        logger.error('[OutboundSync] Event update sync failed:', e)
-      ));
+      await enqueueOutboundSync({
+        id: `admin-event:update:${updatedEvent.id}`,
+        sourceType: 'event',
+        actionType: 'update',
+        data: updatedEvent,
+      }).catch((e) => logger.error('[OutboundSync] Event update enqueue failed:', e));
 
       const fights = await storage.getEventFights(id as string);
       res.json({ ...updatedEvent, fights });

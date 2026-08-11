@@ -8,14 +8,7 @@ import {
   getPipelineSecretFromEnv,
   isSensitivePipelineConfigKey,
 } from '../config/pipelineConfigPolicy';
-import {
-  syncFighterToSupabase,
-  syncEventToSupabase,
-  syncFightHistoryToSupabase,
-  syncNewsToSupabase,
-  syncEventFightToSupabase,
-} from './outboundSyncService';
-import { enqueueOutboundSync } from './jobService';
+import { enqueueOutboundSync, type OutboundSyncEntry } from './jobService';
 
 export type DataPipelineStatus = 'pending' | 'approved' | 'rejected' | 'applied' | 'failed';
 export type SourceType = 'fighter' | 'fight' | 'news' | 'odds' | 'event';
@@ -58,6 +51,16 @@ interface FightPipelineData extends JsonRecord {
 interface EventFightPipelineData extends JsonRecord {
   fighter1Id: string;
   fighter2Id: string;
+}
+
+interface EventFightOutboundEntry {
+  actionType: 'create' | 'update';
+  data: EventFightPipelineData & { id: string; eventId: string; status?: string };
+}
+
+interface EventApplyResult {
+  resolvedId: string;
+  eventFightEntries: EventFightOutboundEntry[];
 }
 
 interface EventPipelineData extends JsonRecord {
@@ -260,8 +263,7 @@ export async function rejectEntry(entryId: string, adminUserId: string, reason: 
  * This is the actual data integration step.
  */
 export async function applyEntry(entryId: string): Promise<void> {
-  // Capture entry before transaction for post-commit outbound sync
-  let appliedEntry: PipelineEntry | (PipelineEntry & { data: JsonRecord }) | null = null;
+  const outboundEntries: OutboundSyncEntry[] = [];
 
   await db.transaction(async (tx) => {
     try {
@@ -281,16 +283,27 @@ export async function applyEntry(entryId: string): Promise<void> {
       let resolvedId: string | undefined;
       switch (entry.sourceType) {
         case 'fighter':
-          await applyFighterData(tx, entry);
+          resolvedId = await applyFighterData(tx, entry);
           break;
         case 'fight':
-          await applyFightData(tx, entry);
+          resolvedId = await applyFightData(tx, entry);
           break;
         case 'event':
-          resolvedId = await applyEventData(tx, entry);
+          {
+            const result = await applyEventData(tx, entry);
+            resolvedId = result.resolvedId;
+            for (const eventFight of result.eventFightEntries) {
+              outboundEntries.push({
+                id: `${entry.id}:event-fight:${eventFight.data.id}`,
+                sourceType: 'event_fight',
+                actionType: eventFight.actionType,
+                data: eventFight.data,
+              });
+            }
+          }
           break;
         case 'news':
-          await applyNewsData(tx, entry);
+          resolvedId = await applyNewsData(tx, entry);
           break;
         case 'odds':
           await applyOddsData(tx, entry);
@@ -304,13 +317,18 @@ export async function applyEntry(entryId: string): Promise<void> {
         .set({
           status: 'applied',
           appliedAt: new Date(),
+          errorLog: null,
         })
         .where(eq(dataPipeline.id, entryId));
 
-      // Inject resolved ID into data so outbound sync has access to it
-      appliedEntry = resolvedId
-        ? { ...entry, data: { ...asRecord(entry.data), id: resolvedId } }
-        : entry;
+      if (entry.sourceType !== 'odds' && resolvedId) {
+        outboundEntries.unshift({
+          id: entry.id,
+          sourceType: entry.sourceType,
+          actionType: entry.actionType,
+          data: { ...asRecord(entry.data), id: resolvedId },
+        });
+      }
       logger.info(`[Data Pipeline] Entry ${entryId} applied successfully`);
     } catch (error) {
       logger.error('[Data Pipeline] Error applying entry:', error);
@@ -318,37 +336,22 @@ export async function applyEntry(entryId: string): Promise<void> {
     }
   });
 
-  // After transaction commits, push to data engine's Supabase (non-blocking, durable)
-  if (appliedEntry) {
-    await enqueueOutboundSync(appliedEntry).catch((err) =>
-      logger.error('[OutboundSync] Post-apply enqueue failed:', err)
-    );
+  // After the local transaction commits, durably enqueue remote delivery.
+  const enqueueErrors: string[] = [];
+  for (const outboundEntry of outboundEntries) {
+    try {
+      await enqueueOutboundSync(outboundEntry);
+    } catch (error) {
+      const message = errorMessage(error);
+      enqueueErrors.push(`${outboundEntry.sourceType}:${outboundEntry.id}: ${message}`);
+      logger.error('[OutboundSync] Post-apply enqueue failed:', error);
+    }
   }
-}
 
-/**
- * Fire outbound sync to Supabase for a just-applied pipeline entry.
- * Runs outside the DB transaction so failures don't roll back the apply.
- */
-async function _outboundSyncEntry(entry: PipelineEntry): Promise<void> {
-  const data = asRecord(entry.data);
-  const action = entry.actionType === 'create' ? 'create' : 'update';
-  switch (entry.sourceType) {
-    case 'fighter':
-      await syncFighterToSupabase(data, action);
-      break;
-    case 'event':
-      await syncEventToSupabase(data, action);
-      break;
-    case 'fight':
-      await syncFightHistoryToSupabase(data, action);
-      break;
-    case 'news':
-      await syncNewsToSupabase(data, action);
-      break;
-    default:
-      // odds — no direct Supabase table mapping currently
-      break;
+  if (enqueueErrors.length > 0) {
+    await db.update(dataPipeline)
+      .set({ errorLog: `Outbound sync enqueue failed: ${enqueueErrors.join('; ')}` })
+      .where(eq(dataPipeline.id, entryId));
   }
 }
 
@@ -357,7 +360,7 @@ async function _outboundSyncEntry(entry: PipelineEntry): Promise<void> {
  * If the payload includes an `eventFights` array, each fight is upserted
  * into the event_fights table and synced to Supabase after commit.
  */
-async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<string | undefined> {
+async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<EventApplyResult> {
   const eventData = asRecord(entry.data) as EventPipelineData;
   const { eventFights: fights, ...metadata } = eventData;
 
@@ -385,13 +388,13 @@ async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<
       .where(eq(events.id, resolvedEventId));
     logger.info(`[Data Pipeline] Updated event ${resolvedEventId}`);
   } else {
-    return undefined;
+    throw new Error(`Unsupported event action: ${entry.actionType}`);
   }
 
   // Insert or update embedded fight matchups if provided
   if (Array.isArray(fights) && fights.length > 0) {
     logger.info(`[Data Pipeline] Processing ${fights.length} embedded event fights for event ${resolvedEventId}`);
-    const fightRows: Array<EventFightPipelineData & { id: string; eventId: string; status?: string }> = [];
+    const fightRows: EventFightOutboundEntry[] = [];
 
     for (const fight of fights) {
       const existing = await tx
@@ -411,7 +414,10 @@ async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<
         await tx.update(eventFights)
           .set({ ...fight, eventId: resolvedEventId })
           .where(eq(eventFights.id, fightId));
-        fightRows.push({ id: fightId, ...fight, eventId: resolvedEventId });
+        fightRows.push({
+          actionType: 'update',
+          data: { id: fightId, ...fight, eventId: resolvedEventId },
+        });
         logger.info(`[Data Pipeline] Updated event_fight ${fightId}`);
       } else {
         // Insert new fight
@@ -422,22 +428,18 @@ async function applyEventData(tx: DbTransaction, entry: PipelineEntry): Promise<
           status: 'OPEN',
           ...fight,
         });
-        fightRows.push({ id: fightId, ...fight, eventId: resolvedEventId, status: 'OPEN' });
+        fightRows.push({
+          actionType: 'create',
+          data: { id: fightId, ...fight, eventId: resolvedEventId, status: 'OPEN' },
+        });
         logger.info(`[Data Pipeline] Inserted event_fight ${fightId} (${fight.fighter1Id} vs ${fight.fighter2Id})`);
       }
     }
 
-    // Outbound sync for each event fight (non-blocking, after transaction)
-    setImmediate(() => {
-      for (const row of fightRows) {
-        syncEventFightToSupabase(row, 'update').catch((err) =>
-          logger.error('[OutboundSync] EventFight (from event payload) sync failed:', err)
-        );
-      }
-    });
+    return { resolvedId: resolvedEventId, eventFightEntries: fightRows };
   }
 
-  return resolvedEventId;
+  return { resolvedId: resolvedEventId, eventFightEntries: [] };
 }
 
 /**
@@ -460,7 +462,7 @@ function normalizeFighterData(data: unknown): FighterPipelineData {
 /**
  * Apply fighter data updates.
  */
-async function applyFighterData(tx: DbTransaction, entry: PipelineEntry): Promise<void> {
+async function applyFighterData(tx: DbTransaction, entry: PipelineEntry): Promise<string> {
   const fighterData = normalizeFighterData(entry.data);
   
   if (entry.actionType === 'create') {
@@ -485,14 +487,16 @@ async function applyFighterData(tx: DbTransaction, entry: PipelineEntry): Promis
           .set({ ...fighterData, lastUpdated: new Date() })
           .where(eq(fighters.id, existing[0].id));
         logger.info(`[Data Pipeline] applyFighterData: upgraded create→update for existing fighter ${existing[0].id}`);
-        return;
+        return existing[0].id;
       }
     }
 
+    const fighterId = uuidv4();
     await tx.insert(fighters).values({
-      id: uuidv4(),
+      id: fighterId,
       ...fighterData,
     });
+    return fighterId;
   } else if (entry.actionType === 'update') {
     if (!entry.sourceId) {
       throw new Error('sourceId required for update');
@@ -500,13 +504,16 @@ async function applyFighterData(tx: DbTransaction, entry: PipelineEntry): Promis
     await tx.update(fighters)
       .set({ ...fighterData, lastUpdated: new Date() })
       .where(eq(fighters.id, entry.sourceId));
+    return entry.sourceId;
   } else if (entry.actionType === 'delete') {
     if (!entry.sourceId) {
       throw new Error('sourceId required for delete');
     }
     await tx.delete(fighters)
       .where(eq(fighters.id, entry.sourceId));
+    return entry.sourceId;
   }
+  throw new Error(`Unsupported fighter action: ${entry.actionType}`);
 }
 
 /**
@@ -535,14 +542,16 @@ function normalizeFightData(data: unknown): FightPipelineData {
  * populated by normalizeFightData from either flat payload fields or the nested
  * location object.
  */
-async function applyFightData(tx: DbTransaction, entry: PipelineEntry): Promise<void> {
+async function applyFightData(tx: DbTransaction, entry: PipelineEntry): Promise<string> {
   const fightData = normalizeFightData(entry.data);
   
   if (entry.actionType === 'create') {
+    const fightId = uuidv4();
     await tx.insert(fightHistory).values({
-      id: uuidv4(),
+      id: fightId,
       ...fightData,
     });
+    return fightId;
   } else if (entry.actionType === 'update') {
     if (!entry.sourceId) {
       throw new Error('sourceId required for update');
@@ -550,20 +559,24 @@ async function applyFightData(tx: DbTransaction, entry: PipelineEntry): Promise<
     await tx.update(fightHistory)
       .set(fightData)
       .where(eq(fightHistory.id, entry.sourceId));
+    return entry.sourceId;
   }
+  throw new Error(`Unsupported fight action: ${entry.actionType}`);
 }
 
 /**
  * Apply news article data.
  */
-async function applyNewsData(tx: DbTransaction, entry: PipelineEntry): Promise<void> {
+async function applyNewsData(tx: DbTransaction, entry: PipelineEntry): Promise<string> {
   const newsData = asRecord(entry.data);
   
   if (entry.actionType === 'create') {
+    const articleId = uuidv4();
     await tx.insert(newsArticles).values({
-      id: uuidv4(),
+      id: articleId,
       ...newsData,
     });
+    return articleId;
   } else if (entry.actionType === 'update') {
     if (!entry.sourceId) {
       throw new Error('sourceId required for update');
@@ -571,7 +584,9 @@ async function applyNewsData(tx: DbTransaction, entry: PipelineEntry): Promise<v
     await tx.update(newsArticles)
       .set(newsData)
       .where(eq(newsArticles.id, entry.sourceId));
+    return entry.sourceId;
   }
+  throw new Error(`Unsupported news action: ${entry.actionType}`);
 }
 
 /**

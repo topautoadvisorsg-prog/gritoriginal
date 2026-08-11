@@ -11,8 +11,8 @@ import {
 
 let boss: PgBoss | null = null;
 
-type OutboundSyncSource = 'fighter' | 'event' | 'fight' | 'news';
-type OutboundSyncAction = 'create' | 'update';
+type OutboundSyncSource = 'fighter' | 'event' | 'event_fight' | 'fight' | 'news';
+type OutboundSyncAction = 'create' | 'update' | 'delete';
 
 export interface OutboundSyncEntry {
   id: string;
@@ -26,7 +26,7 @@ interface OutboundSyncJob {
 }
 
 async function runOutboundSync(entry: OutboundSyncEntry): Promise<void> {
-  const action: OutboundSyncAction = entry.actionType === 'create' ? 'create' : 'update';
+  const action: OutboundSyncAction = entry.actionType;
 
   switch (entry.sourceType) {
     case 'fighter':
@@ -34,6 +34,9 @@ async function runOutboundSync(entry: OutboundSyncEntry): Promise<void> {
       break;
     case 'event':
       await syncEventToSupabase(entry.data, action);
+      break;
+    case 'event_fight':
+      await syncEventFightToSupabase(entry.data, action);
       break;
     case 'fight':
       await syncFightHistoryToSupabase(entry.data, action);
@@ -47,48 +50,45 @@ async function runOutboundSync(entry: OutboundSyncEntry): Promise<void> {
 export async function initJobService() {
   if (boss) return boss;
 
+  const candidate = new PgBoss(env.DATABASE_URL);
   try {
-    boss = new PgBoss(env.DATABASE_URL);
+    candidate.on('error', (error: unknown) => logger.error('[pg-boss] Error:', error));
     
-    boss.on('error', (error: unknown) => logger.error('[pg-boss] Error:', error));
-    
-    await boss.start();
+    await candidate.start();
     logger.info('[pg-boss] Job queue started successfully');
 
-    await boss.createQueue('outbound-sync').catch(() => {});
+    await candidate.createQueue('outbound-sync');
 
-    await boss.work('outbound-sync', async (job: { data: OutboundSyncJob }) => {
+    await candidate.work('outbound-sync', async (job: { data: OutboundSyncJob }) => {
       const { entry } = job.data;
       logger.info(`[pg-boss] Processing outbound-sync for entry ${entry.id}`);
       await runOutboundSync(entry);
     });
 
+    boss = candidate;
     return boss;
   } catch (err) {
     logger.error('[pg-boss] Failed to start:', err);
+    await candidate.stop().catch(() => undefined);
     throw err;
   }
 }
 
-export async function enqueueOutboundSync(entry: OutboundSyncEntry) {
+export async function enqueueOutboundSync(entry: OutboundSyncEntry): Promise<string> {
   if (!boss) {
-    logger.warn('[pg-boss] Queue not initialized, falling back to setImmediate');
-    setImmediate(async () => {
-      try {
-        await runOutboundSync(entry);
-      } catch (e) {
-        logger.error('[OutboundSync Fallback] Post-apply sync failed:', e);
-      }
-    });
-    return;
+    throw new Error('Outbound-sync queue is not initialized');
   }
 
   // Enqueue with retry policy
-  await boss.send('outbound-sync', { entry }, {
+  const jobId = await boss.send('outbound-sync', { entry }, {
     retryLimit: 5,
     retryDelay: 60, // 1 minute
   });
+  if (!jobId) {
+    throw new Error(`pg-boss did not create outbound-sync job for entry ${entry.id}`);
+  }
   logger.info(`[pg-boss] Enqueued outbound-sync for entry ${entry.id}`);
+  return jobId;
 }
 
 export function getBoss() {

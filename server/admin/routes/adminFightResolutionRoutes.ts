@@ -4,7 +4,7 @@ import { isAuthenticated, requireAdmin } from '../../auth/guards';
 import { finalizeFightResult } from '../../services/scoringService';
 import { logger } from '../../utils/logger';
 import { verifyFightState } from '../../middleware/fightState';
-import { syncEventFightToSupabase } from '../../services/outboundSyncService';
+import { enqueueOutboundSync } from '../../services/jobService';
 import { storage } from '../../storage';
 
 function getErrorMessage(error: unknown): string {
@@ -26,17 +26,18 @@ export function registerAdminFightResolutionRoutes(app: Express): void {
 
             const result = await finalizeFightResult(fightId, resultData);
 
-            // Outbound sync to Supabase (non-blocking) — push updated event_fights row
-            setImmediate(async () => {
-                try {
-                    const fight = await storage.getEventFight(fightId);
-                    if (fight) {
-                        await syncEventFightToSupabase(fight, 'update');
-                    }
-                } catch (syncErr) {
-                    logger.error('[OutboundSync] EventFight post-resolution sync failed:', syncErr);
-                }
-            });
+            // Durably enqueue the updated event_fights row for outbound delivery.
+            const fight = await storage.getEventFight(fightId);
+            if (fight) {
+                await enqueueOutboundSync({
+                    id: `admin-event-fight:update:${fight.id}`,
+                    sourceType: 'event_fight',
+                    actionType: 'update',
+                    data: fight,
+                }).catch((syncErr) =>
+                    logger.error('[OutboundSync] EventFight post-resolution enqueue failed:', syncErr)
+                );
+            }
 
             res.json({
                 message: "Fight result saved successfully",
