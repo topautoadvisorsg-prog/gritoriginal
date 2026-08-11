@@ -33,3 +33,4 @@ Thumbs.db
 # local tooling artifacts
 .claude/
 .playwright-cli/
+*.tsbuildinfo

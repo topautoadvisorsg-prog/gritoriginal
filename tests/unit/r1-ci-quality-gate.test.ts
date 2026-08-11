@@ -8,7 +8,7 @@ const workflow = readFileSync(
 const packageJson = JSON.parse(readFileSync(
   new URL('../../package.json', import.meta.url),
   'utf8',
-)) as { scripts: Record<string, string> };
+)) as { engines: { node: string }; scripts: Record<string, string> };
 
 describe('R1 CI quality gate', () => {
   it('runs for pull requests and main with read-only repository permission', () => {
@@ -26,6 +26,8 @@ describe('R1 CI quality gate', () => {
   });
 
   it('uses the locked dependency tree and every local quality gate', () => {
+    expect(workflow).toContain('node-version: 22.13.0');
+    expect(packageJson.engines.node).toBe('>=22.13.0 <23.0.0');
     expect(workflow).toContain('run: npm ci');
     for (const command of ['typecheck', 'test:ci', 'lint', 'build']) {
       expect(workflow).toContain(`run: npm run ${command}`);
