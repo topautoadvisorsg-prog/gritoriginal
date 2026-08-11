@@ -17,6 +17,8 @@ mandatory and reproducible on every pull request and update to `main`.
 - Cancel superseded work on the same ref and cap execution at 20 minutes.
 - Use Node.js 22.13, the committed lockfile, and `npm ci`.
 - Pin official checkout and Node setup actions to immutable commit revisions.
+- Use the official Node 24-based action releases so the workflow itself does
+  not depend on GitHub's retired Node 20 action runtime.
 - Add canonical `typecheck` and single-worker `test:ci` package scripts.
 - Run TypeScript, all tests, ESLint, and the production build without production
   credentials or database connectivity.

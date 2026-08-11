@@ -24,8 +24,8 @@ describe('R1 CI quality gate', () => {
   });
 
   it('pins third-party actions to immutable revisions', () => {
-    expect(workflow).toContain('actions/checkout@11d5960a326750d5838078e36cf38b85af677262');
-    expect(workflow).toContain('actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020');
+    expect(workflow).toContain('actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1');
+    expect(workflow).toContain('actions/setup-node@820762786026740c76f36085b0efc47a31fe5020');
     expect(workflow).not.toMatch(/uses:\s+[^\s]+@v\d/);
   });
 
