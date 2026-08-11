@@ -1,6 +1,4 @@
 import type { Express, Request, Response } from "express";
-import path from "path";
-import fs from "fs";
 import { db } from "../../db";
 import { slips, chatNotifications } from "../../../shared/schema";
 import { users } from "../../../shared/models/auth";
@@ -8,6 +6,7 @@ import { eq, desc, asc } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { logger } from "../../utils/logger";
 import * as adminService from "../../services/adminService";
+import { deleteSlipImage } from "../../services/slipImageStorage";
 
 /**
  * Admin Slip Management routes — moderation queue, featured wall, approve/reject/delete.
@@ -215,11 +214,9 @@ export function registerAdminSlipRoutes(app: Express) {
                 return res.status(404).json({ error: "Slip not found" });
             }
 
-            // Delete file from filesystem (strip leading slash so path.join resolves correctly)
-            const absPath = path.join(process.cwd(), slip.imageUrl.replace(/^\//, ""));
-            if (fs.existsSync(absPath)) {
-                fs.unlinkSync(absPath);
-            }
+            // Preserve the row if owned-object cleanup fails so the operation
+            // remains visible and retryable.
+            await deleteSlipImage(slip.imageUrl);
 
             await db.delete(slips).where(eq(slips.id, id));
 

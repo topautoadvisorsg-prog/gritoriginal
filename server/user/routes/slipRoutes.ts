@@ -1,22 +1,25 @@
 import type { Express, Request, Response } from "express";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import { db } from "../../db";
 import { slips, chatNotifications } from "../../../shared/schema";
 import { eq, and, desc, gt } from "drizzle-orm";
 import { isAuthenticated, requireTier } from "../../auth/guards";
 import { logger } from "../../utils/logger";
+import {
+    deleteSlipImage,
+    InvalidSlipImageError,
+    MAX_SLIP_IMAGE_BYTES,
+    storeSlipImage,
+} from "../../services/slipImageStorage";
 
 const SLIP_EXPIRY_DAYS = 7;
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_MIME_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
 // Multer setup — memoryStorage so we can validate before writing
 const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: MAX_FILE_SIZE },
+    limits: { fileSize: MAX_SLIP_IMAGE_BYTES },
     fileFilter: (_req, file, cb) => {
         if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
             cb(null, true);
@@ -25,16 +28,6 @@ const upload = multer({
         }
     },
 });
-
-function getExtension(mimetype: string): string {
-    const map: Record<string, string> = {
-        "image/jpeg": "jpg",
-        "image/jpg": "jpg",
-        "image/png": "png",
-        "image/webp": "webp",
-    };
-    return map[mimetype] || "jpg";
-}
 
 export function registerSlipRoutes(app: Express) {
 
@@ -60,28 +53,17 @@ export function registerSlipRoutes(app: Express) {
             }
 
             const userId = req.user.id;
+            const slipId = uuidv4();
+            let imageUrl: string | null = null;
 
             try {
-                // Prepare upload directory
-                const slipDir = path.join(process.cwd(), "uploads", "slips", userId);
-                if (!fs.existsSync(slipDir)) {
-                    fs.mkdirSync(slipDir, { recursive: true });
-                }
-
-                const ext = getExtension(req.file.mimetype);
-                const filename = `${uuidv4()}.${ext}`;
-                const filePath = path.join(slipDir, filename);
-
-                // Write file
-                fs.writeFileSync(filePath, req.file.buffer);
-
-                const imageUrl = `/uploads/slips/${userId}/${filename}`;
+                imageUrl = await storeSlipImage(slipId, req.file.buffer, req.file.mimetype);
                 const expiresAt = new Date();
                 expiresAt.setDate(expiresAt.getDate() + SLIP_EXPIRY_DAYS);
 
                 const [slip] = await db.insert(slips)
                     .values({
-                        id: uuidv4(),
+                        id: slipId,
                         userId,
                         imageUrl,
                         status: "pending",
@@ -96,6 +78,17 @@ export function registerSlipRoutes(app: Express) {
                     daysRemaining: SLIP_EXPIRY_DAYS,
                 });
             } catch (error) {
+                if (imageUrl) {
+                    try {
+                        await deleteSlipImage(imageUrl);
+                    } catch (cleanupError) {
+                        logger.error("Could not compensate failed slip database write:", cleanupError);
+                    }
+                }
+
+                if (error instanceof InvalidSlipImageError) {
+                    return res.status(422).json({ error: "Image content is invalid or does not match its file type" });
+                }
                 logger.error("Error saving slip:", error);
                 res.status(500).json({ error: "Failed to save slip" });
             }
@@ -149,11 +142,9 @@ export function registerSlipRoutes(app: Express) {
                 return res.status(403).json({ error: "Approved slips cannot be deleted by users" });
             }
 
-            // Delete from filesystem (strip leading slash so path.join resolves correctly)
-            const absPath = path.join(process.cwd(), slip.imageUrl.replace(/^\//, ""));
-            if (fs.existsSync(absPath)) {
-                fs.unlinkSync(absPath);
-            }
+            // Delete storage first. If it fails, preserve the database row so
+            // cleanup can be retried instead of silently orphaning the image.
+            await deleteSlipImage(slip.imageUrl);
 
             await db.delete(slips).where(eq(slips.id, id));
 

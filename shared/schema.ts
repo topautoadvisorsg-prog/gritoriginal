@@ -798,7 +798,7 @@ export const chatBans = pgTable("chat_bans", {
 export const slips = pgTable("slips", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: varchar("user_id").notNull(),
-  imageUrl: text("image_url").notNull(), // local path: /uploads/slips/<userId>/<uuid>.ext
+  imageUrl: text("image_url").notNull(), // canonical object URL; legacy local paths remain readable during migration
   status: varchar("status", { length: 20 }).notNull().default("pending"), // 'pending' | 'approved' | 'rejected'
   isFeatured: boolean("is_featured").notNull().default(false),
   caption: text("caption"), // admin-set display caption

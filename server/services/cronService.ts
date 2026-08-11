@@ -1,14 +1,13 @@
 import cron from 'node-cron';
-import path from 'path';
-import fs from 'fs';
 import { db } from '../db';
 import { slips } from '../../shared/schema';
-import { lt } from 'drizzle-orm';
+import { eq, lt } from 'drizzle-orm';
 import { createLeaderboardSnapshot } from './leaderboardService';
 import { runMonthlyProgression } from './progressionService';
 import { retryFailedEntries } from './dataEngineService';
 import { expirationService } from './expirationService';
 import { logger } from '../utils/logger';
+import { deleteSlipImage } from './slipImageStorage';
 
 /**
  * Initialize all scheduled tasks for the system.
@@ -76,25 +75,19 @@ export function initCrons() {
             const expiredSlips = await db.select().from(slips).where(lt(slips.expiresAt, now));
 
             let deletedCount = 0;
+            let failedCount = 0;
             for (const slip of expiredSlips) {
-                // Delete from filesystem (strip leading slash so path.join resolves correctly)
                 try {
-                    const absPath = path.join(process.cwd(), slip.imageUrl.replace(/^\//, ""));
-                    if (fs.existsSync(absPath)) {
-                        fs.unlinkSync(absPath);
-                    }
-                } catch (fsErr) {
-                    logger.warn(`[Cron] Could not delete slip file ${slip.imageUrl}:`, fsErr);
+                    await deleteSlipImage(slip.imageUrl);
+                    await db.delete(slips).where(eq(slips.id, slip.id));
+                    deletedCount += 1;
+                } catch (cleanupError) {
+                    failedCount += 1;
+                    logger.warn(`[Cron] Could not clean expired slip ${slip.id}; row preserved for retry:`, cleanupError);
                 }
             }
 
-            if (expiredSlips.length > 0) {
-                // Bulk delete from DB
-                await db.delete(slips).where(lt(slips.expiresAt, now));
-                deletedCount = expiredSlips.length;
-            }
-
-            logger.info(`[Cron] Slip cleanup completed: ${deletedCount} slips removed`);
+            logger.info(`[Cron] Slip cleanup completed: ${deletedCount} removed, ${failedCount} retained for retry`);
         } catch (error) {
             logger.error('[Cron] Slip cleanup failed:', error);
         }

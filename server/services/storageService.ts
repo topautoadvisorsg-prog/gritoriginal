@@ -1,4 +1,9 @@
-import { S3Client, PutObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+    DeleteObjectCommand,
+    GetObjectCommand,
+    PutObjectCommand,
+    S3Client,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Cloudflare R2 storage. R2 speaks the S3 API, so the standard AWS SDK works
@@ -68,6 +73,17 @@ export class StorageService {
         await this.client.send(command);
     }
 
+    // Deletes an exact server-owned object key. S3/R2 deletion is idempotent,
+    // which lets cleanup jobs retry safely after partial application failures.
+    async deleteObject(objectPath: string): Promise<void> {
+        const cleanPath = normalizeObjectPath(objectPath);
+        const command = new DeleteObjectCommand({
+            Bucket: this.bucket,
+            Key: cleanPath,
+        });
+        await this.client.send(command);
+    }
+
     // Downloads the object's bytes (used server-side for validation, e.g.
     // checking aspect ratio, before trusting a client-reported upload).
     async getObjectBuffer(objectPath: string, maxBytes: number): Promise<Buffer> {
@@ -88,6 +104,11 @@ export class StorageService {
     getPublicUrl(objectPath: string): string {
         const cleanPath = objectPath.startsWith('/') ? objectPath.slice(1) : objectPath;
         return `${this.publicUrl}/${cleanPath}`;
+    }
+
+
+    getObjectPathFromPublicUrl(candidateUrl: string): string | null {
+        return extractObjectPathFromPublicUrl(this.publicUrl, candidateUrl);
     }
 }
 
@@ -120,4 +141,49 @@ function assertPositiveByteLimit(maxBytes: number): void {
     if (!Number.isSafeInteger(maxBytes) || maxBytes <= 0) {
         throw new TypeError('maxBytes must be a positive safe integer');
     }
+}
+
+
+export function extractObjectPathFromPublicUrl(
+    publicUrl: string,
+    candidateUrl: string,
+): string | null {
+    // Canonical URLs produced by this service contain only the safe object-key
+    // alphabet. Reject encoded or backslash paths before URL normalization can
+    // collapse traversal segments and obscure their original form.
+    if (candidateUrl.includes('%') || candidateUrl.includes('\\')) return null;
+
+    try {
+        const base = new URL(publicUrl);
+        const candidate = new URL(candidateUrl);
+        const basePath = base.pathname.replace(/\/+$/, '');
+        const objectPrefix = `${basePath}/`;
+
+        if (candidate.origin !== base.origin
+            || candidate.search !== ''
+            || candidate.hash !== ''
+            || !candidate.pathname.startsWith(objectPrefix)) {
+            return null;
+        }
+
+        const objectPath = candidate.pathname.slice(objectPrefix.length);
+        return isSafeObjectPath(objectPath) ? objectPath : null;
+    } catch {
+        return null;
+    }
+}
+
+
+function normalizeObjectPath(objectPath: string): string {
+    const cleanPath = objectPath.startsWith('/') ? objectPath.slice(1) : objectPath;
+    if (!isSafeObjectPath(cleanPath)) {
+        throw new TypeError('Invalid object path');
+    }
+    return cleanPath;
+}
+
+
+function isSafeObjectPath(objectPath: string): boolean {
+    if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(objectPath)) return false;
+    return objectPath.split('/').every((segment) => segment !== '' && segment !== '.' && segment !== '..');
 }
